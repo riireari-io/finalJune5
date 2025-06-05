@@ -1,0 +1,650 @@
+{% extends 'base.html' %}
+
+{% block title %}Email Phishing{% endblock %}
+
+{% block content %}
+<!-- Add Bootstrap Icons CDN -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<style>
+    /* Triton's Trident Styles Applied */
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    html {
+        font-size: 16px;
+        scroll-behavior: smooth;
+    }
+
+    body {
+        background-color: #0d1a26; /* Dark background */
+        color: #e0e0e0; /* Light text for contrast */
+        font-family: 'Arial', sans-serif;
+        overflow-x: hidden;
+    }
+
+    .container {
+        color: #e0e0e0; /* Ensure container text is light */
+    }
+
+    h3 {
+        color: #1a75ff; /* Blue accent for headings */
+    }
+
+    .nav-tabs .nav-item .nav-link {
+        color: #b0b0b0; /* Light gray for inactive tabs */
+        border-color: #334e68;
+        background-color: #1c2a38;
+    }
+
+    .nav-tabs .nav-item .nav-link.active {
+        color: #fff; /* White for active tab text */
+        background-color: #1a75ff; /* Blue for active tab background */
+        border-color: #1a75ff;
+    }
+
+    /* Card styles for both custom and theme templates */
+    .template-card {
+        background-color: #1c2a38; /* Darker blue-gray background */
+        border: 1px solid #334e68 !important; /* Subtle border */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4); /* Darker shadow */
+        transition: all 0.3s ease;
+    }
+
+    .template-card.card-selected {
+        border: 2px solid #1a75ff !important; /* Blue highlight for selected card */
+        box-shadow: 0 0.5rem 1rem rgba(26, 117, 255, 0.4) !important; /* Blue shadow for selected card */
+    }
+
+    .template-card h5 {
+        color: #1a75ff; /* Blue accent for card titles */
+    }
+
+    .template-card .card-subtitle,
+    .template-card .card-text {
+        color: #b0b0b0; /* Light gray for card subtitles and text */
+    }
+
+    /* Form specific styles */
+    .form-label {
+        color: #b0b0b0; /* Light gray for form labels */
+    }
+
+    .form-control {
+        background-color: #0d1a26; /* Dark background for inputs */
+        border: 1px solid #334e68; /* Border for inputs */
+        color: #e0e0e0; /* Light text in inputs */
+    }
+
+    .form-control:focus {
+        background-color: #0d1a26;
+        border-color: #1a75ff; /* Blue border on focus */
+        box-shadow: 0 0 0 0.25rem rgba(26, 117, 255, 0.25);
+        color: #e0e0e0;
+    }
+
+    .form-check-input {
+        background-color: #1c2a38;
+        border-color: #334e68;
+    }
+
+    .form-check-input:checked {
+        background-color: #1a75ff;
+        border-color: #1a75ff;
+    }
+
+    .form-check-label {
+        color: #b0b0b0;
+    }
+
+    .btn-outline-primary {
+        color: #1a75ff;
+        border-color: #1a75ff;
+    }
+
+    .btn-outline-primary:hover {
+        background-color: #1a75ff;
+        color: #fff;
+    }
+
+    /* Success message styles */
+    .alert-success {
+        background-color: #1a75ff; /* Blue background for success messages */   
+        color: #fff; /* White text for success messages */
+        border-color: #1a75ff;
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        animation: fadeInOut 4s ease-in-out;
+    }
+
+    @keyframes fadeInOut {
+        0% { opacity: 0; transform: translateY(-20px); }
+        10% { opacity: 1; transform: translateY(0); }
+        90% { opacity: 1; transform: translateY(0); }
+        100% { opacity: 0; transform: translateY(-20px); }
+    }
+
+    /* Modal styles */
+    .modal-content {
+        background-color: #1c2a38 !important; /* Darker blue-gray background */
+        border: 1px solid #334e68;
+        color: #e0e0e0;
+        border-radius: 15px; /* Match card radius */
+    }
+
+    .modal-header {
+        border-bottom: 1px solid #334e68;
+    }
+
+    .modal-title {
+        color: #1a75ff; /* Blue for modal titles */
+    }
+
+    .modal-body {
+        color: #e0e0e0;
+    }
+
+    .modal-footer {
+        border-top: 1px solid #334e68;
+    }
+    .btn-close {
+        filter: invert(1) brightness(1.5); /* Make close button visible on dark background */
+    }
+
+    /* Bubbles animation (if you want it on this page too) */
+    .bubbles {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        overflow: hidden;
+        z-index: -1;
+    }
+
+    .bubble {
+        position: absolute;
+        background-color: rgba(26, 117, 255, 0.3);
+        border-radius: 50%;
+        animation: floatAnimation 3s infinite linear;
+    }
+
+    @keyframes floatAnimation {
+        0% {
+            transform: translateY(0);
+            opacity: 0.8;
+        }
+        100% {
+            transform: translateY(-120vh);
+            opacity: 0;
+        }
+    }
+</style>
+
+<div class="container mt-5 pt-5">
+    <h3>Email Template</h3>
+
+    <ul class="nav nav-tabs d-flex flex-row" id="templateTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="email-custom-tab" data-bs-toggle="tab" data-bs-target="#email-custom-tab-pane" type="button" role="tab">Custom Email Template</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="email-templates-tab" data-bs-toggle="tab" data-bs-target="#email-templates-tab-pane" type="button" role="tab">Themes Templates</button>
+        </li>
+    </ul>
+
+    <div class="tab-content mt-3" id="templateTabsContent">
+        <div class="tab-pane fade show active" id="email-custom-tab-pane" role="tabpanel">
+            <div class="container border mb-2 template-card border-1 shadow-sm p-4 rounded-4">
+                <div class="card-body">
+                    <h5>Create Custom Email</h5>
+                    <div id="email-sending-message" class="alert alert-info d-none mt-3" role="alert">
+                        Sending email...
+                    </div>
+                    <br>
+                    <form method="post" id="custom-email-form" action="{% url 'email_phishing' %}">
+                        {% csrf_token %}
+                        <div class="mb-2">
+                            <label for="customSubjectEmail" class="form-label">Subject</label>
+                            <input type="text" class="form-control" name="subject" id="customSubjectEmail" required>
+                        </div>
+                        <div class="mb-2">
+                            <label for="customSenderName" class="form-label">Sender Name</label>
+                            <input type="text" class="form-control" name="sender_name" id="customSenderName" required>
+                        </div>
+                        <div class="mb-2">
+                            <label for="customReceiverEmail" class="form-label">Receiver Email</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" name="receiver_email" id="customReceiverEmail" required placeholder="Separate multiple emails with commas">
+                                <button class="btn btn-outline-secondary" type="button" data-bs-toggle="modal" data-bs-target="#selectUserModal" data-target-input="customReceiverEmail">
+                                    <i class="bi bi-plus-lg"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <label for="customMessageEmail" class="form-label">Message</label>
+                            <textarea class="form-control" name="message" id="customMessageEmail" rows="5" required></textarea>
+                        </div>
+                        <div class="mb-3 mt-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="is_real" id="customIsReal">
+                                <label class="form-check-label" for="customIsReal">This is a real email</label>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-outline-primary mt-2 rounded-4">Send</button>
+                        </div>
+                    </form>
+                    <div id="email-success-message" class="alert alert-success mt-3 {% if not success %}d-none{% endif %}" role="alert">
+                        Email was successfully sent!
+                    </div>
+                    <div id="email-error-message" class="alert alert-danger mt-3 {% if not sending_error %}d-none{% endif %}" role="alert">
+                        Email failed to send. <span id="email-error-text">{% if sending_error %}{{ sending_error }}{% endif %}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="email-templates-tab-pane" role="tabpanel">
+            <div class="row">
+                <div class="col-md-6 template-list">
+                    <div id="email-templates">
+                        <div class="container border mb-2 template-card border-1 shadow-sm p-4 rounded-4" onclick="loadTemplate('Your Order from Shoppee Has Shipped!', 'Shoppee Shipping', 'Hi our valued costomir,\n\nYour order #123456 from Shoppee has shipped!\nYou can track your package here: https://phpptracker.shoOpE.com.ph/tracking?orderId=123456\nEstimated Delivery: TODAY For much faster transction  Send to us your personal details\nThank you for shopping with us!\n\nSincerely,\nThe Shoppee Team', 'email', 'sample@example.com', event, 'shopie842@gmail.com')">
+                            <div class="card-body">
+                                <h5 class="card-title">Your Order from Shoppee Has Shipped!</h5>
+                                <br>
+                                <h6 class="card-subtitle text-muted">Shoppee Shipping &lt;shopie842@gmail.com&gt;</h6>
+                                <p class="card-text">Hi our valued costomir... <span class="text-muted">(phishing shipping notice)</span></p>
+                            </div>
+                        </div> 
+                        <div class="container border mb-2 template-card border-1 shadow-sm p-4 rounded-4" onclick="loadTemplate('Receipt for Your [Online Service] Payment', '[Online Service] Billing', 'Dear {first name of the user},\n\nThank you for your payment of Php 309,900 for your [Online Service] subscription.\nYour transaction ID is #464774788\nYou can view your payment history here: https://www.[onlineService].com/account/bibuilling\n\nSincerely,\nThe [Online Service Name] Team', 'email', 'sample@example.com', event)">
+                            <div class="card-body">
+                                <h5 class="card-title">Receipt for Your [Online Service] Payment</h5>
+                                <br>
+                                <h6 class="card-subtitle text-muted">[Online Service] Billing &lt;billing@[onlineService].com&gt;</h6>
+                                <p class="card-text">Thank you for your payment... <span class="text-muted">(fake payment receipt)</span></p>
+                            </div>
+                        </div>
+                        <div class="container border mb-2 template-card border-1 shadow-sm p-4 rounded-4" onclick="loadTemplate('Your Bank Account Has Been Locked', 'Security Team', 'Dear Customer,\n\nWe have detected suspicious activity on your account. Please verify your information to unlock your account: https://bdo-philippines.com/verify\nFailure to do so may result in permanent suspension.\n\nSincerely,\nBDO Security Team', 'email', 'sample@example.com', event)">
+                            <div class="card-body">
+                                <h5 class="card-title">Your Bank Account Has Been Locked</h5>
+                                <br>
+                                <h6 class="card-subtitle text-muted">Security Team &lt;security@bdo.com.ph&gt;</h6>
+                                <p class="card-text">We have detected suspicious activity... <span class="text-muted">(fake bank lock)</span></p>
+                            </div>
+                        </div>
+                        <div class="container border mb-2 template-card border-1 shadow-sm p-4 rounded-4" onclick="loadTemplate('Congratulations! You&#39;ve Won a New iPhone 15', 'Apple Rewards', 'You have been selected to win a brand new iPhone 15! Claim your prize now: http://applepromo-ph.com/claim\nHurry, offer ends soon!\nApple Rewards Team', 'email', 'sample@example.com', event)">
+                            <div class="card-body">
+                                <h5 class="card-title">Congratulations! You've Won a New iPhone 15</h5>
+                                <br>
+                                <h6 class="card-subtitle text-muted">Apple Rewards &lt;promo@apple.com&gt;</h6>
+                                <p class="card-text">You have been selected to win... <span class="text-muted">(prize scam)</span></p>
+                            </div>
+                        </div>
+                        <div class="container border mb-2 template-card border-1 shadow-sm p-4 rounded-4" onclick="loadTemplate('Important: Update Your SSS Information', 'SSS Notification', 'Dear Member,\n\nYour SSS account requires an urgent update. Please login and update your details: https://sss-philippines.com/update\nThank you,\nSSS Support', 'email', 'sample@example.com', event)">
+                            <div class="card-body">
+                                <h5 class="card-title">Important: Update Your SSS Information</h5>
+                                <br>
+                                <h6 class="card-subtitle text-muted">SSS Notification &lt;update@sss.gov.ph&gt;</h6>
+                                <p class="card-text">Your SSS account requires an urgent update... <span class="text-muted">(fake SSS update)</span></p>
+                            </div>
+                        </div>
+                        <div class="container border mb-2 template-card border-1 shadow-sm p-4 rounded-4" onclick="loadTemplate('Globe Telecom: Unpaid Bill Notice', 'Globe Billing', 'Dear Subscriber,\n\nOur records show you have an unpaid bill. Pay now to avoid service interruption: https://globe-billing.com/pay\nGlobe Telecom Billing Department', 'email', 'sample@example.com', event)">
+                            <div class="card-body">
+                                <h5 class="card-title">Globe Telecom: Unpaid Bill Notice</h5>
+                                <br>
+                                <h6 class="card-subtitle text-muted">Globe Billing &lt;billing@globe.com.ph&gt;</h6>
+                                <p class="card-text">Our records show you have an unpaid bill... <span class="text-muted">(fake bill notice)</span></p>
+                            </div>
+                        </div>
+                        <div class="container border mb-2 template-card border-1 shadow-sm p-4 rounded-4" onclick="loadTemplate('Your GCash Account is Suspended', 'GCash Support', 'Hi,\n\nYour GCash account has been suspended due to unusual activity. Reactivate here: https://gcash-philippines.com/reactivate\nGCash Support Team', 'email', 'sample@example.com', event)">
+                            <div class="card-body">
+                                <h5 class="card-title">Your GCash Account is Suspended</h5>
+                                <br>
+                                <h6 class="card-subtitle text-muted">GCash Support &lt;support@gcash.com&gt;</h6>
+                                <p class="card-text">Your GCash account has been suspended... <span class="text-muted">(fake GCash suspension)</span></p>
+                            </div>
+                        </div>
+                        <div class="container border mb-2 template-card border-1 shadow-sm p-4 rounded-4" onclick="loadTemplate('PayMaya: Security Alert', 'PayMaya Security', 'Dear User,\n\nWe noticed a login attempt from a new device. If this was not you, secure your account: https://paymaya-ph.com/secure\nPayMaya Security', 'email', 'sample@example.com', event)">
+                            <div class="card-body">
+                                <h5 class="card-title">PayMaya: Security Alert</h5>
+                                <br>
+                                <h6 class="card-subtitle text-muted">PayMaya Security &lt;alert@paymaya.com&gt;</h6>
+                                <p class="card-text">We noticed a login attempt from a new device... <span class="text-muted">(fake PayMaya alert)</span></p>
+                            </div>
+                        </div>
+                        <div class="container border mb-2 template-card border-1 shadow-sm p-4 rounded-4" onclick="loadTemplate('Your Package is Being Held at Customs', 'PH Customs', 'Dear Customer,\n\nYour package is being held at customs. Pay the clearance fee to release it: https://ph-customs.com/pay\nThank you,\nPH Customs', 'email', 'sample@example.com', event)">
+                            <div class="card-body">
+                                <h5 class="card-title">Your Package is Being Held at Customs</h5>
+                                <br>
+                                <h6 class="card-subtitle text-muted">PH Customs &lt;customs@ph-gov.com&gt;</h6>
+                                <p class="card-text">Your package is being held at customs... <span class="text-muted">(fake customs fee)</span></p>
+                            </div>
+                        </div>
+                        <div class="container border mb-2 template-card border-1 shadow-sm p-4 rounded-4" onclick="loadTemplate('Facebook: Unusual Login Attempt', 'Facebook Security', 'Hi {first name},\n\nWe detected an unusual login attempt on your account. Please confirm your identity: https://facebook-ph.com/verify\nFacebook Security Team', 'email', 'sample@example.com', event)">
+                            <div class="card-body">
+                                <h5 class="card-title">Facebook: Unusual Login Attempt</h5>
+                                <br>
+                                <h6 class="card-subtitle text-muted">Facebook Security &lt;security@facebook.com&gt;</h6>
+                                <p class="card-text">We detected an unusual login attempt... <span class="text-muted">(fake Facebook alert)</span></p>
+                            </div>
+                        </div>
+                        <div class="container border mb-2 template-card border-1 shadow-sm p-4 rounded-4" onclick="loadTemplate('Your Netflix Subscription Will Expire Soon', 'Netflix', 'Dear Subscriber,\n\nYour Netflix subscription will expire in 3 days. Renew now to continue watching: https://netflix-philippines.com/renew\nNetflix Team', 'email', 'sample@example.com', event)">
+                            <div class="card-body">
+                                <h5 class="card-title">Your Netflix Subscription Will Expire Soon</h5>
+                                <br>
+                                <h6 class="card-subtitle text-muted">Netflix &lt;support@netflix.com&gt;</h6>
+                                <p class="card-text">Your Netflix subscription will expire in 3 days... <span class="text-muted">(fake Netflix expiry)</span></p>
+                            </div>
+                        </div>
+                        <div class="container border mb-2 template-card border-1 shadow-sm p-4 rounded-4" onclick="loadTemplate('Amazon Prime: Payment Failed', 'Amazon Prime', 'Dear Customer,\n\nWe were unable to process your recent payment. Update your billing info: https://amazon-prime-ph.com/update\nAmazon Prime Support', 'email', 'sample@example.com', event)">
+                            <div class="card-body">
+                                <h5 class="card-title">Amazon Prime: Payment Failed</h5>
+                                <br>
+                                <h6 class="card-subtitle text-muted">Amazon Prime &lt;prime@amazon.com&gt;</h6>
+                                <p class="card-text">We were unable to process your recent payment... <span class="text-muted">(fake Amazon payment)</span></p>
+                            </div>
+                        </div>
+                        <div class="container border mb-2 template-card border-1 shadow-sm p-4 rounded-4" onclick="loadTemplate('URGENT: Confirm Your Email for 1,000,000 PHP Prize', 'Lucky Draw', 'Congratulations! You are the winner of 1,000,000 PHP. Confirm your email and send your bank details to claim: http://luckydraw-ph.com/winner', 'email', 'sample@example.com', event)">
+                            <div class="card-body">
+                                <h5 class="card-title">URGENT: Confirm Your Email for 1,000,000 PHP Prize</h5>
+                                <br>
+                                <h6 class="card-subtitle text-muted">Lucky Draw &lt;luckydraw@promo.com&gt;</h6>
+                                <p class="card-text">Congratulations! You are the winner... <span class="text-muted">(obvious prize scam)</span></p>
+                            </div>
+                        </div>
+                        <div class="container border mb-2 template-card border-1 shadow-sm p-4 rounded-4" onclick="loadTemplate('COVID-19 Relief Fund Available', 'DOH Relief', 'Dear Citizen,\n\nYou are eligible for a COVID-19 relief fund. Apply now: https://doh-philippines.com/relief\nDepartment of Health', 'email', 'sample@example.com', event)">
+                            <div class="card-body">
+                                <h5 class="card-title">COVID-19 Relief Fund Available</h5>
+                                <br>
+                                <h6 class="card-subtitle text-muted">DOH Relief &lt;relief@doh-gov.com&gt;</h6>
+                                <p class="card-text">You are eligible for a COVID-19 relief fund... <span class="text-muted">(fake COVID relief)</span></p>
+                            </div>
+                        </div>
+                        <div class="container border mb-2 template-card border-1 shadow-sm p-4 rounded-4" onclick="loadTemplate('Your Email Storage is Full', 'IT Support', 'Your mailbox is almost full. Increase your storage now: http://email-support-ph.com/upgrade\nIT Support', 'email', 'sample@example.com', event)">
+                            <div class="card-body">
+                                <h5 class="card-title">Your Email Storage is Full</h5>
+                                <br>
+                                <h6 class="card-subtitle text-muted">IT Support &lt;support@email.com&gt;</h6>
+                                <p class="card-text">Your mailbox is almost full... <span class="text-muted">(fake IT support)</span></p>
+                            </div>
+                        </div>
+                        <div class="container border mb-2 template-card border-1 shadow-sm p-4 rounded-4" onclick="loadTemplate('Apple ID Locked', 'Apple Support', 'Your Apple ID has been locked for security reasons. Unlock here: http://appleid-ph.com/unlock\nApple Support', 'email', 'sample@example.com', event)">
+                            <div class="card-body">
+                                <h5 class="card-title">Apple ID Locked</h5>
+                                <br>
+                                <h6 class="card-subtitle text-muted">Apple Support &lt;support@apple.com&gt;</h6>
+                                <p class="card-text">Your Apple ID has been locked for security reasons... <span class="text-muted">(fake Apple ID lock)</span></p>
+                            </div>
+                        </div>
+                        <div class="container border mb-2 template-card border-1 shadow-sm p-4 rounded-4" onclick="loadTemplate('Free Jollibee for a Year!', 'Jollibee Promo', 'Congratulations! You have won free Jollibee for a year. Claim your prize: http://jollibee-ph.com/free\nJollibee Team', 'email', 'sample@example.com', event)">
+                            <div class="card-body">
+                                <h5 class="card-title">Free Jollibee for a Year!</h5>
+                                <br>
+                                <h6 class="card-subtitle text-muted">Jollibee Promo &lt;promo@jollibee.com&gt;</h6>
+                                <p class="card-text">Congratulations! You have won free Jollibee for a year... <span class="text-muted">(fake Jollibee promo)</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="container border mb-2 template-card border-1 shadow-sm p-4 rounded-4">
+                        <div class="card-body">
+                            <h5>Edit Email Template</h5>
+                            <div id="email-sending-message-edit" class="alert alert-info d-none mt-3" role="alert">
+                                Sending email...
+                            </div>
+                            <br>
+                            <form id="edit-form-email" action="{% url 'email_phishing' %}" method="post">
+                                {% csrf_token %}
+                                <div class="mb-2">
+                                    <label for="templateSubjectEmail" class="form-label">Subject</label>
+                                    <input type="text" name="subject" class="form-control" id="templateSubjectEmail" required>
+                                </div>
+                                <div class="mb-2">
+                                    <label for="templateSenderName" class="form-label">Sender Name</label>
+                                    <input type="text" class="form-control" name="sender_name" id="templateSenderName" required>
+                                </div>
+                                <input type="hidden" name="sender_email" id="templateSenderEmail">
+                                <div class="mb-2">
+                                    <label for="templateReceiverEmail" class="form-label">Receiver Email</label>
+                                    <div class="input-group">
+                                        <input type="text" name="receiver_email" class="form-control" id="templateReceiverEmail" required>
+                                        <button class="btn btn-outline-secondary" type="button" data-bs-toggle="modal" data-bs-target="#selectUserModal" data-target-input="templateReceiverEmail">
+                                            <i class="bi bi-plus-lg"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="mb-2">
+                                    <label for="templateMessageEmail" class="form-label">Message</label>
+                                    <textarea class="form-control" name="message" id="templateMessageEmail" rows="5" required></textarea>
+                                </div>
+                                <div class="mb-3 mt-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="is_real" id="editTemplateIsReal">
+                                        <label class="form-check-label" for="editTemplateIsReal">This is a real email</label>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-end">
+                                    <button type="submit" class="btn btn-outline-primary mt-2 rounded-4">Send</button>
+                                </div>
+                            </form>
+                            <div id="email-success-message-edit" class="alert alert-success mt-3 d-none" role="alert">
+                                Email was successfully sent!
+                            </div>
+                            <div id="email-error-message-edit" class="alert alert-danger mt-3 d-none" role="alert">
+                                Email failed to send. <span id="email-error-text-edit"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+        </div>
+    </div>
+</div>
+
+<!-- Select User Modal -->
+<div class="modal fade" id="selectUserModal" tabindex="-1" aria-labelledby="selectUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="selectUserModalLabel">Select User(s)</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="userSearchInput" class="form-control mb-3" placeholder="Search users by name or email...">
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" id="selectAllUsersCheckbox">
+                    <label class="form-check-label" for="selectAllUsersCheckbox">Select All</label>
+                </div>
+                <div id="userListContainer" style="max-height: 300px; overflow-y: auto; border: 1px solid #334e68; padding: 10px; border-radius: 0.25rem;">
+                    <!-- User list will be populated here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="confirmUserSelectionButton">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="bubbles"></div>
+
+<!-- Place this before any other script tags -->
+<script>
+window.PRELOADED_USERS = {{ user_list_json|safe }};
+</script>
+
+<script>
+window.addEventListener('DOMContentLoaded', function() {
+    // Custom Email Form
+    const customEmailForm = document.getElementById('custom-email-form');
+    const sendingMsg = document.getElementById('email-sending-message');
+    const successMsg = document.getElementById('email-success-message');
+    const errorMsg = document.getElementById('email-error-message');
+    if (customEmailForm) {
+        customEmailForm.addEventListener('submit', function() {
+            if (sendingMsg) sendingMsg.classList.remove('d-none');
+            if (successMsg) successMsg.classList.add('d-none');
+            if (errorMsg) errorMsg.classList.add('d-none');
+        });
+    }
+    if (successMsg && !successMsg.classList.contains('d-none')) {
+        setTimeout(function() {
+            successMsg.classList.add('d-none');
+        }, 2000);
+    }
+    // Themes Template (Edit Email Template) Form
+    const editEmailForm = document.getElementById('edit-form-email');
+    const sendingMsgEdit = document.getElementById('email-sending-message-edit');
+    const successMsgEdit = document.getElementById('email-success-message-edit');
+    const errorMsgEdit = document.getElementById('email-error-message-edit');
+    const errorTextEdit = document.getElementById('email-error-text-edit');
+    if (editEmailForm) {
+        editEmailForm.addEventListener('submit', function() {
+            if (sendingMsgEdit) sendingMsgEdit.classList.remove('d-none');
+            if (successMsgEdit) successMsgEdit.classList.add('d-none');
+            if (errorMsgEdit) errorMsgEdit.classList.add('d-none');
+        });
+    }
+    // Show success and error for edit form if redirected with success/error (optional: you can set these via backend if needed)
+    // Auto-hide success message for edit form
+    if (successMsgEdit && !successMsgEdit.classList.contains('d-none')) {
+        setTimeout(function() {
+            successMsgEdit.classList.add('d-none');
+        }, 2000);
+    }
+});
+
+function loadTemplate(subject, sender, message, type, receiver, senderEmail) {
+    document.querySelectorAll('#email-templates .template-card').forEach(card => card.classList.remove('card-selected'));
+    if (event && event.currentTarget) {
+        event.currentTarget.classList.add('card-selected');
+    }
+    if (type === 'email') {
+        document.getElementById('templateSubjectEmail').value = subject;
+        document.getElementById('templateSenderName').value = sender;
+        document.getElementById('templateReceiverEmail').value = receiver;
+        document.getElementById('templateMessageEmail').value = message;
+        if (senderEmail) {
+            document.getElementById('templateSenderEmail').value = senderEmail;
+        } else {
+            document.getElementById('templateSenderEmail').value = '';
+        }
+    }
+}
+
+let currentTargetInputId = null;
+const userSearchInput = document.getElementById('userSearchInput');
+const selectAllUsersCheckbox = document.getElementById('selectAllUsersCheckbox');
+const userListContainer = document.getElementById('userListContainer');
+const confirmUserSelectionButton = document.getElementById('confirmUserSelectionButton');
+let allUsers = window.PRELOADED_USERS || [];
+
+function fetchUsers() {
+    renderUserList(allUsers);
+}
+
+function renderUserList(users) {
+    userListContainer.innerHTML = '';
+    if (users.length === 0) {
+        userListContainer.innerHTML = '<p>No users found.</p>';
+        return;
+    }
+    users.forEach(user => {
+        const card = document.createElement('div');
+        card.className = 'd-flex align-items-center justify-content-between mb-2 p-2';
+        card.style.background = '#1c2a38';
+        card.style.border = '1px solid #334e68';
+        card.style.borderRadius = '0.25rem';
+        card.innerHTML = `
+            <div>
+                <span class='fw-bold text-primary'>${user.name}</span><br>
+                <span class='text-muted small'>${user.email}</span>
+            </div>
+            <input class='form-check-input user-checkbox' type='checkbox' value='${user.email}' id='user-${user.id}' data-name='${user.name}'>
+        `;
+        userListContainer.appendChild(card);
+    });
+    updateSelectAllCheckboxState();
+}
+
+document.querySelectorAll('[data-bs-target="#selectUserModal"]').forEach(button => {
+    button.addEventListener('click', function() {
+        currentTargetInputId = this.dataset.targetInput;
+        fetchUsers();
+    });
+});
+
+userSearchInput.addEventListener('input', function() {
+    const searchTerm = this.value.toLowerCase().trim();
+    const filtered = allUsers.filter(user =>
+        (user.name && user.name.toLowerCase().includes(searchTerm)) ||
+        user.email.toLowerCase().includes(searchTerm)
+    );
+    renderUserList(filtered);
+});
+
+selectAllUsersCheckbox.addEventListener('change', function() {
+    document.querySelectorAll('#userListContainer .user-checkbox').forEach(cb => {
+        cb.checked = this.checked;
+    });
+});
+
+userListContainer.addEventListener('change', function(event) {
+    if (event.target.classList.contains('user-checkbox')) {
+        updateSelectAllCheckboxState();
+    }
+});
+
+function updateSelectAllCheckboxState() {
+    const checkboxes = document.querySelectorAll('#userListContainer .user-checkbox');
+    const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+    selectAllUsersCheckbox.checked = checkboxes.length > 0 && checkedCount === checkboxes.length;
+    selectAllUsersCheckbox.indeterminate = checkedCount > 0 && checkedCount < checkboxes.length;
+}
+
+confirmUserSelectionButton.addEventListener('click', function() {
+    if (!currentTargetInputId) return;
+    const selectedEmails = Array.from(document.querySelectorAll('#userListContainer .user-checkbox:checked')).map(cb => cb.value);
+    document.getElementById(currentTargetInputId).value = selectedEmails.join(', ');
+    const modal = bootstrap.Modal.getInstance(document.getElementById('selectUserModal'));
+    modal.hide();
+});
+
+// Bubbles script
+const bubblesContainer = document.querySelector('.bubbles');
+function createBubble() {
+    const bubble = document.createElement('div');
+    bubble.classList.add('bubble');
+    const size = Math.random() * 20 + 10;
+    bubble.style.width = `${size}px`;
+    bubble.style.height = `${size}px`;
+    bubble.style.left = `${Math.random() * 100}%`;
+    bubble.style.bottom = '-10px';
+    bubble.style.animationDuration = `${Math.random() * 3 + 2}s`;
+    bubblesContainer.appendChild(bubble);
+    bubble.addEventListener('animationend', () => {
+        bubble.remove();
+    });
+}
+for (let i = 0; i < 15; i++) {
+    setTimeout(createBubble, i * 200);
+}
+setInterval(createBubble, 1000);
+
+window.addEventListener('pageshow', function(event) {
+    if (event.persisted) {
+        window.location.reload();
+    }
+});
+</script>
+
+{% endblock %}

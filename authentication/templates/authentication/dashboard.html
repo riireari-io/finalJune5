@@ -1,0 +1,403 @@
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<style>
+    /* Base styles - Consistent with the original design's aesthetic */
+    body {
+        background-color: #0d1a26; /* Darker blue for a deeper background */
+        color: #e0e0e0; /* Light text for contrast */
+        font-family: 'Segoe UI', 'Arial', sans-serif;
+        overflow-x: hidden; /* Prevent horizontal scroll */
+    }
+
+    .main-glass {
+        background: #122233;
+        border-radius: 22px;
+        box-shadow: 0 8px 32px 0 rgba(0,0,0,0.37);
+        border: 1px solid rgba(26,117,255,0.12);
+        padding: 48px 48px 32px 48px;
+        margin: 48px auto 48px auto;
+        max-width: 90vw;
+        width: 90vw;
+    }
+
+    @media (max-width: 992px) {
+        .main-glass { padding: 30px 10px; }
+    }
+    @media (max-width: 576px) {
+        .main-glass { padding: 12px 2vw; }
+        h1, h2 { font-size: 1.2em; }
+    }
+
+    /* General text color remapping for elements using Bootstrap's "primary" or "success" */
+    .text-primary,
+    h1.text-primary,
+    h2.text-primary,
+    h5.text-primary,
+    strong.text-primary {
+        color: #1a75ff !important; /* Consistent blue accent */
+    }
+
+    .text-success {
+        color: #28a745 !important; /* Keeping standard success green for alerts/status */
+    }
+
+    .text-danger {
+        color: #dc3545 !important; /* Standard danger red */
+    }
+
+    /* --- Glassmorphism Styles --- */
+    /* Apply glass effect to main content containers */
+    .glass-container {
+        background-color: rgba(255, 255, 255, 0.08); /* Semi-transparent white */
+        border-radius: 15px;
+        backdrop-filter: blur(10px); /* Frosted glass effect */
+        -webkit-backdrop-filter: blur(10px); /* Safari support */
+        border: 1px solid rgba(255, 255, 255, 0.15); /* Subtle white border */
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); /* Enhanced shadow for depth */
+        margin-top: 40px; /* Add some top margin */
+        margin-bottom: 40px; /* Add some bottom margin */
+        padding: 40px; /* Ensure sufficient padding */
+        box-sizing: border-box; /* Include padding and border */
+    }
+
+    /* Specific adjustments for the main welcome section to make it larger */
+    .welcome-section {
+        padding: 50px; /* Slightly more padding for the main hero container */
+    }
+
+    /* Adjust cards within the glass containers for nested transparency */
+    .glass-card {
+        background: rgba(26, 117, 255, 0.07);
+        border-radius: 15px;
+        border: 1px solid rgba(26,117,255,0.08);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.18);
+        color: #e0e0e0;
+        padding: 32px 24px;
+        margin-bottom: 24px;
+        transition: box-shadow 0.2s, transform 0.2s;
+    }
+
+    .glass-card:hover {
+        box-shadow: 0 0 40px 10px #1a75ffcc, 0 0 80px 20px #ffffff33, 0 8px 32px 0 rgba(0,0,0,0.5);
+        transform: translateY(-6px) scale(1.02);
+        border-color: #1a75ff;
+    }
+
+    .glass-card h5 {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #90caff;
+        display: flex;
+        align-items: center;
+        gap: 0.5em;
+        margin-bottom: 0.8rem;
+    }
+
+    .glass-card p {
+        color: #b7d6ff;
+        font-size: 1.05em;
+    }
+
+    /* Progress bar styling */
+    .progress {
+        background-color: rgba(255,255,255,0.08);
+        border: 1px solid rgba(26,117,255,0.15);
+        height: 24px;
+        border-radius: 12px;
+    }
+
+    .progress-bar {
+        background-color: #1a75ff !important;
+        font-weight: 600;
+    }
+
+    /* Bubbles animation */
+    .bubbles {
+        position: fixed;
+        top: 0; left: 0; width: 100vw; height: 100vh;
+        pointer-events: none;
+        z-index: 0;
+        overflow: hidden;
+    }
+
+    .bubble {
+        position: absolute;
+        background: linear-gradient(135deg, #90caff 60%, #fff 100%);
+        opacity: 0.18;
+        border-radius: 50%;
+        animation: bubbleUp linear forwards;
+    }
+
+    @keyframes bubbleUp {
+        to { transform: translateY(-100vh); opacity: 0; }
+    }
+
+    /* Heading styles */
+    h1, h2, h5 {
+        font-family: 'Segoe UI', 'Arial', sans-serif !important;
+        font-weight: 800;
+        letter-spacing: -1px;
+        display: flex;
+        align-items: center;
+        gap: 0.5em;
+    }
+    h1 {
+        font-size: 2.8rem;
+        color: #eaf6ff;
+        margin-bottom: 2rem;
+    }
+    h2 {
+        font-size: 2rem;
+        color: #90caff;
+        margin-bottom: 1.5rem;
+    }
+    h5 {
+        font-size: 1.3rem;
+        color: #1a75ff !important;
+        margin-bottom: 1rem;
+    }
+    @media (max-width: 768px) {
+        h1 { font-size: 2rem; }
+        h2 { font-size: 1.3rem; }
+        h5 { font-size: 1.1rem; }
+    }
+    /* --- Responsive Adjustments --- */
+    @media (max-width: 768px) {
+        .glass-container {
+            padding: 25px; /* Smaller padding on mobile */
+            margin-top: 25px;
+            margin-bottom: 25px;
+        }
+
+        .welcome-section {
+            padding: 30px; /* Adjust welcome section padding */
+        }
+
+        h1 {
+            font-size: 2.5em; /* Smaller headings on mobile */
+        }
+
+        .lead {
+            font-size: 1em;
+        }
+
+        .btn-outline-primary {
+            padding: 12px 25px;
+            font-size: 1em;
+        }
+
+        .glass-card, .info-card {
+            padding: 25px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        h1 {
+            font-size: 2em;
+        }
+    }
+
+    /* Dashboard card styles */
+    .dashboard-card {
+        background: rgba(26, 117, 255, 0.07);
+        border-radius: 15px;
+        border: 1px solid rgba(26,117,255,0.08);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.18);
+        color: #e0e0e0;
+        padding: 32px 24px;
+        margin-bottom: 24px;
+        transition: box-shadow 0.2s, transform 0.2s;
+        word-break: break-word;
+        white-space: pre-line;
+        min-width: 220px;
+        max-width: 100%;
+        flex: 1 1 280px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .dashboard-card h5, .dashboard-card strong.text-primary {
+        word-break: break-word;
+        white-space: pre-line;
+        width: 100%;
+    }
+    .dashboard-card p {
+        color: #b7d6ff;
+        font-size: 1.05em;
+        word-break: break-word;
+        white-space: pre-line;
+        width: 100%;
+    }
+    .row.d-flex.justify-content-center.gap-3 {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        justify-content: center;
+        align-items: stretch;
+    }
+    @media (max-width: 992px) {
+        .dashboard-card {
+            min-width: 180px;
+            padding: 20px 10px;
+        }
+    }
+    @media (max-width: 768px) {
+        .dashboard-card {
+            min-width: 140px;
+            padding: 16px 6px;
+        }
+        .row.d-flex.justify-content-center.gap-3 {
+            gap: 0.7rem;
+        }
+    }
+    @media (max-width: 576px) {
+        .dashboard-card {
+            min-width: 100px;
+            padding: 10px 2px;
+        }
+        .row.d-flex.justify-content-center.gap-3 {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+    }
+</style>
+
+<div class="container text-center py-5 glass-container welcome-section">
+    <div class="mb-3">
+        
+    </div>
+    <h1 class="font-weight-bold text-primary d-flex flex-column align-items-center justify-content-center">
+        <i class="bi bi-house-door-fill mb-2"></i>
+        Welcome to Triton's Trident
+    </h1>
+    <p class="lead">
+        <i class="bi bi-lightbulb-fill text-warning"></i>
+        An interactive simulation to help you identify and defend against phishing attacks
+    </p>
+
+    {% if user.is_authenticated %}
+        <div class="container mt-3">
+            <br>
+            {% if user.is_superuser %}
+                <a href="{% url 'services' %}" class="btn btn-outline-primary rounded-4 mb-4">Start Simulation</a>
+                <h3>Hello, Admin!</h3>
+            {% else %}
+                <h3>Hello, {{ user.first_name }} {{ user.last_name }}!</h3>
+            {% endif %}
+            <h4 class="text-success">You're successfully logged in.</h4>
+            <br>
+        </div>
+    {% else %}
+        <div class="container mt-4">
+            <br>
+            <h3>Welcome, Guest!</h3>
+            <h4 class="text-danger">Please log in to access your account.</h4>
+            <br>
+        </div>
+    {% endif %}
+    <div class="my-4">
+        <h4 class="text-primary">Your Lesson Progress</h4>
+        <div class="progress rounded-4">
+            <div class="progress-bar" role="progressbar" style="width: {{ percent_complete|default:0 }}%;" aria-valuenow="{{ percent_complete|default:0 }}" aria-valuemin="0" aria-valuemax="100">{{ percent_complete|default:0 }}%</div>
+        </div>
+    </div>
+</div>
+
+<div class="main-glass">
+    <h1>
+        <i class="bi bi-shield-lock-fill text-primary" style="font-size: 2.5rem;"></i>
+        Hi there! Welcome to The Triton's Trident.
+    </h1>
+    <p class="lead">
+        <i class="bi bi-lightbulb-fill text-warning"></i>
+        Ever feel like the digital world is a bit like the ocean – full of amazing things, but also some sneaky dangers lurking beneath the surface? That's exactly why we created <b>The Triton's Trident</b>. We're here to help you navigate those waters safely, especially when it comes to <b>phishing attacks</b>.
+    </p>
+    <p class="desc">
+        <i class="bi bi-people-fill text-info"></i>
+        Think of us as your friendly guide and training partner. We've built this platform using the powerful and flexible <b>Django</b> web framework to create a space where you can experience realistic phishing scenarios in a safe environment. Our goal isn't just to tell you about threats, but to equip you with the confidence and skills to spot them yourself.
+    </p>
+    <div class="my-4">
+        <h4 class="text-primary">Your Lesson Progress</h4>
+        <div class="progress rounded-4">
+            <div class="progress-bar" role="progressbar" style="width: {{ percent_complete|default:0 }}%;" aria-valuenow="{{ percent_complete|default:0 }}" aria-valuemin="0" aria-valuemax="100">{{ percent_complete|default:0 }}%</div>
+        </div>
+    </div>
+</div>
+
+<!-- Feature Cards Section -->
+<div class="container-lg pb-5">
+    <div class="row d-flex justify-content-center gap-3">
+        <div class="col-md-3 glass-card mx-2">
+            <h5 id="edit-inbox-title"><i class="bi bi-envelope-open-fill"></i> {{ edit_inbox_title }}</h5>
+            <p id="edit-inbox-desc">{{ edit_inbox_desc }}</p>
+        </div>
+        <div class="col-md-3 glass-card mx-2">
+            <h5 id="edit-flag-title"><i class="bi bi-exclamation-triangle-fill text-warning"></i> {{ edit_flag_title }}</h5>
+            <p id="edit-flag-desc">{{ edit_flag_desc }}</p>
+        </div>
+        <div class="col-md-3 glass-card mx-2">
+            <h5 id="edit-perf-title"><i class="bi bi-graph-up-arrow"></i> {{ edit_perf_title }}</h5>
+            <p id="edit-perf-desc">{{ edit_perf_desc }}</p>
+        </div>
+    </div>
+</div>
+
+<!-- Info Section -->
+<div class="main-glass mt-5">
+    <h2 class="section-title" id="edit-why-title">
+        <i class="bi bi-question-circle-fill"></i>
+        {{ edit_why_title }}
+    </h2>
+    <p class="lead" id="edit-why-lead1">
+        <i class="bi bi-bar-chart-fill text-info"></i>
+        {{ edit_why_lead1 }}
+    </p>
+    <p class="lead" id="edit-why-lead2">
+        <i class="bi bi-shield-check text-success"></i>
+        {{ edit_why_lead2 }}
+    </p>
+    <p class="lead" id="edit-why-lead3">
+        <i class="bi bi-person-check-fill text-primary"></i>
+        {{ edit_why_lead3 }}
+    </p>
+    <div class="row d-flex flex-row justify-content-center gap-4">
+        <div class="col-md-4 glass-card">
+            <strong id="edit-risk-title">{{ edit_risk_title }}</strong>
+            <p id="edit-risk-desc">{{ edit_risk_desc }}</p>
+        </div>
+        <div class="col-md-4 glass-card">
+            <strong id="edit-aware-title">{{ edit_aware_title }}</strong>
+            <p id="edit-aware-desc">{{ edit_aware_desc }}</p>
+        </div>
+    </div>
+</div>
+
+<div class="bubbles"></div>
+<script>
+    // Bubbles script
+    const bubblesContainer = document.querySelector('.bubbles');
+    function createBubble() {
+        const bubble = document.createElement('div');
+        bubble.classList.add('bubble');
+        const size = Math.random() * 20 + 10;
+        bubble.style.width = `${size}px`;
+        bubble.style.height = `${size}px`;
+        bubble.style.left = `${Math.random() * 100}%`;
+        bubble.style.bottom = '-10px';
+        bubble.style.animationDuration = `${Math.random() * 3 + 2}s`;
+        bubblesContainer.appendChild(bubble);
+        bubble.addEventListener('animationend', () => {
+            bubble.remove();
+        });
+    }
+    for (let i = 0; i < 15; i++) {
+        setTimeout(createBubble, i * 200);
+    }
+    setInterval(createBubble, 1000);
+</script>
+{% endblock %}

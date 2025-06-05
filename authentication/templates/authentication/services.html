@@ -1,0 +1,440 @@
+{% extends 'base.html' %}
+
+{% block title %}Campaigns{% endblock %}
+
+{% block content %}
+<style>
+    /* Reset & Base from Original (partial - new body styles will override some) */
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Base font size for responsiveness - from original */
+    html {
+        font-size: 16px; /* Default from original, will be changed by new styles and then original media queries */
+        scroll-behavior: smooth;
+    }
+
+    /* NEW Design Styles (from second code block) */
+    body {
+        background-color: #0d1a26;
+        color: #e0e0e0; /* Light text for contrast */
+        font-family: 'Arial', sans-serif; /* New font */
+        overflow-x: hidden;
+    }
+
+    /* Layout Containers - Merging concepts */
+    .main-container {
+        display: flex;
+        /* flex-direction: row; from original, maintained for desktop */
+        position: relative; /* From new, useful for absolute positioning of button */
+        min-height: 90vh; /* From new */
+        /* padding: 3.75rem; from original - replaced by new padding logic for sidebar */
+        padding-left: 220px; /* Space for the vertical logo/sidebar, from new */
+        padding-right: 60px; /* From new */
+        padding-top: 60px; /* From new */
+        padding-bottom: 130px; /* Further increased to give more space above the absolute positioned button */
+        /* gap: 2.5rem; from original - new layout might have different gap needs */
+    }
+
+    .logo-sidebar {
+        /* position: fixed; top: 0; left: 0; from original - replaced by new absolute full height */
+        position: absolute; /* From new */
+        left: 0; /* From new */
+        top: 0; /* From new */
+        height: 100%; /* From new */
+        width: 200px; /* From new, original was 5rem */
+        display: flex;
+        flex-direction: column; /* Maintained from original and new */
+        justify-content: space-between; /* From new */
+        align-items: center; /* Maintained from original and new */
+        /* padding: 2rem; from original - replaced by new */
+        padding: 30px 0; /* From new */
+        background-color: #0d1a26; /* From new, original was #1a1a40 */
+        z-index: 900; /* From new */
+        /* gap: 2rem; from original */
+    }
+
+    .logo-sidebar .logo {
+        font-size: 2.5em; /* From new, original was 2.25rem */
+        font-weight: bold; /* From new, original was 700 */
+        color: #fff; /* From new, original was #00fff7 */
+        writing-mode: vertical-lr; /* From new, original was vertical-rl */
+        text-orientation: mixed; /* From new */
+        transform: rotate(180deg); /* Maintained from original and new */
+        display: flex; /* From new */
+        align-items: center; /* From new */
+        justify-content: center; /* From new */
+        height: 50%; /* From new */
+    }
+
+    .social-section { /* Primarily from new design */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+        height: 50%;
+        justify-content: flex-end;
+        padding-bottom: 30px;
+    }
+
+    .social-section h6 { /* From new design */
+        writing-mode: vertical-lr;
+        text-orientation: mixed;
+        transform: rotate(180deg);
+        color: #b0b0b0;
+        font-weight: normal;
+        margin-bottom: 15px;
+        font-size: 1.1em;
+    }
+
+    .social-section a { /* From new design */
+        color: #e0e0e0;
+        font-size: 1.8em;
+        transition: color 0.3s ease;
+    }
+
+    .social-section a:hover { /* From new design */
+        color: #1a75ff; /* Blue accent */
+    }
+
+    .transform-button { /* From new design */
+        position: absolute;
+        /* left: 30px; From new - may need adjustment if sidebar changes width responsively */
+        /* bottom: 30px; From new */
+        /* Adjusted to be relative to logo-sidebar width */
+        left: calc(200px + 30px); /* Place it next to the initial wider sidebar */
+        bottom: 30px;
+        padding: 20px 35px;
+        background-color: #1a75ff; /* Blue accent */
+        color: #fff;
+        text-decoration: none;
+        border-radius: 35px;
+        font-weight: bold;
+        font-size: 1.2em; /* New base size */
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        transition: background-color 0.3s ease, left 0.3s ease; /* Added left transition */
+        z-index:10;
+    }
+
+    .transform-button:hover { /* From new design */
+        background-color: #0056b3; /* Darker blue on hover */
+    }
+
+    .transform-button i { /* From new design */
+        z-index:10;
+        font-size: 1.5em;
+    }
+
+    .hero-section { /* Renamed to .content-section for services page */
+        display: flex;
+        flex: 1;
+        flex-direction: column; /* Changed to column for services content */
+        justify-content: center;
+        align-items: center;
+        gap: 40px; /* Adjusted gap */
+        position: relative;
+        z-index: 1;
+        padding-top: 50px; /* Added padding to top */
+    }
+
+    .hero-text { /* Renamed to .content-header for services page */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 1rem;
+        max-width: 900px; /* Wider for service descriptions */
+        flex: none; /* No flex grow/shrink */
+        text-align: center;
+    }
+
+    .hero-text h1 {
+        font-size: 3.5em; /* Adjusted for services page title */
+        font-weight: bold;
+        color: #fff;
+        line-height: 1.1;
+        margin-bottom: 15px;
+    }
+
+    .hero-text p {
+        font-size: 1.2em; /* Adjusted for services page lead text */
+        line-height: 1.7;
+        color: #b0b0b0;
+    }
+
+    /* Cards in the services section */
+    .dashboard-card { /* Reusing dashboard-card styles from home template */
+        background-color: #0d1a26;
+        color: #e0e0e0;
+        border-radius: 15px;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        padding: 40px;
+        border: 1px solid #334e68;
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        flex-basis: 30%; /* Control card width */
+        max-width: 350px; /* Max width for cards */
+        min-height: 220px; /* Ensure consistent card height */
+    }
+
+    .dashboard-card:hover {
+        transform: translateY(-8px) scale(1.03);
+        box-shadow:
+            0 0 80px 8px #1a75ffcc,   /* Bright blue glow */
+            0 0 64px 16px #ffffffcc,   /* Bright white glow */
+            0 8px 32px 0 rgba(0,0,0,0.5); /* Deeper shadow for contrast */
+        border-color: #ced6e2;
+        z-index: 2;
+    }
+
+    .dashboard-card h3.card-title {
+        color: #1a75ff; /* Blue accent for card titles */
+        font-weight: bold;
+        margin-bottom: 15px;
+        font-size: 1.8em;
+    }
+
+    .dashboard-card p.card-text {
+        font-size: 1.1em;
+        line-height: 1.6;
+        color: #b0b0b0;
+        margin-bottom: 25px;
+    }
+
+    .btn-outline-primary {
+        color: #1a75ff;
+        border-color: #1a75ff;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .btn-outline-primary:hover {
+        background-color: #1a75ff;
+        color: #fff;
+    }
+
+    /* Bubbles animation - From new design (blue) */
+    .bubbles {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        overflow: hidden;
+        z-index: -1; /* Ensure it's behind other content */
+    }
+
+    .bubble {
+        position: absolute;
+        background-color: rgba(26, 117, 255, 0.3); /* Blue color for bubbles */
+        border-radius: 50%;
+        animation: floatAnimation 3s infinite linear; /* Renamed to avoid conflict if 'float' is a common class */
+        /* bottom and animation-duration set by JS */
+    }
+
+    @keyframes floatAnimation { /* Renamed from 'float' */
+        0% {
+            transform: translateY(0);
+            opacity: 0.8;
+        }
+        100% {
+            transform: translateY(-120vh); /* Adjusted to ensure they go well off-screen */
+            opacity: 0;
+        }
+    }
+
+    /* Removed pulse animation and abstract shapes as they were part of the hero visual that isn't on this page */
+
+    /* General text color remapping for elements using Bootstrap's "primary" and "success" */
+    .text-primary {
+        color: #1a75ff !important; /* Standard blue accent */
+    }
+    .text-success { /* If used for text, remap to a suitable color, otherwise it might be for icons */
+        color: #28a745 !important; /* Keeping original green for success feedback */
+    }
+    .text-danger {
+        color: #dc3545 !important;
+    }
+
+
+    /* --- RESPONSIVENESS (with adjustments for new design) --- */
+    @media (max-width: 768px) {
+        .main-container {
+            flex-direction: column;
+            padding: 2rem; /* Original padding for smaller screens */
+            gap: 2rem; /* Original gap */
+            padding-left: 2rem; /* Reset padding for mobile */
+            padding-right: 2rem;
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+
+        .logo-sidebar {
+            flex-direction: row;
+            width: 100%;
+            height: auto;
+            position: static; /* Critical for flow on mobile */
+            justify-content: center; /* Original alignment for mobile */
+            padding: 1rem; /* Original padding */
+        }
+
+        .logo-sidebar .logo {
+            writing-mode: horizontal-tb; /* Original responsive change */
+            transform: rotate(0); /* Original responsive change */
+            font-size: 2rem; /* Adjusted for mobile, can fine-tune */
+            height: auto; /* Reset height */
+        }
+        .social-section {
+            display: none; /* Hide social section on smaller screens for simplicity or adapt differently */
+        }
+
+        .transform-button {
+            position: relative; /* Change from absolute for simpler flow */
+            left: auto;
+            bottom: auto;
+            z-index: 10;
+            margin: 1rem auto; /* Center button or place appropriately */
+            display: table; /* For auto margin centering */
+        }
+
+        .hero-section { /* Applies to .content-section now */
+            flex-direction: column;
+            align-items: center;
+            padding-top: 2rem;
+            gap: 2rem;
+        }
+
+        .hero-text h1 { /* Applies to .content-header h1 now */
+            font-size: 3rem; /* Adjusted for mobile */
+            text-align: center;
+        }
+
+        .hero-text p { /* Applies to .content-header p now */
+            font-size: 1rem;
+            text-align: center;
+        }
+
+        .dashboard-card {
+            padding: 20px; /* Smaller padding for cards */
+            flex-basis: auto; /* Allow cards to take full width or adjust based on flex-wrap */
+            max-width: 100%; /* Ensure full width on small screens */
+            margin-bottom: 1.5rem !important; /* Add margin for spacing */
+        }
+    }
+
+    @media (max-width: 480px) {
+        html {
+            font-size: 14px; /* Original responsive base font size */
+        }
+
+        .hero-text h1 {
+            font-size: 2.5rem; /* Further adjustment */
+        }
+
+        .transform-button {
+            font-size: 1em; /* Further adjust button font size if needed */
+            padding: 15px 25px;
+            z-index:10;
+        }
+    }
+
+    @media (max-width: 320px) {
+        html {
+            font-size: 12px; /* Original responsive base font size */
+        }
+
+        .hero-text h1 {
+            font-size: 2rem; /* Further adjustment */
+        }
+        .transform-button {
+            font-size: 0.9em;
+            padding: 12px 20px;
+            z-index:10;
+        }
+    }
+
+    /* Applies to all main headings */
+h1.text-primary, h1.page-title, h1 {
+    font-family: 'Segoe UI', 'Arial', sans-serif !important;
+    font-weight: 800;
+    font-size: 2.7rem;
+    letter-spacing: -1px;
+    color: #1a75ff !important;
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    margin-bottom: 2rem;
+}
+@media (max-width: 768px) {
+    h1.text-primary, h1.page-title, h1 {
+        font-size: 2rem;
+    }
+}
+</style>
+
+
+
+    <div class="hero-section"> {# Using hero-section as a general content wrapper #}
+        <div class="hero-text"> {# Using hero-text for title and lead paragraph #}
+            <h1 class="text-primary mb-4">
+    <i class="bi bi-briefcase-fill"></i>
+    Campaigns
+</h1>
+            <p class="lead">Explore our range of phishing simulation services designed to enhance your security awareness.</p>
+        </div>
+        <div class="container-lg pb-5">
+            <div class="row text-dark d-flex justify-content-center gap-3">
+                <div class="col-md-3 mb-4 rounded-4 shadow p-4 d-flex flex-column dashboard-card">
+                    <h3 class="card-title">Email Phishing</h3>
+                    <p class="card-text">Simulate email phishing attacks to test your organization's resilience.</p>
+                    <div class="mt-auto">
+                        <a href="{% url 'email_phishing' %}" class="btn btn-outline-primary rounded-4">Start Email Phishing</a>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4 rounded-4 shadow p-4 d-flex flex-column dashboard-card">
+                    <h3 class="card-title">SMS Phishing</h3>
+                    <p class="card-text">Simulate SMS phishing attacks to evaluate your team's response.</p>
+                    <div class="mt-auto">
+                        <a href="{% url 'sms_sender' %}" class="btn btn-outline-primary rounded-4">Start SMS Phishing</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+<div class="bubbles"></div>
+<script>
+    // Original Bubbles script
+    const bubblesContainer = document.querySelector('.bubbles');
+    function createBubble() {
+        const bubble = document.createElement('div');
+        bubble.classList.add('bubble');
+        const size = Math.random() * 20 + 10; // Original size logic
+        bubble.style.width = `${size}px`;
+        bubble.style.height = `${size}px`;
+        bubble.style.left = `${Math.random() * 100}%`;
+        bubble.style.bottom = '-10px'; // Start from bottom
+        // Using a new animation 'floatAnimation' defined in CSS
+        bubble.style.animationDuration = `${Math.random() * 3 + 2}s`; // Random duration for variety
+        bubblesContainer.appendChild(bubble);
+        bubble.addEventListener('animationend', () => {
+            bubble.remove();
+        });
+    }
+    for (let i = 0; i < 15; i++) { // Initial burst
+        setTimeout(createBubble, i * 200);
+    }
+    setInterval(createBubble, 1000); // Continuous creation
+
+    // Original pageshow script
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted) {
+            window.location.reload();
+        }
+    });
+</script>
+{% endblock %}

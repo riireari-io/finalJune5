@@ -1,0 +1,392 @@
+{% extends 'base.html' %}
+{% block title %}Analytics{% endblock %}
+{% block content %}
+<style>
+    /* Custom styles for the analytics page to match the Triton's Trident theme */
+    body {
+        background-color: #0d1a26; /* Dark background from main theme */
+        color: #e0e0e0; /* Light text for contrast */
+        font-family: 'Arial', sans-serif;
+    }
+
+    .container {
+        background-color: #1c2a38; /* Slightly lighter dark background for the container */
+        border-radius: 15px;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        padding: 40px; /* Increased padding */
+        border: 1px solid #334e68; /* Border from dashboard card */
+    }
+
+    .text-primary {
+        color: #1a75ff !important; /* Blue accent color */
+    }
+
+    /* Applies to all main headings */
+    h1.text-primary, h1.page-title, h1 {
+        font-family: 'Segoe UI', 'Arial', sans-serif !important;
+        font-weight: 800;
+        font-size: 2.7rem;
+        letter-spacing: -1px;
+        color: #1a75ff !important;
+        display: flex;
+        align-items: center;
+        gap: 0.5em;
+        margin-bottom: 2rem;
+    }
+    @media (max-width: 768px) {
+        h1.text-primary, h1.page-title, h1 {
+            font-size: 2rem;
+        }
+    }
+
+    /* Chart specific styling */
+    .chart-container {
+        position: relative;
+        background-color: rgba(255, 255, 255, 0.1); /* Transparent white for glass effect */
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 30px; /* Space below the chart */
+        box-shadow: 0 0 20px rgba(26, 117, 255, 0.4); /* Glow effect with blue accent */
+        backdrop-filter: blur(10px); /* Glass blur effect */
+        -webkit-backdrop-filter: blur(10px); /* Safari support */
+        border: 1px solid rgba(255, 255, 255, 0.2); /* Subtle white border */
+    }
+
+    /* Adjust list group items to match the dark theme */
+    .list-group-item {
+        background-color: #0d1a26; /* Dark background for list items */
+        color: #e0e0e0; /* Light text for list items */
+        border: 1px solid #334e68; /* Border from dashboard card */
+        margin-bottom: 5px; /* Small gap between list items */
+        border-radius: 8px; /* Slightly rounded corners for list items */
+    }
+
+    .badge {
+        font-size: 0.9em; /* Slightly smaller badge font */
+        padding: 0.5em 0.8em; /* Adjusted padding */
+    }
+
+    /* Custom badge colors to match the chart colors */
+    .badge.bg-primary { background-color: rgba(54, 162, 235, 1) !important; }
+    .badge.bg-warning { background-color: rgba(255, 206, 86, 1) !important; }
+    .badge.bg-danger { background-color: rgba(255, 99, 132, 1) !important; }
+    .badge.bg-purple { background-color: rgba(153, 102, 255, 1) !important; }
+    .badge.bg-info { background-color: rgba(75, 192, 192, 1) !important; }
+    .badge.bg-success { background-color: rgba(40, 167, 69, 1) !important; }
+
+</style>
+
+<div class="container py-5">
+    <h1 class="text-primary mb-4">
+        <i class="bi bi-bar-chart-fill"></i>
+        Analytics
+    </h1>
+    <div class="chart-container mt-5">
+        <canvas id="analyticsBar" width="400" height="200"></canvas>
+    </div>
+    <div class="mt-4">
+        <ul class="list-group">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                Sent Emails <span class="badge bg-primary rounded-pill">{{ total_sent_emails }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                Sent SMS <span class="badge bg-warning rounded-pill text-dark">{{ total_sent_sms }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                Reported Emails <span class="badge bg-danger rounded-pill">{{ total_reported_emails }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                Reported SMS <span class="badge bg-purple rounded-pill" style="background:#9966ff;color:#fff;">{{ total_reported_sms }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                Total Users <span class="badge bg-info rounded-pill text-dark">{{ total_users }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                Assessment Completed <span class="badge bg-success rounded-pill">{{ total_completed }}</span>
+            </li>
+        </ul>
+    </div>
+    <div class="chart-container mt-4" style="max-width:520px; margin:auto; min-height:260px;">
+        <canvas id="smsActionsBar" width="400" height="200"></canvas>
+    </div>
+    <div class="chart-container mt-4" style="max-width:520px; margin:auto;">
+        <canvas id="smsActionsPie" width="500" height="500"></canvas>
+    </div>
+    <div class="chart-container mt-4" style="max-width:520px; margin:auto; min-height:260px;">
+        <canvas id="legitEmailsBar" width="400" height="200"></canvas>
+    </div>
+    <div class="chart-container mt-4" style="max-width:520px; margin:auto;">
+        <canvas id="legitEmailsPie" width="500" height="500"></canvas>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const analyticsBar = new Chart(document.getElementById('analyticsBar').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: ['Sent Emails', 'Sent SMS', 'Reported Emails', 'Reported SMS', 'Total Users', 'Assessment Completed'],
+                datasets: [{
+                    label: 'Count',
+                    data: [
+                        Number('{{ total_sent_emails|default:0 }}'),
+                        Number('{{ total_sent_sms|default:0 }}'),
+                        Number('{{ total_reported_emails|default:0 }}'),
+                        Number('{{ total_reported_sms|default:0 }}'),
+                        Number('{{ total_users|default:0 }}'),
+                        Number('{{ total_completed|default:0 }}')
+                    ],
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(255, 206, 86, 0.7)',
+                        'rgba(255, 99, 132, 0.7)',
+                        'rgba(153, 102, 255, 0.7)',
+                        'rgba(75, 192, 192, 0.7)',
+                        'rgba(40, 167, 69, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(40, 167, 69, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        ticks: {
+                            color: '#e0e0e0' /* Light text for x-axis labels */
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)' /* Subtle grid lines */
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        precision: 0,
+                        ticks: {
+                            color: '#e0e0e0' /* Light text for y-axis labels */
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)' /* Subtle grid lines */
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: '#e0e0e0' /* Light text for legend */
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+    <script>
+        const legitEmailsBar = new Chart(document.getElementById('legitEmailsBar').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: [
+                    'Legitimate Emails (Safe & Real)',
+                    'Legitimate Emails (Safe but Fake)',
+                    'Reported Emails (Fake)',
+                    'Reported Emails (Real)'
+                ],
+                datasets: [{
+                    label: 'Email Actions',
+                    data: [
+                        Number('{{ total_legit_emails_real|default:0 }}'),
+                        Number('{{ total_legit_emails_fake|default:0 }}'),
+                        Number('{{ total_reported_emails_fake|default:0 }}'),
+                        Number('{{ total_reported_emails_real|default:0 }}')
+                    ],
+                    backgroundColor: [
+                        'rgba(25, 135, 84, 0.7)', // green for real safe
+                        'rgba(220, 53, 69, 0.7)',  // red for fake safe
+                        'rgba(255, 193, 7, 0.7)',  // yellow for reported fake
+                        'rgba(13, 110, 253, 0.7)'  // blue for reported real
+                    ],
+                    borderColor: [
+                        'rgba(25, 135, 84, 1)',
+                        'rgba(220, 53, 69, 1)',
+                        'rgba(255, 193, 7, 1)',
+                        'rgba(13, 110, 253, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        ticks: {
+                            color: '#e0e0e0'    
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        precision: 0,
+                        ticks: {
+                            color: '#e0e0e0'
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: '#e0e0e0'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+    <script>
+        const legitEmailsPie = new Chart(document.getElementById('legitEmailsPie').getContext('2d'), {
+            type: 'pie',
+            data: {
+                labels: [
+                    'Legitimate Emails (Safe & Real)',
+                    'Legitimate Emails (Safe but Fake)',
+                    'Reported Emails (Fake)',
+                    'Reported Emails (Real)'
+                ],
+                datasets: [{
+                    data: [
+                        Number('{{ total_legit_emails_real|default:0 }}'),
+                        Number('{{ total_legit_emails_fake|default:0 }}'),
+                        Number('{{ total_reported_emails_fake|default:0 }}'),
+                        Number('{{ total_reported_emails_real|default:0 }}')
+                    ],
+                    backgroundColor: [
+                        'rgba(25, 135, 84, 0.7)', // green for real safe
+                        'rgba(220, 53, 69, 0.7)',  // red for fake safe
+                        'rgba(255, 193, 7, 0.7)',  // yellow for reported fake
+                        'rgba(13, 110, 253, 0.7)'  // blue for reported real
+                    ],
+                    borderColor: [
+                        'rgba(25, 135, 84, 1)',
+                        'rgba(220, 53, 69, 1)',
+                        'rgba(255, 193, 7, 1)',
+                        'rgba(13, 110, 253, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: '#e0e0e0'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+    <script>
+        const smsActionsBar = new Chart(document.getElementById('smsActionsBar').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: [
+                    'Marked as Safe (Legit SMS)',
+                    'Marked as Safe (Fake SMS)',
+                    'Reported Fake SMS (Legit)',
+                    'Reported Fake SMS (Fake)'
+                ],
+                datasets: [{
+                    label: 'SMS Actions',
+                    data: [
+                        Number('{{ sms_legit_real|default:0 }}'),
+                        Number('{{ sms_legit_fake|default:0 }}'),
+                        Number('{{ sms_reported_real|default:0 }}'),
+                        Number('{{ sms_reported_fake|default:0 }}')
+                    ],
+                    backgroundColor: [
+                        'rgba(25, 135, 84, 0.7)', // green for legit safe
+                        'rgba(220, 53, 69, 0.7)',  // red for fake safe
+                        'rgba(255, 193, 7, 0.7)',  // yellow for reported legit
+                        'rgba(13, 110, 253, 0.7)'  // blue for reported fake
+                    ],
+                    borderColor: [
+                        'rgba(25, 135, 84, 1)',
+                        'rgba(220, 53, 69, 1)',
+                        'rgba(255, 193, 7, 1)',
+                        'rgba(13, 110, 253, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        ticks: { color: '#e0e0e0' },
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        precision: 0,
+                        ticks: { color: '#e0e0e0' },
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                    }
+                },
+                plugins: {
+                    legend: { labels: { color: '#e0e0e0' } }
+                }
+            }
+        });
+        const smsActionsPie = new Chart(document.getElementById('smsActionsPie').getContext('2d'), {
+            type: 'pie',
+            data: {
+                labels: [
+                    'Marked as Safe (Legit SMS)',
+                    'Marked as Safe (Fake SMS)',
+                    'Reported Fake SMS (Legit)',
+                    'Reported Fake SMS (Fake)'
+                ],
+                datasets: [{
+                    data: [
+                        Number('{{ sms_legit_real|default:0 }}'),
+                        Number('{{ sms_legit_fake|default:0 }}'),
+                        Number('{{ sms_reported_real|default:0 }}'),
+                        Number('{{ sms_reported_fake|default:0 }}')
+                    ],
+                    backgroundColor: [
+                        'rgba(25, 135, 84, 0.7)',
+                        'rgba(220, 53, 69, 0.7)',
+                        'rgba(255, 193, 7, 0.7)',
+                        'rgba(13, 110, 253, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(25, 135, 84, 1)',
+                        'rgba(220, 53, 69, 1)',
+                        'rgba(255, 193, 7, 1)',
+                        'rgba(13, 110, 253, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { labels: { color: '#e0e0e0' } }
+                }
+            }
+        });
+    </script>
+</div>
+{% endblock %}

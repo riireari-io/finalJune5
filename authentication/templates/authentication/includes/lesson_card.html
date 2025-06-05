@@ -1,0 +1,17 @@
+<div class="col-md-4 d-flex">
+  <div class="card shadow-sm position-relative h-100 w-100 d-flex flex-column rounded-4">
+    <div class="card-body d-flex flex-column py-5">
+      <h5 class="card-title font-weight-bold text-primary">
+        <i class="bi bi-file-earmark-text"></i> {{ title }}
+      </h5>
+      <p class="card-text mt-3">{{ description }}</p>
+      <div class="mt-auto">
+        <p class="text-muted mb-2">Duration: {{ duration }}</p>
+        <a href="{{ url }}" class="btn btn-primary w-100 rounded-3">View Content</a>
+      </div>
+      {% if completed %}
+        <span class="badge bg-success position-absolute top-0 end-0 m-2">Completed</span>
+      {% endif %}
+    </div>
+  </div>
+</div>

@@ -1,0 +1,660 @@
+{% extends 'base.html' %}
+{% block title %}Suspicious URLs & Domains - Lesson 2{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<style>
+    body {
+        background: #0F1C2E; /* Slightly darker, richer blue */
+        color: #E6EAF0; /* Softer white for text */
+        font-family: 'Inter', 'Segoe UI', 'Arial', sans-serif; /* Modern font choice */
+        line-height: 1.6;
+    }
+
+
+    #lesson2-content {
+        background: rgba(23, 50, 80, 0.5); /* More opaque, darker blue tint */
+        border-radius: 20px; /* Slightly more rounded */
+        box-shadow: 0 12px 40px rgba(0,0,0,0.4); /* Deeper shadow */
+        border: 1px solid rgba(50, 150, 255, 0.2); /* Lighter, more vibrant border */
+        backdrop-filter: blur(15px) saturate(1.5); /* Stronger blur and saturation */
+        -webkit-backdrop-filter: blur(15px) saturate(1.5);
+        padding: 40px 30px;
+        margin-top: 40px;
+        margin-bottom: 40px;
+        position: relative;
+        z-index: 1;
+        animation: fadeIn 0.8s ease-out; /* Add a fade-in animation */
+    }
+
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+
+    .lesson-title {
+        background: linear-gradient(90deg, rgba(50, 150, 255, 0.2), rgba(20, 90, 200, 0.2)); /* Subtle gradient */
+        color: #79C2F5 !important; /* Brighter blue for title */
+        font-weight: 700;
+        border-radius: 15px; /* Slightly more rounded */
+        font-size: 1.6rem;
+        padding: 18px 25px; /* More padding */
+        border: 1px solid rgba(50, 150, 255, 0.3); /* Defined border */
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2); /* Subtle shadow for title */
+    }
+
+
+    h1, h2, h3, h4 {
+        font-family: 'Inter', 'Segoe UI', 'Arial', sans-serif;
+        font-weight: 700;
+    }
+    h1 {
+        color: #50A3FF; /* Brighter blue for main heading */
+        font-size: 2.8em; /* Larger main heading */
+        text-shadow: 0 2px 8px rgba(0,0,0,0.3); /* Subtle text shadow */
+    }
+    h2 {
+        color: #79C2F5; /* Matches lesson title blue */
+        font-size: 2.2em;
+        padding-bottom: 5px;
+        border-bottom: 1px solid rgba(50, 150, 255, 0.1); /* Subtle underline effect */
+        margin-top: 3.5rem; /* More space above H2 */
+    }
+    h3 {
+        color: #A3D4FF; /* Lighter blue for sub-headings */
+        font-size: 1.8em;
+        margin-top: 2.5rem; /* More space above H3 */
+    }
+    h4 {
+        color: #C1E1FF; /* Even lighter blue */
+    }
+
+
+    .example, .interactive-email {
+        background: rgba(255,255,255,0.08) !important; /* Slightly more visible background */
+        border-left: 6px solid #50A3FF !important; /* Thicker, more vibrant border */
+        color: #E6EAF0 !important;
+        border-radius: 12px; /* Slightly more rounded */
+        padding: 25px; /* More padding */
+        margin-top: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+
+    .highlight {
+        background: #FFD700; /* Gold-like yellow */
+        color: #2C3E50; /* Darker text for contrast */
+        border-radius: 6px; /* More rounded highlight */
+        padding: 2px 6px;
+        font-weight: 600; /* Make highlight text bolder */
+    }
+
+
+    .quiz-section {
+        background: rgba(30, 80, 130, 0.4); /* Deeper blue for quiz section */
+        border: 1px solid rgba(50, 150, 255, 0.3);
+        border-radius: 16px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+        padding: 30px;
+    }
+
+
+    .choices .btn {
+        font-size: 1.1em;
+        border-radius: 10px; /* More rounded buttons */
+        margin-bottom: 0.6em;
+        background: rgba(255,255,255,0.05); /* Slightly more transparent */
+        color: #B7D6FF;
+        border: 1px solid #50A3FF; /* More vibrant border */
+        transition: all 0.3s ease; /* Smoother transition */
+        padding: 12px 18px; /* More padding */
+    }
+    .choices .btn:hover, .choices .btn:focus {
+        background: #50A3FF; /* Solid blue on hover */
+        color: #fff;
+        transform: translateY(-2px); /* Slight lift effect */
+        box-shadow: 0 4px 12px rgba(80,163,255,0.4); /* Shadow on hover */
+    }
+
+
+    .feedback {
+        font-size: 1.15em; /* Slightly larger feedback text */
+        margin-top: 1em;
+        padding: 1em 1.2em;
+        border-radius: 10px;
+        font-weight: 500;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    .feedback.correct, .result.correct {
+        background: rgba(40, 200, 120, 0.2); /* Softer green */
+        color: #6CFFB4; /* Brighter green text */
+        border: 1px solid #28C878;
+    }
+    .feedback.wrong, .result.wrong {
+        background: rgba(255, 80, 100, 0.2); /* Softer red */
+        color: #FF8B99; /* Brighter red text */
+        border: 1px solid #FF5064;
+    }
+
+
+    .btn-primary, .btn-success, .btn-secondary {
+        border-radius: 10px; /* Consistent button rounding */
+        font-weight: 600;
+        padding: 12px 25px; /* More padding */
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+    .btn-primary {
+        background: linear-gradient(45deg, #1a75ff, #0056b3); /* Gradient for primary button */
+        border: none;
+    }
+    .btn-primary:hover, .btn-primary:focus {
+        background: linear-gradient(45deg, #0056b3, #1a75ff);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(26,117,255,0.4);
+    }
+    .btn-success {
+        background: linear-gradient(45deg, #28a745, #157347); /* Gradient for success button */
+        border: none;
+    }
+    .btn-success:hover, .btn-success:focus {
+        background: linear-gradient(45deg, #157347, #28a745);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(40,167,69,0.4);
+    }
+    .btn-secondary {
+        background: linear-gradient(45deg, #4F6D8C, #324D68); /* Gradient for secondary button */
+        border: none;
+    }
+    .btn-secondary:hover, .btn-secondary:focus {
+        background: linear-gradient(45deg, #324D68, #4F6D8C);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(51,78,104,0.4);
+    }
+
+
+    #scrollTopBtn {
+        background: linear-gradient(45deg, #1a75ff, #0056b3); /* Gradient for scroll to top */
+        color: #fff;
+        border: none;
+        border-radius: 50%; /* Perfect circle */
+        width: 60px; /* Fixed width/height */
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 6px 20px rgba(26,117,255,0.4);
+        font-size: 1.4em; /* Larger icon */
+        z-index: 9999;
+        opacity: 0.9; /* Slightly transparent */
+        transition: all 0.3s ease;
+        bottom: 30px;
+        right: 30px;
+    }
+    #scrollTopBtn:hover {
+        background: linear-gradient(45deg, #0056b3, #1a75ff);
+        opacity: 1;
+        transform: translateY(-3px) scale(1.05); /* Lift and slight scale */
+        box-shadow: 0 8px 25px rgba(26,117,255,0.6);
+    }
+
+
+    /* General utility classes adjusted for new theme */
+    .bg-success.bg-opacity-10 { background: rgba(40, 200, 120, 0.1) !important; }
+    .bg-info.bg-opacity-10 { background: rgba(50, 150, 255, 0.1) !important; }
+    .bg-info.bg-opacity-25 { background: rgba(50, 150, 255, 0.25) !important; }
+    .border-info { border-color: #50A3FF !important; }
+    .border-success { border-color: #28C878 !important; }
+    .border-primary { border-color: #50A3FF !important; }
+    .text-primary { color: #50A3FF !important; } /* Ensure text-primary aligns with new h1 color */
+    .text-success { color: #28C878 !important; } /* Ensure text-success aligns with new green */
+    .text-danger { color: #FF5064 !important; } /* Ensure text-danger aligns with new red */
+    .text-secondary { color: #A3D4FF !important; } /* Adjusting secondary text for consistency */
+
+
+    /* Specific styles for the interactive email example */
+    .email-line {
+        padding: 5px 0;
+        border-bottom: 1px dashed rgba(255,255,255,0.1);
+    }
+    .email-line:last-child {
+        border-bottom: none;
+    }
+    .label {
+        font-weight: bold;
+        display: inline-block;
+        width: 80px; /* Align labels */
+    }
+    .email-body-text {
+        margin-top: 15px;
+        padding: 15px;
+        border-radius: 10px;
+        background: rgba(50, 150, 255, 0.1); /* Slightly more prominent background for email body */
+        border: 1px solid rgba(50, 150, 255, 0.2);
+    }
+    .email-link-text {
+        color: #79C2F5; /* Make the visible link text stand out */
+        text-decoration: underline;
+        cursor: pointer;
+        position: relative; /* Needed for tooltip positioning */
+    }
+    .email-link-tooltip {
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #333;
+        color: #fff;
+        padding: 8px 12px;
+        border-radius: 6px;
+        white-space: nowrap;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+        font-size: 0.9em;
+        z-index: 10;
+        pointer-events: none; /* Allows clicks to pass through */
+        border: 1px solid #50A3FF;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+    .email-link-text:hover .email-link-tooltip {
+        opacity: 1;
+        visibility: visible;
+        bottom: 120%; /* Adjust position to be above the link */
+    }
+    .hover-tip {
+        font-size: 0.95em;
+        margin-bottom: 15px;
+        padding: 8px 15px;
+        background: rgba(255,255,255,0.05);
+        border-left: 4px solid #FFD700;
+        border-radius: 8px;
+        color: #C1E1FF;
+    }
+
+
+    @media (max-width: 768px) {
+        #lesson2-content {
+            padding: 25px 5vw;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        h1 { font-size: 1.8em; }
+        h2 { font-size: 1.4em; }
+        h3 { font-size: 1.2em; }
+        .lesson-title { font-size: 1.2rem; padding: 15px 20px;}
+        .choices .btn { font-size: 1em; padding: 10px 15px; }
+        #scrollTopBtn { width: 50px; height: 50px; font-size: 1.2em; bottom: 20px; right: 20px;}
+    }
+</style>
+<div class="container mt-5 pt-5 mb-5" id="lesson2-content">
+    <h1 class="text-center" style="font-size:2.8em;">Welcome to Triton's Trident! <span class="bi bi-shield-lock-fill"></span></h1>
+    <p class="text-center" style="font-size:1.15em; color: #D5DDF0;">Get ready to become a cybersecurity detective! These quick lessons will arm you with the essential skills to spot and avoid sneaky phishing attempts that try to steal your personal information. Let's dive in and make you a phishing pro!</p>
+
+
+    ---
+
+
+    <div class="lesson-title p-3 rounded-4 mb-4 mt-4 text-center fw-bold">Lesson 2: All About Email and SMS Phishing<span class="bi bi-link-45deg"></span></div>
+   <h3 class="mt-4 mb-3">What is Email Phishing? </h3>
+   <p>Phishing is a form of social engineering where attackers deceive individuals into divulging sensitive information or performing actions that compromise security. Typically executed via scam emails, these attacks manipulate victims into clicking malicious links, downloading harmful attachments, or providing confidential data. Unlike malware, phishing relies on psychological tactics rather than technical exploits.</p>
+   <p><b>How can I detect Phishing Emails?</b></p>
+   <p>Knowing how to spot phishing emails is crucial to protecting yourself. Phishing emails often try to trick you into revealing personal information or clicking on harmful links. To tell the difference between a genuine email and a phishing attempt, watch out for some common warning signs. By learning these simple tips, you can often recognize phishing emails before they cause harm. The key is to develop the habit of questioning every unexpected or unusual email by asking yourself, "Could this be a phishing email?" This mindset helps you stay alert and avoid falling for scams.</p>
+   
+   
+   <ul>
+     <li><b>Missing Personal Salutation-</b> One of the first things to check in an email is how it addresses you. Legitimate companies usually use your name to make the message feel personal and trustworthy. On the other hand, phishing emails often use generic greetings like "Dear Customer" or "Dear User." This lack of a personal salutation can be a strong warning sign that the email might be a phishing attempt.</li><br>
+     <li><b>The Sender-</b> To protect yourself from phishing, always double-check the sender's email address. Phishing emails often use addresses that look very similar to those of real companies but contain small differences. For example, a legitimate email might come from service@paypal.com, while a phishing email could be from service@paypai.com —which looks almost the same at first glance. Training yourself to carefully examine the sender's address can help you spot these subtle fake emails and avoid falling victim to phishing scams.</li><br>
+     <li><b>The Email Header-</b> Sometimes, skilled cybercriminals can disguise phishing emails to make them appear as if they come from a trusted sender. For those with technical knowledge, examining the email header can reveal hidden details that aren't visible in the main message. By analyzing the header, you might find unusual code or inconsistencies that indicate the email is fraudulent. This deeper investigation helps uncover phishing attempts that might otherwise go unnoticed.</li><br>
+     <li><b>Deceptive Attachments-</b> Phishers often send harmful attachments, especially targeting employees in companies where receiving files by email is common. Because employees are used to opening attachments regularly, they might open a suspicious file without thinking—especially if it has a name like "final reminder" that creates a sense of urgency. This can lead to malware infecting the computer, which could steal sensitive information. The important lesson is to never open attachments unless you are absolutely sure the sender is legitimate. Always pause and consider if the email really makes sense before opening any file.</li><br>
+    <li><b>Security alerts-</b> Phishers often send fake security alerts claiming your password has been compromised, suspicious activity was detected, or there was a login from an unknown device. For example, you might get an email pretending to be from Netflix—one of the most commonly spoofed brands—warning you about unusual account activity. If you click the link in these emails, you may be taken to a fake login page designed to steal your credentials. Cybercriminals then use these stolen accounts to sell pirated access on the dark web for services like Netflix, Hulu, DirecTV, and others. Always verify security alerts directly through the official website or app instead of clicking links in unexpected emails.</li><br>
+    <li><b>Dubious links-</b> Phishing emails often trick users into clicking links that lead to fake websites designed to steal login information. These links may look like they belong to real companies, but on closer inspection, they usually contain misleading subdomains. For example, instead of directing you to a legitimate page like www.google.com/login, a phishing link might look like google.com.login.tinyurl.co. In this case, you're not going to Google—you're being sent to tinyurl.co, which is the real domain. These fake websites are made to look like official login pages, asking for passwords, PINs, or other sensitive information. If you receive an email asking you to log in, don't click the link. Instead, manually type the correct website address into your browser to ensure you're visiting the legitimate site.</li><br>
+   <li><b>Language-</b> Phishing emails often contain language that seems out of place. For example, if you're an American customer of a U.S. bank and you suddenly receive an email from that bank written in Spanish, that's a red flag. Why would a trusted bank contact you in a language you don't use with them? This mismatch is a strong sign the message could be a scam. Also, be cautious if the email includes sensitive information like account details. Legitimate banks typically send such messages securely through your online banking inbox—not through regular email. Always question emails with strange language or unexpected content, especially when they claim to be from trusted institutions.</li><br>
+   <li><b>Private information-</b> Phishing emails often try to trick you into giving away personal information like passwords, PINs, or security codes (TANs). Keep in mind: no legitimate bank will ever ask for this kind of sensitive data through email. If you receive a message asking for such details, it's a clear sign of a phishing attempt. This is exactly why banks send important information through secure channels—such as your bank's official app, online banking portal, or even by regular mail—not through unsecured emails.</li><br>
+   <li><b>Grammatical and Spelling Errors-</b> Watch out for emails with poor grammar or spelling mistakes. Many phishing emails are written in another language and then translated using online tools, which often results in awkward or incorrect phrasing. These kinds of errors are common signs that the message may not be from a legitimate source. Always take extra caution if an email sounds unnatural or looks unprofessional.</li><br>
+   </ul>
+   <p>These attacks often go unnoticed because they look convincingly real and play on your natural instincts. You might not realize you've been tricked until it's too late.</p>
+   <h3 class="mt-4 mb-3">What is SMS Phishing or SMiSHing? </h3>
+   <p>SMiShing is phishing done through text messages. These messages may come from unknown numbers or even appear to be from someone you know, like a coworker. They often include a suspicious link or ask you to act quickly. If you receive a message from a number you don't recognize, it's best to delete it right away. If you're ever unsure about a request, don't respond to the message—call the person directly using a verified phone number to confirm if it's real.</p>
+   <p><b>How SMiShing Steals Your Information</b></p>
+   <p>Cybercriminals commonly use two tactics in smishing attacks to steal your personal data:</p>
+   <ul>
+    <li><b>Malware Downloads:</b> The link in the text message may lead you to download harmful software disguised as a legitimate app. Once installed, it can secretly collect your personal data—like login details or financial info—and send it directly to the attacker. </li>
+    <li><b>Fake Websites:</b> The link might also take you to a fraudulent website that looks like a real one, such as your bank's login page. These fake sites are designed to trick you into entering sensitive information like passwords or account numbers.</li>
+  </ul>
+  <p><b>Why SMiShing is a Growing Threat</b></p>
+  <p>As more people use their personal smartphones for work, SMiShing has become a serious threat not just to individuals, but to businesses as well. In fact, SMiShing is now one of the most common forms of malicious text attacks.
+
+
+Cyberattacks targeting mobile devices are increasing, just like our reliance on them. Since texting is one of the most frequent smartphone activities, it creates an easy path for attackers. These factors, combined with how easily people trust and respond to texts, make SMiShing a particularly dangerous form of cybercrime.
+
+
+Let's take a closer look at how these attacks happen and how you can stay protected.</p>
+<p><b>How SMiShing Works</b></p>
+<p>SMiShing uses social engineering to influence your decisions through three key techniques:</p>
+   <ul>
+    <li><b>Trust: </b> The message appears to come from a known or reliable source. Since texts feel personal and familiar, you're more likely to believe them.</li>
+    <li><b>Context:</b> Messages are often tailored to feel relevant—like confirming a delivery or warning about a suspicious login—making them seem legitimate.</li>
+    <li><b>Emotion:</b> By creating urgency, fear, or excitement, attackers get you to act quickly without thinking</li>
+   </ul>
+   <p><b>How to Prevent SMiShing</b></p>
+   <p> SMiShing attacks only work if you fall for them. If you don't reply or click, the attack fails. That's why doing nothing is often the safest response.
+
+
+Still, it's important to stay alert—some businesses and services do use text messages for legitimate communication. Here are smart ways to protect yourself:</p>
+<ul>
+    <li><b>Don't respond to suspicious texts.</b> Even replying with "STOP" might let scammers know your number is active. Stay silent and delete the message.</li>
+    <li><b>Take a moment.</b>  If the message sounds urgent or alarming ("Your account is locked!"), pause before reacting. Attackers use urgency to make you panic.</li>
+    <li><b>Contact the company directly. </b>  If you're unsure, call your bank or the business using their official contact details—not the number or link in the message.</li>
+    <li><b>Don't click suspicious links</b> If a message makes you uncomfortable, don't use the links or numbers it includes. Instead, visit the company's website directly.</li>
+    <li><b>Check the sender. </b> Messages from strange short numbers (like 4-digit codes) could be a red flag. These may come from email-to-text services often used by attackers.</li>
+    <li><b>Avoid storing sensitive info on your phone.</b> Try not to save your credit card numbers or PINs on your device.</li>
+    <li><b>Enable Multi-Factor Authentication (MFA).</b> MFA adds extra protection. Even if your password is stolen, a second layer—like a code from an app (e.g., Google Authenticator)—can keep attackers out.</li>
+    <li><b>Never share passwords or codes over text. </b>  Don't send passwords, PINs, or recovery codes via SMS—even if the request looks real.</li>
+    <li><b>Report SMiShing attempts.</b> Let authorities or your mobile provider know if you receive suspicious texts.</li>
+</ul>
+<p><span class="highlight">Remember:</span>  SMiShing depends on tricking you into acting. If you ignore the message and don't interact, the scam has no effect.</p>
+
+
+    ---
+    <p>Source Adapted From: Hornetsecurity. (n.d.). Phishing <a href="https://www.hornetsecurity.com/en/knowledge-base/phishing/"> The danger of malicious phishing mails</a></p>
+    <p>Source Adapted From: Kaspersky. (n.d.). What is SMiShing and How to Defend Against It <a href="https://www.kaspersky.com/resource-center/threats/what-is-smishing-and-how-to-defend-against-it"> What is Smishing and How to Defend Against it</a></p>
+
+
+
+
+    <div id="quiz-lesson2" class="quiz-section rounded-4 p-4 mt-5 shadow-sm">
+        <h2 class="text-center mb-4">Time to Test Your Underwater Detective Skills! 🕵️‍♀️</h2>
+        <div id="quiz2-question-1">
+            <p class="question fw-bold">Question 1: You get a text message from a number claiming to be your bank, asking you to verify your account by clicking a link. What type of attack are you likely experiencing?</p>
+            <div class="choices mb-3">
+                <button class="btn w-100 text-start mb-2" onclick="checkAnswer2(1, 'wrong', this)">A) Phishing via email</button>
+                <button class="btn w-100 text-start mb-2" onclick="checkAnswer2(1, 'correct', this)">B) Phishing via text message (SMS)</button>
+                <button class="btn w-100 text-start" onclick="checkAnswer2(1, 'wrong', this)">C) Phishing via phone call</button>
+                <button class="btn w-100 text-start" onclick="checkAnswer2(1, 'wrong', this)">D) Phishing via social media</button>
+
+
+            </div>
+            <div id="feedback2-1" class="feedback"></div>
+            <div class="text-center mt-3">
+                <button id="next-btn2-1" class="next-question-btn btn btn-success" style="display:none;" onclick="showNextQuestion2(2)">Next Question</button>
+            </div>
+        </div>
+        <div id="quiz2-question-2" style="display:none;">
+            <p class="question fw-bold">Question 2: A message appears on your phone from "IT Support," asking you to update your password immediately or your account will be locked. The message uses a phone number similar to your company's official number. Which tactic is the attacker using to trick you?</p>
+            <div class="choices mb-3">
+                <button class="btn w-100 text-start mb-2" onclick="checkAnswer2(2, 'wrong', this)">A) Using random phone numbers</button>
+                <button class="btn w-100 text-start mb-2" onclick="checkAnswer2(2, 'correct', this)">B) Posing as legitimate organizations or individuals</button>
+                <button class="btn w-100 text-start" onclick="checkAnswer2(2, 'wrong', this)">C) Sending messages only at night</button>
+                <button class="btn w-100 text-start" onclick="checkAnswer2(2, 'wrong', this)">D) Offering free gifts in every message</button>
+
+
+            </div>
+            <div id="feedback2-2" class="feedback"></div>
+            <div class="text-center mt-3">
+                <button id="next-btn2-2" class="next-lesson-btn btn btn-success" style="display:none;" onclick="showNextQuestion2(3)">Next Question</button>
+            </div>
+        </div>
+         <div id="quiz2-question-3" style="display:none;">
+            <p class="question fw-bold">Question 3: You receive a text telling you to click a link to claim a prize. The link looks suspicious but you are curious. Why should you avoid clicking the link?</p>
+            <div class="choices mb-3">
+                <button class="btn w-100 text-start mb-2" onclick="checkAnswer2(3, 'correct', this)">A) They might lead to fake websites designed to steal your information</button>
+                <button class="btn w-100 text-start mb-2" onclick="checkAnswer2(3, 'wrong', this)">B) They always lead to websites with viruses</button>
+                <button class="btn w-100 text-start" onclick="checkAnswer2(3, 'wrong', this)">C) Clicking links automatically installs apps</button>
+                <button class="btn w-100 text-start" onclick="checkAnswer2(3, 'wrong', this)">D) Text messages cannot contain links</button>
+
+
+            </div>
+            <div id="feedback2-3" class="feedback"></div>
+            <div class="text-center mt-3">
+                <button id="next-btn2-3" class="next-lesson-btn btn btn-success" style="display:none;" onclick="showNextQuestion2(4)">Next Question</button>
+            </div>
+        </div>
+         <div id="quiz2-question-4" style="display:none;">
+            <p class="question fw-bold">Question 4: You get a text message asking you to reply with "STOP" to unsubscribe from future messages. What should you do?</p>
+            <div class="choices mb-3">
+                <button class="btn w-100 text-start mb-2" onclick="checkAnswer2(4, 'wrong', this)">A)  Respond with "STOP" to unsubscribe</button>
+                <button class="btn w-100 text-start mb-2" onclick="checkAnswer2(4, 'correct', this)">B) Verify the message by contacting the company directly</button>
+                <button class="btn w-100 text-start" onclick="checkAnswer2(4, 'wrong', this)">C) Click any links to confirm</button>
+                <button class="btn w-100 text-start" onclick="checkAnswer2(4, 'wrong', this)">D) Share the message with friends</button>
+
+
+            </div>
+            <div id="feedback2-4" class="feedback"></div>
+            <div class="text-center mt-3">
+                <button id="next-btn2-4" class="next-lesson-btn btn btn-success" style="display:none;" onclick="showNextQuestion2(5)">Next Question</button>
+            </div>
+        </div>
+          <div id="quiz2-question-5" style="display:none;">
+            <p class="question fw-bold">Question 5: You receive an email claiming to be from "PayPall," asking you to log in via a provided link. How can you tell this is likely a phishing email? </p>
+            <div class="choices mb-3">
+                <button class="btn w-100 text-start mb-2" onclick="checkAnswer2(5, 'wrong', this)">A) It uses the official domain name exactly </button>
+                <button class="btn w-100 text-start mb-2" onclick="checkAnswer2(5, 'correct', this)">B) It contains slight misspellings or unusual domain names similar to real ones</button>
+                <button class="btn w-100 text-start" onclick="checkAnswer2(5, 'wrong', this)">C) It always comes from a free email service like Gmail or Yahoo</button>
+                <button class="btn w-100 text-start" onclick="checkAnswer2(5, 'wrong', this)">D) It never includes a sender's email address</button>
+
+
+            </div>
+            <div id="feedback2-5" class="feedback"></div>
+            <div class="text-center mt-3">
+                <button id="next-btn2-5" class="next-lesson-btn btn btn-success" style="display:none;" onclick="showNextQuestion2(6)">Next Question</button>
+            </div>
+        </div>
+          <div id="quiz2-question-6" style="display:none;">
+            <p class="question fw-bold">Question 6:You receive an email supposedly from your bank requesting your PIN to update your security details. What is the safest response? </p>
+            <div class="choices mb-3">
+                <button class="btn w-100 text-start mb-2" onclick="checkAnswer2(6, 'wrong', this)">A) Provide the information quickly </button>
+                <button class="btn w-100 text-start mb-2" onclick="checkAnswer2(6, 'correct', this)">B) Ignore the email and delete it</button>
+                <button class="btn w-100 text-start" onclick="checkAnswer2(6, 'wrong', this)">C) Forward the email to your friends</button>
+                <button class="btn w-100 text-start" onclick="checkAnswer2(6, 'wrong', this)">D) Reply asking for more information</button>
+
+
+            </div>
+            <div id="feedback2-6" class="feedback"></div>
+            <div class="text-center mt-3">
+                <button id="next-btn2-6" class="next-lesson-btn btn btn-success" style="display:none;" onclick="showNextQuestion2(7)">Next Question</button>
+            </div>
+        </div>
+          <div id="quiz2-question-7" style="display:none;">
+            <p class="question fw-bold">Question 7: A text message tells you your account will be suspended in 1 hour unless you verify your identity by clicking a link. The message makes you feel panicked. What emotional tactic is the attacker using? </p>
+            <div class="choices mb-3">
+                <button class="btn w-100 text-start mb-2" onclick="checkAnswer2(7, 'wrong', this)">A) Making the message very funny</button>
+                <button class="btn w-100 text-start mb-2" onclick="checkAnswer2(7, 'correct', this)">B) Creating a sense of urgency or fear</button>
+                <button class="btn w-100 text-start" onclick="checkAnswer2(7, 'wrong', this)">C) Offering a discount coupon</button>
+                <button class="btn w-100 text-start" onclick="checkAnswer2(7, 'wrong', this)">D) Sending long technical explanations</button>
+
+
+            </div>
+            <div id="feedback2-7" class="feedback"></div>
+            <div class="text-center mt-3">
+                <button id="next-btn2-7" class="next-lesson-btn btn btn-success" style="display:none;" onclick="showNextQuestion2(8)">Next Question</button>
+            </div>
+        </div>
+          <div id="quiz2-question-8" style="display:none;">
+            <p class="question fw-bold">Question 8:You notice a text message comes from a short 4-digit number instead of a regular phone number, asking you to reset your password. What technique might the attacker be using? </p>
+            <div class="choices mb-3">
+                <button class="btn w-100 text-start mb-2" onclick="checkAnswer2(8, 'wrong', this)">A)  Using fake apps to steal data </button>
+                <button class="btn w-100 text-start mb-2" onclick="checkAnswer2(8, 'correct', this)">B) Hiding the attacker's real phone number behind a false one</button>
+                <button class="btn w-100 text-start" onclick="checkAnswer2(8, 'wrong', this)">C) Sending harmless prank messages</button>
+                <button class="btn w-100 text-start" onclick="checkAnswer2(8, 'wrong', this)">D) Blocking messages from unknown senders</button>
+
+
+            </div>
+            <div id="feedback2-8" class="feedback"></div>
+            <div class="text-center mt-3">
+                <button id="next-btn2-8" class="next-lesson-btn btn btn-success" style="display:none;" onclick="showNextQuestion2(9)">Next Question</button>
+            </div>
+        </div>
+          <div id="quiz2-question-9" style="display:none;">
+            <p class="question fw-bold">Question 9:  Your bank asks you to enable a feature that sends a code to your phone every time you log in, in addition to your password. Why is this multi-factor authentication helpful against phishing?</p>
+            <div class="choices mb-3">
+                <button class="btn w-100 text-start mb-2" onclick="checkAnswer2(9, 'wrong', this)">A) It changes your password automatically</button>
+                <button class="btn w-100 text-start mb-2" onclick="checkAnswer2(9, 'wrong', this)">B) It deletes phishing emails for you</button>
+                <button class="btn w-100 text-start" onclick="checkAnswer2(9, 'wrong', this)">C) It prevents you from receiving any text message</button>
+                <button class="btn w-100 text-start mb-2" onclick="checkAnswer2(9, 'correct', this)">D) It requires a second form of verification beyond just a password</button>
+
+
+            </div>
+            <div id="feedback2-9" class="feedback"></div>
+            <div class="text-center mt-3">
+                <button id="next-btn2-9" class="next-lesson-btn btn btn-success" style="display:none;" onclick="showNextQuestion2(10)">Next Question</button>
+            </div>
+        </div>
+          <div id="quiz2-question-10" style="display:none;">
+            <p class="question fw-bold">Question 10: After clicking a suspicious link, you think your bank details may have been stolen. What should be one of your first steps? </p>
+            <div class="choices mb-3">
+                <button class="btn w-100 text-start mb-2" onclick="checkAnswer2(10, 'wrong', this)">A) Share the attack details on social media </button>
+                <button class="btn w-100 text-start mb-2" onclick="checkAnswer2(10, 'wrong', this)">B) Reply to the attacker asking to stop</button>
+                <button class="btn w-100 text-start" onclick="checkAnswer2(10, 'correct', this)">C) Report the attack to your bank or relevant authorities</button>
+                <button class="btn w-100 text-start" onclick="checkAnswer2(10, 'wrong', this)">D) Ignore it and hope for the best</button>
+        </div>
+         <div id="feedback2-10" class="feedback"></div>
+            <div class="text-center mt-3">
+                <button id="next-btn2-10" class="next-lesson-btn btn btn-success" style="display:none;" onclick="completeLessonAndRedirect2()">Proceed to the Next Lesson</button>
+            </div>
+        </div>
+        <div class="quiz-clear"></div>
+    </div>
+    <a href="{% url 'email_phishing_basics' %}" class="btn btn-secondary mt-5">← Back to Lesson 1</a>
+    <a href="/assessment/all-about-email-sms-phishing/" class="btn btn-primary mt-4">Go to Assessment: All About Email and SMS Phishing</a>
+
+
+</div>
+<script>
+
+
+function checkAnswer2(questionNum, type, button) {
+    const feedbackDiv = document.getElementById(`feedback2-${questionNum}`);
+    const nextButton = document.getElementById(`next-btn2-${questionNum}`);
+    const choicesDiv = button.closest('.choices');
+    Array.from(choicesDiv.children).forEach(btn => {
+        btn.disabled = true;
+        btn.style.opacity = '0.7';
+        btn.style.cursor = 'default';
+        if (btn === button) {
+            if (type === 'correct') {
+                btn.classList.add('btn-success');
+                btn.classList.remove('btn-outline-primary');
+            } else {
+                btn.classList.add('btn-danger');
+                btn.classList.remove('btn-outline-primary');
+            }
+        }
+    });
+    if (type === 'correct') {
+        feedbackDiv.textContent = feedbackCorrect2[questionNum] || "Correct!";
+        feedbackDiv.classList.add('correct');
+        feedbackDiv.classList.remove('wrong');
+    } else {
+        feedbackDiv.textContent = feedbackWrong2[questionNum] || "Not quite. Try again!";
+        feedbackDiv.classList.add('wrong');
+        feedbackDiv.classList.remove('correct');
+    }
+    feedbackDiv.style.display = 'block';
+    nextButton.style.display = 'block';
+}
+function showNextQuestion2(questionNum) {
+    document.getElementById(`quiz2-question-${questionNum - 1}`).style.display = 'none';
+    document.getElementById(`quiz2-question-${questionNum}`).style.display = 'block';
+    if (questionNum === 2) {
+        resetQuiz('quiz2-question-2', 'feedback2-2', 'next-btn2-2');
+    }
+}
+function resetQuiz(questionId, feedbackId, nextBtnId) {
+    const questionDiv = document.getElementById(questionId);
+    const feedbackDiv = document.getElementById(feedbackId);
+    const nextButton = document.getElementById(nextBtnId);
+    const choicesDiv = questionDiv.querySelector('.choices');
+    Array.from(choicesDiv.children).forEach(btn => {
+        btn.disabled = false;
+        btn.style.opacity = '1';
+        btn.style.cursor = 'pointer';
+        btn.classList.remove('btn-success', 'btn-danger'); // Remove old answer styles
+        btn.classList.add('btn-outline-primary'); // Add back default style
+    });
+    feedbackDiv.style.display = 'none';
+    nextButton.style.display = 'none';
+    feedbackDiv.classList.remove('correct', 'wrong');
+}
+function completeLessonAndRedirect2() {
+    fetch("{{ lesson_urls.suspicious_urls_domains }}", {
+        method: "POST",
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'X-Requested-With': 'XMLHttpRequest',
+        },
+        body: ''
+    }).finally(function() {
+        window.location.assign('{{ lesson_urls.phishing_techniques_advance|escapejs }}');
+    });
+}
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('lesson2-content').style.display = 'block';
+    document.getElementById('quiz-lesson2').style.display = 'block';
+    resetQuiz('quiz2-question-1', 'feedback2-1', 'next-btn2-1');
+    resetQuiz('quiz2-question-2', 'feedback2-2', 'next-btn2-2');
+    document.getElementById('quiz2-question-1').style.display = 'block';
+    document.getElementById('quiz2-question-2').style.display = 'none';
+});
+
+
+// Scroll to Top logic
+window.addEventListener("scroll", function () {
+    const scrollBtn = document.getElementById("scrollTopBtn");
+    if (window.scrollY > window.innerHeight / 2) {
+        scrollBtn.style.display = "flex"; /* Use flex to center icon */
+    } else {
+        scrollBtn.style.display = "none";
+    }
+});
+
+
+function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+
+</script>
+<script>
+const feedbackCorrect2 = {
+    1: "Correct! This is SMS phishing (SMiShing)—never click suspicious links in texts.",
+    2: "Great! Attackers often pose as trusted organizations to trick you.",
+    3: "Exactly! Suspicious links can lead to fake sites that steal your info.",
+    4: "Right! Always verify by contacting the company directly, not by replying.",
+    5: "Correct! Look for slight misspellings or unusual domains in phishing emails.",
+    6: "Well done! Never share sensitive info—ignore and delete such emails.",
+    7: "Correct! Attackers use urgency and fear to pressure you into acting.",
+    8: "Exactly! Short codes can hide the attacker's real number.",
+    9: "Right! Multi-factor authentication adds a strong extra layer of security.",
+    10: "Correct! Report the attack to your bank or authorities immediately."
+};
+const feedbackWrong2 = {
+    1: "Not quite. SMiShing is phishing via text message—watch out for suspicious links.",
+    2: "No. Attackers often impersonate real people or organizations.",
+    3: "Nope. The real danger is fake sites that steal your information.",
+    4: "Incorrect. Don't reply—verify by contacting the company directly.",
+    5: "Not right. Phishing emails often use domains that look almost real.",
+    6: "No. The safest response is to ignore and delete suspicious requests.",
+    7: "No. The attacker is trying to make you panic and act fast.",
+    8: "Not quite. Attackers use short codes to hide their real number.",
+    9: "No. Multi-factor authentication means you need more than just a password.",
+    10: "Not correct. You should report the incident to your bank or authorities."
+};
+</script>
+{% endblock %}

@@ -1,0 +1,13 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "shell",
+			"label": "Collect static files for production",
+			"command": "python manage.py collectstatic --noinput",
+			"problemMatcher": [],
+			"isBackground": false,
+			"group": "build"
+		}
+	]
+}

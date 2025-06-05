@@ -1,0 +1,726 @@
+{% extends 'base.html' %}
+{% block title %}Phishing Basic: Easy Lessons - Lesson 1{% endblock %}
+{% block content %}
+
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+
+<style>
+    /* Base styles for the page background and overall look */
+    body {
+        background: #0F1C2E; /* Darker, richer blue */
+        color: #E6EAF0; /* Softer white for text */
+        font-family: 'Inter', 'Segoe UI', 'Arial', sans-serif; /* Modern font choice */
+        line-height: 1.6;
+    }
+
+
+    /* Glass transparent effect for main container */
+    .container#lesson1-content {
+        background: rgba(23, 50, 80, 0.5); /* More opaque, darker blue tint */
+        border-radius: 20px; /* Slightly more rounded */
+        box-shadow: 0 12px 40px rgba(0,0,0,0.4); /* Deeper shadow */
+        border: 1px solid rgba(50, 150, 255, 0.2); /* Lighter, more vibrant border */
+        backdrop-filter: blur(15px) saturate(1.5); /* Stronger blur and saturation */
+        -webkit-backdrop-filter: blur(15px) saturate(1.5);
+        padding: 40px 30px;
+        margin-top: 40px;
+        margin-bottom: 40px;
+        position: relative;
+        z-index: 1;
+        animation: fadeIn 0.8s ease-out; /* Add a fade-in animation */
+    }
+
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+
+    /* Text colors and sizes */
+    h1 {
+        color: #50A3FF; /* Brighter blue for main heading */
+        font-weight: bold;
+        font-size: 2.8em; /* Larger main heading */
+        text-shadow: 0 2px 8px rgba(0,0,0,0.3); /* Subtle text shadow */
+    }
+
+
+    p {
+        color: #E6EAF0; /* Softer white for paragraphs */
+        font-size: 1.05em; /* Slightly larger standard paragraph font size */
+        line-height: 1.7;
+    }
+
+
+    p.text-center {
+        font-size: 1.15em; /* Slightly larger for intro text but still adjusted */
+        color: #D5DDF0;
+    }
+
+
+    .lesson-title {
+        background: linear-gradient(90deg, rgba(50, 150, 255, 0.2), rgba(20, 90, 200, 0.2)); /* Subtle gradient */
+        color: #79C2F5 !important; /* Brighter blue for title */
+        font-weight: 700;
+        border-radius: 15px; /* Slightly more rounded */
+        font-size: 1.6rem;
+        padding: 18px 25px; /* More padding */
+        border: 1px solid rgba(50, 150, 255, 0.3); /* Defined border */
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2); /* Subtle shadow for title */
+    }
+
+
+    h3 {
+        color: #A3D4FF; /* Lighter blue for sub-headings */
+        font-size: 1.8em;
+        margin-top: 2.5rem; /* More space above H3 */
+    }
+
+
+    ul {
+        padding-left: 25px; /* Indent list items */
+    }
+
+
+    ul li {
+        margin-bottom: 0.7rem; /* More spacing for list items */
+        font-size: 1.05em; /* Consistent with paragraphs */
+        color: #E6EAF0;
+    }
+
+
+    .highlight {
+        background: #FFD700; /* Gold-like yellow */
+        color: #2C3E50; /* Darker text for contrast */
+        border-radius: 6px; /* More rounded highlight */
+        padding: 2px 6px;
+        font-weight: 600; /* Make highlight text bolder */
+    }
+
+
+    /* Example box styling */
+    .example {
+        background: rgba(255,255,255,0.08) !important; /* Slightly more visible background */
+        border-left: 6px solid #50A3FF !important; /* Thicker, more vibrant border */
+        color: #E6EAF0 !important;
+        border-radius: 12px; /* Slightly more rounded */
+        padding: 25px; /* More padding */
+        margin-top: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+
+    .example b {
+        color: #50A3FF; /* Brighter blue for bold text in example */
+    }
+
+
+    /* Quiz section styling */
+    .quiz-section {
+        background: rgba(30, 80, 130, 0.4); /* Deeper blue for quiz section */
+        border: 1px solid rgba(50, 150, 255, 0.3);
+        border-radius: 16px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+        padding: 30px;
+    }
+
+
+    .quiz-section h2 {
+        color: #79C2F5 !important; /* Matches lesson title blue */
+        font-size: 2.2em;
+        padding-bottom: 5px;
+        border-bottom: 1px solid rgba(50, 150, 255, 0.1); /* Subtle underline effect */
+        margin-bottom: 2rem;
+    }
+
+
+    .question {
+        color: #E6EAF0; /* Softer white for questions */
+        font-size: 1.15em; /* Slightly larger quiz question font size */
+        margin-bottom: 1.2rem;
+    }
+
+
+    .choices .btn-outline-primary {
+        color: #B7D6FF;
+        border-color: #50A3FF;
+        background: rgba(255,255,255,0.05); /* Slightly more transparent */
+        transition: all 0.3s ease; /* Smoother transition */
+        padding: 12px 18px; /* More generous padding */
+        font-size: 1.1em; /* Slightly larger font size for choice buttons */
+        border-radius: 10px; /* More rounded buttons */
+    }
+
+
+    .choices .btn-outline-primary:hover:not(:disabled),
+    .choices .btn-outline-primary:focus:not(:disabled) {
+        background: #50A3FF; /* Solid blue on hover */
+        color: #fff;
+        transform: translateY(-2px); /* Slight lift effect */
+        box-shadow: 0 4px 12px rgba(80,163,255,0.4); /* Shadow on hover */
+    }
+   
+    .choices .btn-outline-primary.btn-success {
+        background-color: #28a745 !important;
+        border-color: #28a745 !important;
+        color: #fff !important;
+    }
+
+
+    .choices .btn-outline-primary.btn-danger {
+        background-color: #dc3545 !important;
+        border-color: #dc3545 !important;
+        color: #fff !important;
+    }
+
+
+
+
+    .choices .btn-outline-primary:disabled {
+        opacity: 0.7;
+        cursor: default;
+    }
+
+
+    .feedback {
+        margin-top: 1.5rem;
+        padding: 1em 1.2em;
+        border-radius: 10px;
+        font-weight: 500;
+        font-size: 1.15em; /* Slightly larger feedback text */
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+
+    .feedback.correct {
+        background: rgba(40, 200, 120, 0.2); /* Softer green */
+        color: #6CFFB4; /* Brighter green text */
+        border: 1px solid #28C878;
+    }
+
+
+    .feedback.wrong {
+        background: rgba(255, 80, 100, 0.2); /* Softer red */
+        color: #FF8B99; /* Brighter red text */
+        border: 1px solid #FF5064;
+    }
+
+
+    .next-question-btn, .next-lesson-btn {
+        background: linear-gradient(45deg, #28a745, #157347); /* Gradient for success button */
+        border: none;
+        color: #fff;
+        margin-top: 2rem;
+        padding: 12px 25px;
+        border-radius: 10px;
+        font-size: 1.1em; /* Adjusted next button font size */
+        display: none; /* Hidden by default */
+        float: right; /* Align to right */
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        transition: all 0.3s ease;
+    }
+
+
+    .next-question-btn:hover, .next-lesson-btn:hover {
+        background: linear-gradient(45deg, #157347, #28a745);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(40,167,69,0.4);
+    }
+
+
+    /* Clearfix for floated buttons */
+    .quiz-clear {
+        clear: both;
+    }
+
+
+    /* Scroll to Top button */
+    #scrollTopBtn {
+        background: linear-gradient(45deg, #1a75ff, #0056b3); /* Gradient for scroll to top */
+        color: #fff;
+        border: none;
+        border-radius: 50%; /* Perfect circle */
+        width: 60px; /* Fixed width/height */
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 6px 20px rgba(26,117,255,0.4);
+        font-size: 1.4em; /* Larger icon */
+        z-index: 9999;
+        opacity: 0.9; /* Slightly transparent */
+        transition: all 0.3s ease;
+        bottom: 30px;
+        right: 30px;
+    }
+
+
+    #scrollTopBtn:hover {
+        background: linear-gradient(45deg, #0056b3, #1a75ff);
+        opacity: 1;
+        transform: translateY(-3px) scale(1.05); /* Lift and slight scale */
+        box-shadow: 0 8px 25px rgba(26,117,255,0.6);
+    }
+
+
+    /* Back to Assessment button */
+    .btn-secondary {
+        background: linear-gradient(45deg, #4F6D8C, #324D68); /* Gradient for secondary button */
+        border: none;
+        color: #fff;
+        transition: all 0.3s ease;
+        font-size: 1.05em; /* Adjusted back button font size */
+        padding: 12px 25px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+
+    .btn-secondary:hover {
+        background: linear-gradient(45deg, #324D68, #4F6D8C);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(51,78,104,0.4);
+    }
+
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .container#lesson1-content {
+            padding: 25px 5vw;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+
+        h1 { font-size: 1.8em; }
+        h3 { font-size: 1.4em; }
+        p, ul li, .example { font-size: 0.95em; }
+        p.text-center { font-size: 1.05em; }
+        .lesson-title { font-size: 1.2rem; padding: 15px 20px;}
+        .question { font-size: 1.05em; }
+        .choices .btn-outline-primary { font-size: 1em; padding: 10px 15px; }
+        .feedback { font-size: 1em; padding: 0.8em 1em; }
+        .next-question-btn, .next-lesson-btn { font-size: 1em; padding: 10px 20px; margin-top: 1.5rem; }
+        #scrollTopBtn { width: 50px; height: 50px; font-size: 1.2em; bottom: 20px; right: 20px;}
+        .btn-secondary { font-size: 1em; padding: 10px 20px; }
+    }
+</style>
+
+
+<div class="container mt-5 pt-5 mb-5" id="lesson1-content">
+    <h1 class="text-center">Welcome to Triton's Trident! 🔱</h1>
+    <p class="text-center">Get ready to become a cybersecurity detective! These quick lessons will arm you with the essential skills to spot and avoid sneaky phishing attempts that try to steal your personal information. Let's dive in and make you a phishing pro!</p>
+
+
+    ---
+
+
+    <div class="lesson-title p-3 rounded-4 mb-4 mt-4 text-center fw-bold">Lesson 1: Everything About Phishing </div>
+    <h3 class="mt-4 mb-3">What is Phishing?</h3>
+    <p>Phishing is a type of cyberattack where attackers send fake messages that appear to come from a trusted or well-known source — usually through email or text messages (SMS). These messages are designed to trick the recipient into giving away sensitive information, such as login credentials, personal data, or financial details.</p>
+    <p>Phishing attacks can also be used to:</p>
+<ul>
+        <li>Install malware on a user's device,</li>
+        <li>Steal money or identities,</li>
+        <li>Or gain access to company networks and confidential data.</li>
+    </ul>
+    <div class="example rounded-3 shadow-sm mb-4">
+        <p class="text-center fw-bold">"Last year Cisco Security saw that 80% of ransomware attacks we observed began with a phishing email," said <br> <span class="highlight">Tom Gillis SVP and GM Security at Cisco, RSA Conference 2023
+</span> </p>
+    </div>
+     <h3 class="mt-4 mb-3">How do phishing scams trick users?</h3>
+    <p>Phishing scams are built on social engineering — attackers craft fake messages that look like they're from trusted sources. These emails or texts may seem harmless but are meant to lure users into dangerous actions, such as:</p>
+   <ul>
+        <li>Clicking on malicious links,</li>
+        <li>Downloading harmful attachments,</li>
+        <li>Or entering login details on fake websites.</li>
+   </ul>
+ <h3 class="mt-4 mb-3">Why do hackers send phishing scams?</h3>
+    <p>Attackers often target personally identifiable information (PII) or login credentials to access accounts and commit fraud. With enough information, cybercriminals may:</p>
+    <ul>
+        <li>Drain bank accounts,</li>
+        <li>Compromise company systems,</li>
+        <li>Or even launch ransomware attacks that lock data unless a ransom is paid.</li>
+     </ul>
+
+
+ <h3 class="mt-4 mb-3">How does phishing work?</h3>
+    <p>Phishing succeeds by imitating trust. Victims receive messages that seem urgent or emotionally persuasive, asking them to click links or enter personal information on fake sites that look real</p>
+    <p>Tactics include:</p>
+<ul>
+        <li>Fear ("Your account will be locked!"),</li>
+        <li>Curiosity ("You've won a prize!"),</li>
+        <li>Urgency ("Update your details now!"),</li>
+        <li>Or impersonation of trusted individuals or brands.</li>
+    </ul>
+    <p>Some phishing campaigns even target specific people (known as spear phishing) using custom messages.
+
+
+It only takes one mistake to let attackers in — that's why it's critical to  <a href="https://www.cisco.com/c/dam/en_us/about/doing_business/trust-center/docs/phishing-program-infographic.pdf"> Think Before You Click.</a> (You can click that link, as it has important phishing stats and information.)</p>
+
+
+<h3 class="mt-4 mb-3">Who are the targets of phishing?</h3>
+    <p>Everyone is a potential target. Phishing attackers usually don't pick specific people—they send out mass emails or messages hoping that even a few recipients will fall for the scam.
+
+
+Because of this broad targeting, it's essential that all users are educated through security awareness training. Knowing what phishing looks like—and how to respond—can make a huge difference in preventing security breaches.</p>
+ 
+<h3 class="mt-4 mb-3">Why are phishing so effective?</h3>
+<p>Phishing works so well because it preys on human behavior. It takes advantage of:</p>
+    <ul>
+        <li>Our tendency to trust people or messages that look official,</li>
+        <li>Our curiosity about unexpected emails,</li>
+        <li>And our impulsive responses to messages that seem urgent or emotional.</li>
+    </ul>
+    <p>On top of that, phishing is cheap and easy for attackers to launch:</p>
+    <ul>
+        <li>Bulk email lists are easy to buy.</li>
+        <li>Phishing kits (ready-made scam tools) are available on the dark web.</li>
+        <li>Sending emails costs almost nothing.</li>
+        <li>The risks for the attacker are low—but the damage to the victim can be huge.</li>
+    </ul>
+ <p>That's why staying alert and thinking critically before clicking links or opening attachments is one of your best defenses.</p>
+
+
+    ---
+   
+    <div class="lesson-title p-3 rounded-4 mb-4 mt-4 text-center fw-bold">Lesson 2: Dangers of phishing - What can happen when you are phished? </div>
+    <p>Phishing can have serious consequences for individuals and organizations.</p>
+    <p class="fw-bold">For Individual:</p>
+     <ul>
+        <li>Bank funds may be stolen</li>
+        <li>Unauthorized charges may appear on your credit cards</li>
+        <li>You could lose access to important files and photos</li>
+        <li>Hackers might take over your social media</li>
+        <li>Criminals could impersonate you and target your family or friends</li>
+    </ul>
+     <p class="fw-bold">For organizations:</p>
+     <ul>
+        <li>Loss of company funds</li>
+        <li>Leakage of personal data belonging to clients, partners, or staff</li>
+        <li>Disruption of operations due to locked files or systems</li>
+        <li>Damage to company reputation and trust</li>
+       
+    </ul>
+    <h3 class="mt-4 mb-3">Phishing Awareness & Prevention</h3>
+    <p>Phishing attacks evolve quickly, so it's important to stay informed.</p>
+    <p class="fw-bold">What your organization should do:</p>
+    <ul>
+        <li>Use email filters and security software</li>
+        <li>Train employees regularly to spot and report phishing</li>
+        <li>Run phishing simulations to test alertness</li>
+    </ul>
+    <p class="fw-bold">Personal safety tips:</p>
+    <ul>
+        <li>Don't click on suspicious email links or attachments</li>
+        <li>Keep software and browsers updated</li>
+        <li>Don't share sensitive information through email or unfamiliar websites</li>
+        <li>Be cautious with emotional or urgent messages</li>
+        <li>Regularly review your accounts for suspicious activity</li>
+    </ul>
+
+
+ 
+
+
+    ---
+<p>Source: Adapted from the Cisco. (n.d.).<a href="https://www.cisco.com/site/us/en/learn/topics/security/what-is-phishing.html"> What is phishing?</a></p>
+
+
+    <div id="quiz-lesson1" class="quiz-section rounded-4 p-4 mt-5 shadow-sm">
+        <h2 class="text-center mb-4">Quick Check: Sender Smarts 🧠</h2>
+        <div id="quiz1-question-1">
+            <p class="question fw-bold">Question 1: What is phishing?</p>
+            <div class="choices mb-3">
+                <button class="btn btn-outline-primary w-100 text-start mb-2" onclick="checkAnswer1(1, 'wrong', this)">A) Sending jokes to friends by email</button>
+                <button class="btn btn-outline-primary w-100 text-start mb-2" onclick="checkAnswer1(1, 'correct', this)">B) Sending fraudulent messages pretending to be from trusted sources</button>
+                <button class="btn btn-outline-primary w-100 text-start" onclick="checkAnswer1(1, 'wrong', this)">C) Using strong passwords to protect emails.</button>
+                <button class="btn btn-outline-primary w-100 text-start" onclick="checkAnswer1(1, 'wrong', this)">D) Making calls to verify email accounts</button>
+            </div>
+            <div id="feedback1-1" class="feedback"></div>
+            <div class="text-center mt-3">
+                <button id="next-btn1-1" class="next-question-btn btn" onclick="showNextQuestion1(2)">Next Question</button>
+            </div>
+        </div>
+        <div id="quiz1-question-2" style="display:none;">
+            <p class="question fw-bold">Question 2:  Which of the following is a sign of a phishing email?</p>
+            <div class="choices mb-3">
+                <button class="btn btn-outline-primary w-100 text-start mb-2" onclick="checkAnswer1(2, 'wrong', this)">A) It comes from a known contact and has a polite tone. </button>
+                <button class="btn btn-outline-primary w-100 text-start mb-2" onclick="checkAnswer1(2, 'correct', this)">B) It contains urgent language and unexpected attachments.</button>
+                <button class="btn btn-outline-primary w-100 text-start" onclick="checkAnswer1(2, 'wrong', this)">C) It uses correct spelling and grammar.</button>
+                <button class="btn btn-outline-primary w-100 text-start" onclick="checkAnswer1(2, 'wrong', this)">D) It has your full name and address in it.</button>
+            </div>
+            <div id="feedback1-2" class="feedback"></div>
+            <div class="text-center mt-3">
+                <button id="next-btn1-2" class="next-question-btn btn" onclick="showNextQuestion1(3)">Next Question</button>
+            </div>
+        </div>
+        <div id="quiz1-question-3" style="display:none;">
+            <p class="question fw-bold">Question 3:  What can happen if you click on a phishing link or download a malicious file?</p>
+            <div class="choices mb-3">
+                <button class="btn btn-outline-primary w-100 text-start mb-2" onclick="checkAnswer1(3, 'wrong', this)">A) Your device gets faster. </button>
+                <button class="btn btn-outline-primary w-100 text-start mb-2" onclick="checkAnswer1(3, 'wrong', this)">B) You unlock bonus software.</button>
+                <button class="btn btn-outline-primary w-100 text-start" onclick="checkAnswer1(3, 'correct', this)">C) Your system can be infected or compromised.</button>
+                <button class="btn btn-outline-primary w-100 text-start" onclick="checkAnswer1(3, 'wrong', this)">D) Nothing – it's just a link.</button>
+            </div>
+            <div id="feedback1-3" class="feedback"></div>
+            <div class="text-center mt-3">
+                <button id="next-btn1-3" class="next-question-btn btn" onclick="showNextQuestion1(4)">Next Question</button>
+            </div>
+        </div>
+        <div id="quiz1-question-4" style="display:none;">
+            <p class="question fw-bold">Question 4: Why are phishing attacks so successful?</p>
+            <div class="choices mb-3">
+                <button class="btn btn-outline-primary w-100 text-start mb-2" onclick="checkAnswer1(4, 'wrong', this)">A) They are sent only to technical users</button>
+                <button class="btn btn-outline-primary w-100 text-start mb-2" onclick="checkAnswer1(4, 'wrong', this)">B) They take months to plan</button>
+                <button class="btn btn-outline-primary w-100 text-start" onclick="checkAnswer1(4, 'correct', this)">C) They exploit human emotions like fear and curiosity</button>
+                <button class="btn btn-outline-primary w-100 text-start" onclick="checkAnswer1(4, 'wrong', this)">D) They only target large corporations</button>
+            </div>
+             <div id="feedback1-4" class="feedback"></div>
+            <div class="text-center mt-3">
+                <button id="next-btn1-4" class="next-question-btn btn" onclick="showNextQuestion1(5)">Next Question</button>
+            </div>
+        </div>
+        <div id="quiz1-question-5" style="display:none;">
+            <p class="question fw-bold">Question 5: Who is most likely to be targeted by phishing?</p>
+            <div class="choices mb-3">
+                <button class="btn btn-outline-primary w-100 text-start mb-2" onclick="checkAnswer1(5, 'wrong', this)">A) Only IT administrators</button>
+                <button class="btn btn-outline-primary w-100 text-start mb-2" onclick="checkAnswer1(5, 'correct', this)">B) Anyone with an email or phone number</button>
+                <button class="btn btn-outline-primary w-100 text-start" onclick="checkAnswer1(5, 'wrong', this)">C) Just people who use online banking</button>
+                <button class="btn btn-outline-primary w-100 text-start" onclick="checkAnswer1(5, 'wrong', this)">D)  Gamers and students only</button>
+            </div>
+             <div id="feedback1-5" class="feedback"></div>
+            <div class="text-center mt-3">
+                <button id="next-btn1-5" class="next-question-btn btn" onclick="showNextQuestion1(6)">Next Question</button>
+            </div>
+        </div>
+          <div id="quiz1-question-6" style="display:none;">
+            <p class="question fw-bold">Question 6: What should you do if you suspect an email is a phishing attempt?</p>
+            <div class="choices mb-3">
+                <button class="btn btn-outline-primary w-100 text-start mb-2" onclick="checkAnswer1(6, 'wrong', this)">A) Reply and ask if it's legit</button>
+                <button class="btn btn-outline-primary w-100 text-start mb-2" onclick="checkAnswer1(6, 'wrong', this)">B) Forward it to coworkers to get opinions </button>
+                <button class="btn btn-outline-primary w-100 text-start" onclick="checkAnswer1(6, 'correct', this)">C) Report it to your IT/security team</button>
+                <button class="btn btn-outline-primary w-100 text-start" onclick="checkAnswer1(6, 'wrong', this)">D) Delete it and forget about it</button>
+            </div>
+             <div id="feedback1-6" class="feedback"></div>
+            <div class="text-center mt-3">
+                <button id="next-btn1-6" class="next-question-btn btn" onclick="showNextQuestion1(7)">Next Question</button>
+            </div>
+        </div>
+         <div id="quiz1-question-7" style="display:none;">
+            <p class="question fw-bold">Question 7: Which is a personal risk of being phished?</p>
+            <div class="choices mb-3">
+                <button class="btn btn-outline-primary w-100 text-start mb-2" onclick="checkAnswer1(7, 'wrong', this)">A) Getting more followers on social media</button>
+                <button class="btn btn-outline-primary w-100 text-start mb-2" onclick="checkAnswer1(7, 'wrong', this)">B) Improved internet speed </button>
+                <button class="btn btn-outline-primary w-100 text-start" onclick="checkAnswer1(7, 'correct', this)">C) Unauthorized charges or stolen identity</button>
+                <button class="btn btn-outline-primary w-100 text-start" onclick="checkAnswer1(7, 'wrong', this)">D) Automatic updates for apps</button>
+            </div>
+             <div id="feedback1-7" class="feedback"></div>
+            <div class="text-center mt-3">
+                <button id="next-btn1-7" class="next-question-btn btn" onclick="showNextQuestion1(8)">Next Question</button>
+            </div>
+        </div>
+          <div id="quiz1-question-8" style="display:none;">
+            <p class="question fw-bold">Question 8: What is one good defense against phishing?</p>
+            <div class="choices mb-3">
+                <button class="btn btn-outline-primary w-100 text-start mb-2" onclick="checkAnswer1(8, 'wrong', this)">A) Posting your contact info publicly</button>
+                <button class="btn btn-outline-primary w-100 text-start mb-2" onclick="checkAnswer1(8, 'wrong', this)">B) Ignoring all your emails </button>
+                <button class="btn btn-outline-primary w-100 text-start" onclick="checkAnswer1(8, 'wrong', this)">C) Using outdated antivirus software</button>
+                <button class="btn btn-outline-primary w-100 text-start" onclick="checkAnswer1(8, 'correct', this)">D)  Multi-layered security and user training</button>
+            </div>
+             <div id="feedback1-8" class="feedback"></div>
+            <div class="text-center mt-3">
+                <button id="next-btn1-8" class="next-question-btn btn" onclick="showNextQuestion1(9)">Next Question</button>
+            </div>
+        </div>
+         <div id="quiz1-question-9" style="display:none;">
+            <p class="question fw-bold">Question 9: Why do attackers use natural disasters or health scares in phishing scams?</p>
+            <div class="choices mb-3">
+                <button class="btn btn-outline-primary w-100 text-start mb-2" onclick="checkAnswer1(9, 'wrong', this)">A) To calm people down</button>
+                <button class="btn btn-outline-primary w-100 text-start mb-2" onclick="checkAnswer1(9, 'wrong', this)">B) To promote public safety </button>
+                <button class="btn btn-outline-primary w-100 text-start" onclick="checkAnswer1(9, 'correct', this)">C) To take advantage of distracted or emotional users</button>
+                <button class="btn btn-outline-primary w-100 text-start" onclick="checkAnswer1(9, 'wrong', this)">D)  To spread helpful alerts</button>
+            </div>
+             <div id="feedback1-9" class="feedback"></div>
+            <div class="text-center mt-3">
+                <button id="next-btn1-9" class="next-question-btn btn" onclick="showNextQuestion1(10)">Next Question</button>
+            </div>
+        </div>
+        <div id="quiz1-question-10" style="display:none;">
+            <p class="question fw-bold">Question 10:  What should you avoid doing when reading a suspicious email?</p>
+            <div class="choices mb-3">
+                <button class="btn btn-outline-primary w-100 text-start mb-2" onclick="checkAnswer1(10, 'wrong', this)">A) Hovering over links to inspect them</button>
+                <button class="btn btn-outline-primary w-100 text-start mb-2" onclick="checkAnswer1(10, 'correct', this)">B) Clicking unknown attachments </button>
+                <button class="btn btn-outline-primary w-100 text-start" onclick="checkAnswer1(10, 'wrong', this)">C) Reporting it as phishing</button>
+                <button class="btn btn-outline-primary w-100 text-start" onclick="checkAnswer1(10, 'wrong', this)">D) Verifying sender information</button>
+            </div>
+            <div id="feedback1-10" class="feedback"></div>
+            <div class="text-center mt-3">
+                <button id="next-btn1-10" class="next-lesson-btn btn" onclick="completeLessonAndRedirect1()">Next Lesson</button>
+            </div>
+        <div class="quiz-clear"></div>
+    </div>
+
+
+    <button onclick="scrollToTop()" id="scrollTopBtn" class="btn btn-primary">
+        <i class="bi bi-arrow-up-circle-fill"></i>
+    </button>
+
+
+    <a href="{% url 'assessment' %}" class="btn btn-secondary mt-4">← Back to Assessment</a>
+
+
+    <a href="/assessment/understanding-phishing-modern-cyber-threat/" class="btn btn-primary mt-4">Go to Assessment: Understanding Phishing - A Modern Cyber Threat</a>
+
+
+</div>
+
+
+<script>
+    // Functions for quiz logic (kept as is)
+    function checkAnswer1(questionNum, type, button) {
+        const feedbackDiv = document.getElementById(`feedback1-${questionNum}`);
+        const nextButton = document.getElementById(`next-btn1-${questionNum}`);
+        const choicesDiv = button.closest('.choices');
+        Array.from(choicesDiv.children).forEach(btn => {
+            btn.disabled = true;
+            btn.style.opacity = '0.7';
+            btn.style.cursor = 'default';
+            if (btn === button) {
+                if (type === 'correct') {
+                    btn.classList.add('btn-success');
+                    btn.classList.remove('btn-outline-primary');
+                } else {
+                    btn.classList.add('btn-danger');
+                    btn.classList.remove('btn-outline-primary');
+                }
+            }
+        });
+        if (type === 'correct') {
+            feedbackDiv.textContent = feedbackCorrect[questionNum] || "Correct!";
+            feedbackDiv.classList.add('correct');
+            feedbackDiv.classList.remove('wrong');
+        } else {
+            feedbackDiv.textContent = feedbackWrong[questionNum] || "Not quite. Try again!";
+            feedbackDiv.classList.add('wrong');
+            feedbackDiv.classList.remove('correct');
+        }
+        feedbackDiv.style.display = 'block';
+        nextButton.style.display = 'block';
+    }
+
+
+    function showNextQuestion1(questionNum) {
+        document.getElementById(`quiz1-question-${questionNum - 1}`).style.display = 'none';
+        document.getElementById(`quiz1-question-${questionNum}`).style.display = 'block';
+        // Reset the next question when shown
+        resetQuiz(`quiz1-question-${questionNum}`, `feedback1-${questionNum}`, `next-btn1-${questionNum}`);
+    }
+
+
+    function completeLessonAndRedirect1() {
+        fetch("{{ lesson_urls.email_phishing_basics }}", {
+            method: "POST",
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: ''
+        }).finally(function() {
+            window.location.assign('{{ lesson_urls.suspicious_urls_domains|escapejs }}');
+        });
+    }
+
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+
+    function resetQuiz(questionId, feedbackId, nextBtnId) {
+        const questionDiv = document.getElementById(questionId);
+        const feedbackDiv = document.getElementById(feedbackId);
+        const nextButton = document.getElementById(nextBtnId);
+        const choicesDiv = questionDiv.querySelector('.choices');
+        Array.from(choicesDiv.children).forEach(btn => {
+            btn.disabled = false;
+            btn.style.opacity = '1';
+            btn.style.cursor = 'pointer';
+            btn.classList.remove('btn-success', 'btn-danger'); // Remove previous answer colors
+            btn.classList.add('btn-outline-primary'); // Add back default button style
+        });
+        feedbackDiv.style.display = 'none';
+        nextButton.style.display = 'none';
+        feedbackDiv.classList.remove('correct', 'wrong');
+    }
+
+
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('lesson1-content').style.display = 'block';
+        document.getElementById('quiz-lesson1').style.display = 'block';
+        resetQuiz('quiz1-question-1', 'feedback1-1', 'next-btn1-1');
+        resetQuiz('quiz1-question-2', 'feedback1-2', 'next-btn1-2');
+        document.getElementById('quiz1-question-1').style.display = 'block';
+        document.getElementById('quiz1-question-2').style.display = 'none';
+
+
+        // Initial check for scroll button visibility on load
+        const scrollBtn = document.getElementById("scrollTopBtn");
+        window.addEventListener("scroll", function () {
+            if (window.scrollY > window.innerHeight / 2) {
+                scrollBtn.style.display = "flex"; // Use flex to center icon
+            } else {
+                scrollBtn.style.display = "none";
+            }
+        });
+    });
+
+
+    function scrollToTop() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+
+    const feedbackCorrect = {
+        1: "Correct! Phishing is sending fraudulent messages pretending to be from trusted sources.",
+        2: "Great job! Urgent language and unexpected attachments are classic phishing signs.",
+        3: "Right! Clicking phishing links or files can infect or compromise your system.",
+        4: "Exactly! Phishing exploits human emotions like fear and curiosity.",
+        5: "Correct! Anyone with an email or phone number can be targeted.",
+        6: "Well done! Always report suspicious emails to your IT/security team.",
+        7: "Correct! Phishing can lead to unauthorized charges or stolen identity.",
+        8: "Right! Multi-layered security and user training are strong defenses.",
+        9: "Correct! Attackers exploit distracted or emotional users during crises.",
+        10: "Exactly! Never click unknown attachments in suspicious emails."
+    };
+
+
+    const feedbackWrong = {
+        1: "Not quite. Review what phishing means and try again!",
+        2: "Nope. Look for urgency and unexpected attachments in phishing emails.",
+        3: "Not correct. Phishing links or files can harm your device.",
+        4: "No. Phishing works because it manipulates human emotions.",
+        5: "Incorrect. Phishing targets are not limited to certain groups.",
+        6: "No. The best action is to report suspicious emails.",
+        7: "Not right. Phishing can cause financial or identity loss.",
+        8: "Nope. The best defense is layered security and awareness.",
+        9: "Not quite. Attackers use crises to trick distracted users.",
+        10: "No. Avoid clicking unknown attachments in suspicious emails."
+    };
+</script>
+{% endblock %}

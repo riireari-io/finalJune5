@@ -1,0 +1,804 @@
+{% extends "base.html" %}
+
+{% block title %}Triton's Trident{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+
+<style>
+    /* Reset & Base */
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    html {
+        font-size: 16px;
+        scroll-behavior: smooth;
+    }
+
+    /* NEW Design Styles (from second code block) */
+    body {
+        background-color: #0d1a26;
+        color: #e0e0e0; /* Light text for contrast */
+        font-family: 'Segoe UI', 'Arial', sans-serif; /* Changed to Segoe UI for a more modern feel, consistent with new design */
+        overflow-x: hidden;
+    }
+
+    /* General text color remapping for elements using Bootstrap's "primary" or "success" */
+    /* Re-mapped primary and success to a consistent blue accent */
+    .text-primary,
+    h1.text-primary,
+    h2.text-primary,
+    h5.text-primary,
+    strong.text-primary {
+        color: #1a75ff !important; /* Consistent blue accent */
+    }
+
+    .text-success {
+        color: #1a75ff !important; /* Re-mapping Bootstrap's text-success to the blue accent */
+    }
+
+    .text-danger {
+        color: #dc3545 !important; /* Standard danger red */
+    }
+
+    /* --- Glassmorphism Styles (from second code block, adapted) --- */
+    /* Applied to the main content areas */
+    .glass-container {
+        background-color: rgba(255, 255, 255, 0.08); /* Semi-transparent white */
+        border-radius: 15px;
+        backdrop-filter: blur(10px); /* Frosted glass effect */
+        -webkit-backdrop-filter: blur(10px); /* Safari support */
+        border: 1px solid rgba(255, 255, 255, 0.15); /* Subtle white border */
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); /* Enhanced shadow for depth */
+        padding: 40px; /* Ensure sufficient padding */
+        box-sizing: border-box; /* Include padding and border */
+    }
+
+    .main-glass { /* This was used for the larger, centralized blocks in the second design */
+        background: #122233; /* Darker background for main content blocks */
+        border-radius: 22px;
+        box-shadow: 0 8px 32px 0 rgba(0,0,0,0.37);
+        border: 1px solid rgba(26,117,255,0.12);
+        padding: 48px 48px 32px 48px;
+        margin: 48px auto; /* Centered with auto margins */
+        max-width: 90vw;
+        width: 90vw; /* Adjust for responsiveness */
+    }
+
+    /* Glass Card styles (from second code block, adapted for dashboard-card) */
+    .dashboard-card { /* Renamed from glass-card to integrate with existing structure */
+        background: rgba(26, 117, 255, 0.07); /* Semi-transparent blue for cards */
+        border-radius: 15px;
+        border: 1px solid rgba(26,117,255,0.08);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.18);
+        color: #e0e0e0;
+        padding: 32px 24px;
+        margin-bottom: 24px; /* Ensure spacing between cards */
+        transition: box-shadow 0.2s, transform 0.2s; /* Hover effects */
+        word-break: break-word;
+        white-space: pre-line;
+        min-width: 220px;
+        max-width: 100%;
+        flex: 1 1 280px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .dashboard-card:hover {
+        box-shadow: 0 0 40px 10px #1a75ffcc, 0 0 80px 20px #ffffff33, 0 8px 32px 0 rgba(0,0,0,0.5);
+        transform: translateY(-6px) scale(1.02);
+        border-color: #1a75ff;
+    }
+
+    .dashboard-card h5, .dashboard-card strong.text-primary {
+        word-break: break-word;
+        white-space: pre-line;
+        width: 100%;
+    }
+
+    .dashboard-card p {
+        color: #b7d6ff; /* Lighter blue for card paragraph text */
+        font-size: 1.05em;
+        word-break: break-word;
+        white-space: pre-line;
+        width: 100%;
+    }
+
+    /* Progress bar styling */
+    .progress {
+        background-color: rgba(255,255,255,0.08);
+        border: 1px solid rgba(26,117,255,0.15);
+        height: 24px;
+        border-radius: 12px;
+    }
+
+    .progress-bar {
+        background-color: #1a75ff !important;
+        font-weight: 600;
+    }
+
+    /* Heading styles */
+    h1, h2, h5 {
+        font-family: 'Segoe UI', 'Arial', sans-serif !important;
+        font-weight: 800;
+        letter-spacing: -1px;
+        display: flex;
+        align-items: center;
+        gap: 0.5em;
+    }
+    h1 {
+        font-size: 2.8rem; /* Adjusted for overall page hierarchy */
+        color: #eaf6ff;
+        margin-bottom: 2rem;
+    }
+    h2 {
+        font-size: 2rem;
+        color: #90caff;
+        margin-bottom: 1.5rem;
+    }
+    h5 {
+        font-size: 1.3rem;
+        color: #1a75ff !important;
+        margin-bottom: 1rem;
+    }
+
+    /* Layout Containers - Merging concepts */
+    .main-container {
+        display: flex;
+        flex-direction: row;
+        position: relative;
+        min-height: 90vh;
+        padding-left: 0; /* Remove sidebar offset */
+        padding-right: 60px;
+        padding-top: 60px;
+        padding-bottom: 130px;
+    }
+
+    .logo-sidebar {
+        z-index: 10;
+        /* Remove position: fixed, top, left, height: 100% */
+        position: static;
+        width: 200px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        padding: 30px 0;
+        background-color: #0d1a26;
+        border-right: 1px solid rgba(26,117,255,0.1);
+    }
+
+    .logo-sidebar .logo {
+         z-index: 10;
+        font-size: 2.5em;
+        font-weight: bold;
+        color: #fff;
+        writing-mode: vertical-lr;
+        text-orientation: mixed;
+        transform: rotate(180deg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 50%;
+    }
+
+    .social-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+        height: 50%;
+        justify-content: flex-end;
+        padding-bottom: 30px;
+    }
+
+    .social-section h6 {
+        writing-mode: vertical-lr;
+        text-orientation: mixed;
+        transform: rotate(180deg);
+        color: #b0b0b0;
+        font-weight: normal;
+        margin-bottom: 15px;
+        font-size: 1.1em;
+    }
+
+    .social-section a {
+        color: #e0e0e0;
+        font-size: 1.8em;
+        transition: color 0.3s ease;
+    }
+
+    .social-section a:hover {
+        color: #1a75ff; /* Blue accent */
+    }
+
+    .transform-button {
+        position: absolute;
+        left: calc(200px + 30px); /* Position next to the sidebar */
+        bottom: 30px;
+        padding: 20px 35px;
+        background-color: #1a75ff; /* Blue accent */
+        color: #fff;
+        text-decoration: none;
+        border-radius: 35px;
+        font-weight: bold;
+        font-size: 1.2em;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        transition: background-color 0.3s ease, left 0.3s ease;
+        z-index: 10;
+    }
+
+    .transform-button:hover {
+        background-color: #0056b3; /* Darker blue on hover */
+    }
+
+    .transform-button i {
+        font-size: 1.5em;
+    }
+
+    .hero-section {
+        display: flex;
+        flex: 1;
+        justify-content: space-between;
+        align-items: center;
+        gap: 80px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .hero-text {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 1rem;
+        max-width: 700px;
+        flex: 2;
+    }
+
+    .hero-text h1 {
+        font-size: 6.5em;
+        font-weight: bold;
+        color: #fff;
+        line-height: 0.9;
+        margin-bottom: 30px;
+    }
+
+    .hero-text p {
+        font-size: 1.4em;
+        line-height: 1.7;
+        color: #b0b0b0;
+    }
+
+    .hero-visual {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        min-height: 500px;
+    }
+
+    .abstract-shape-1 {
+        position: absolute;
+        width: 400px;
+        height: 400px;
+        background: linear-gradient(135deg, #1e90ff, #87ceeb);
+        border-radius: 50%;
+        opacity: 0.7;
+        filter: blur(70px);
+        animation: pulse 4s infinite alternate;
+        z-index: 0;
+    }
+
+    .abstract-shape-2 {
+        position: absolute;
+        width: 350px;
+        height: 350px;
+        background: linear-gradient(45deg, #4682b4, #b0e0e6);
+        border-radius: 50%;
+        opacity: 0.6;
+        filter: blur(60px);
+        animation: pulse 5s infinite alternate-reverse;
+        top: 70px;
+        left: 70px;
+        z-index: 0;
+    }
+
+    .hero-visual .what-we-do {
+        background-color: rgba(0, 0, 0, 0.4);
+        border: 2px solid #1a75ff; /* Blue border */
+        border-radius: 20px;
+        padding: 40px;
+        max-width: 400px;
+        text-align: left;
+        position: relative;
+        z-index: 2;
+        /* Adding glassmorphism effect to the what-we-do card */
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+    }
+
+    .hero-visual .what-we-do h3 {
+        color: #1a75ff; /* Blue accent */
+        font-weight: bold;
+        margin-bottom: 20px;
+        font-size: 1.8em;
+    }
+
+    .hero-visual .what-we-do p {
+        font-size: 1.2em;
+        color: #b0b0b0;
+    }
+
+
+    /* Dashboard content (from new design, adapted to fit existing structure) */
+    .dashboard-section {
+        background-color: #1c2a38;
+        padding: 70px 0;
+        margin-top: 120px;
+    }
+
+    /* General text color remapping for elements using Bootstrap's "success" for green */
+    .btn-outline-success { /* Re-mapping Bootstrap's btn-outline-success to blue */
+        color: #1a75ff;
+        border-color: #1a75ff;
+    }
+    .btn-outline-success:hover {
+        background-color: #1a75ff;
+        color: #fff;
+    }
+
+    /* Bubbles animation */
+    .bubbles {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        overflow: hidden;
+        z-index: -1; /* Ensure it's behind other content */
+    }
+
+    .bubble {
+        position: absolute;
+        background-color: rgba(26, 117, 255, 0.3); /* Blue color for bubbles */
+        border-radius: 50%;
+        animation: floatAnimation 3s infinite linear;
+    }
+
+    @keyframes floatAnimation {
+        0% {
+            transform: translateY(0);
+            opacity: 0.8;
+        }
+        100% {
+            transform: translateY(-120vh);
+            opacity: 0;
+        }
+    }
+
+    @keyframes pulse {
+        0% {
+            transform: scale(0.9);
+            opacity: 0.7;
+        }
+        100% {
+            transform: scale(1.1);
+            opacity: 0.9;
+        }
+    }
+
+
+    /* --- RESPONSIVENESS --- */
+    @media (max-width: 992px) { /* Added breakpoint for main-glass padding */
+        .main-glass { padding: 30px 10px; }
+    }
+
+    @media (max-width: 768px) {
+        .main-container {
+            flex-direction: column;
+            padding: 2rem;
+            gap: 2rem;
+            padding-left: 2rem; /* Reset padding-left for mobile */
+            padding-right: 2rem; /* Ensure consistency */
+            padding-bottom: 2rem; /* Adjust as needed */
+        }
+
+        .logo-sidebar {
+            z-index: 10;
+            flex-direction: row;
+            width: 100%;
+            height: auto;
+            position: static;
+            justify-content: center;
+            padding: 1rem;
+            border-right: none; /* Remove border on mobile */
+            border-bottom: 1px solid rgba(26,117,255,0.1); /* Add bottom border */
+        }
+
+        .logo-sidebar .logo {
+             z-index: 10;
+            writing-mode: horizontal-tb;
+            transform: rotate(0);
+            font-size: 2rem;
+            height: auto;
+            margin-right: 1rem; /* Add some space if social section is hidden */
+        }
+        .social-section {
+            display: none; /* Hide social section on smaller screens for simplicity */
+        }
+
+        .transform-button {
+            position: relative;
+            left: auto;
+            bottom: auto;
+            margin: 1rem auto;
+            display: table;
+            font-size: 1.1em; /* Adjust button font size */
+            padding: 15px 30px;
+        }
+
+        .hero-section {
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .hero-text h1 {
+            font-size: 4rem;
+            text-align: center;
+        }
+
+        .hero-text p {
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        .hero-visual {
+            max-width: 20rem;
+            min-height: auto;
+        }
+        .hero-visual .what-we-do {
+            padding: 20px;
+        }
+        .hero-visual .what-we-do h3 {
+            font-size: 1.5em;
+        }
+        .hero-visual .what-we-do p {
+            font-size: 1em;
+        }
+
+
+        .abstract-shape-1 {
+            width: 10rem;
+            height: 10rem;
+            top: -2rem;
+            left: -2rem;
+            filter: blur(40px);
+        }
+
+        .abstract-shape-2 {
+            width: 7rem;
+            height: 7rem;
+            bottom: -2rem;
+            right: -2rem;
+            filter: blur(30px);
+        }
+
+        .dashboard-section {
+            padding: 40px 0;
+            margin-top: 40px;
+        }
+        .dashboard-card {
+            padding: 20px;
+        }
+        .dashboard-card h5,
+        .dashboard-card strong.text-success {
+            font-size: 1.2em;
+        }
+    }
+
+    @media (max-width: 576px) { /* Smaller mobile adjustments */
+        .main-glass { padding: 12px 2vw; }
+        h1, h2 { font-size: 1.2em; } /* Smaller headings for very small screens */
+        .hero-text h1 { font-size: 3rem; }
+
+        
+    }
+
+
+    @media (max-width: 480px) {
+        html {
+            font-size: 14px;
+        }
+
+        .hero-text h1 {
+            font-size: 3rem;
+        }
+
+        .abstract-shape-1,
+        .abstract-shape-2 {
+            display: none;
+        }
+
+        .transform-button {
+            font-size: 1em;
+            padding: 15px 25px;
+        }
+    }
+
+    @media (max-width: 320px) {
+        html {
+            font-size: 12px;
+        }
+
+        .hero-text h1 {
+            font-size: 2.25rem;
+        }
+        .transform-button {
+            font-size: 0.9em;
+            padding: 12px 20px;
+        }
+    }
+
+    .row.d-flex.justify-content-center.gap-3 {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        justify-content: center;
+        align-items: stretch;
+    }
+</style>
+
+<div class="main-container">
+    <div class="logo-sidebar">
+        <div class="logo">
+            PS <br>TRITON'S TRIDENT
+        </div>
+        <div class="social-section">
+            <h6>Phishing Simulation</h6>
+            </div>
+    </div>
+    
+    <div class="hero-section">
+        <div class="hero-text">
+            <h1>TRITONS <br>TRIDENT <br>ATTACKS.</h1>
+            <p>An interactive simulation to help you identify and defend against phishing attacks</p>
+        </div>
+        <div class="hero-visual">
+            <div class="abstract-shape-1"></div>
+            <div class="abstract-shape-2"></div>
+            <div class="what-we-do">
+                <h3>WHAT WE DO?</h3>
+                <p>Practice identifying suspicious emails in a realistic inbox simulation.</p>
+            </div>
+        </div>
+    </div>
+    <a href="{% url 'login' %}" class="transform-button">
+        Start Simulation <i class="fas fa-arrow-right"></i>
+    </a>
+</div>
+
+<div class="main-glass dashboard-section text-center py-5">
+    <div class="container">
+        <div class="mb-3 d-flex flex-column align-items-center justify-content-center">
+            <i class="bi bi-shield-lock-fill fa-3x text-primary" style="font-size: 3rem;"></i> 
+        </div>
+        <h1 class="font-weight-bold text-primary text-center w-100" style="display: flex; justify-content: center; align-items: center;">
+            Welcome to Triton's Trident
+        </h1> 
+        <p class="lead text-light text-center">An interactive simulation to help you identify and defend against phishing attacks</p>
+
+        {% if user.is_authenticated %}
+            <div class="container mt-3">
+                <br>
+                {% if user.is_superuser %}
+                    <a href="{% url 'services' %}" class="btn btn-outline-primary rounded-4 mb-4">Start Simulation</a> 
+                    <h3>Hello, Admin!</h3>
+                {% else %}
+                    <h3>Hello, {{ user.first_name }} {{ user.last_name }}!</h3>
+                {% endif %}
+                <h4 class="text-success">You're successfully logged in.</h4> <br>
+            </div>
+        {% else %}
+            <div class="container mt-4">
+                <br>
+                <h3>Welcome, Guest!</h3>
+                <h4 class="text-danger">Please log in to access your account.</h4>
+                <br>
+            </div>
+        {% endif %}
+
+        
+        </div>
+    </div>
+</div>
+
+<div class="container-lg pb-5 pt-5">
+    <div class="row text-dark d-flex justify-content-center gap-3"> 
+        <div class="col-md-3 mb-4 rounded-4 shadow p-4 dashboard-card">
+            <h5 id="edit-inbox-title"><i class="bi bi-envelope-open-fill"></i> {{ edit_inbox_title }}</h5> 
+            <p class="mb-0" id="edit-inbox-desc">{{ edit_inbox_desc }}</p>
+        </div>
+        <div class="col-md-3 mb-4 rounded-4 shadow p-4 dashboard-card">
+            <h5 id="edit-flag-title"><i class="bi bi-exclamation-triangle-fill text-warning"></i> {{ edit_flag_title }}</h5> 
+            <p class="mb-0" id="edit-flag-desc">{{ edit_flag_desc }}</p>
+        </div>
+        <div class="col-md-3 mb-4 rounded-4 shadow p-4 dashboard-card">
+            <h5 class="font-weight-bold" id="edit-perf-title"><i class="bi bi-graph-up-arrow"></i> {{ edit_perf_title }}</h5> 
+            <p class="mb-0" id="edit-perf-desc">{{ edit_perf_desc }}</p>
+        </div>
+    </div>
+</div>
+
+<div class="main-glass mt-5">
+    <h2 class="section-title" id="edit-why-title">
+        <i class="bi bi-question-circle-fill"></i>
+        {{ edit_why_title }}
+    </h2>
+    <p class="lead" id="edit-why-lead1">
+        <i class="bi bi-bar-chart-fill text-info"></i>
+        {{ edit_why_lead1 }}
+    </p>
+    <p class="lead" id="edit-why-lead2">
+        <i class="bi bi-shield-check text-success"></i>
+        {{ edit_why_lead2 }}
+    </p>
+    <p class="lead" id="edit-why-lead3">
+        <i class="bi bi-person-check-fill text-primary"></i>
+        {{ edit_why_lead3 }}
+    </p>
+    <div class="container pb-5">
+        <div class="row text-dark d-flex flex-row justify-content-center gap-4">
+            <div class="col-md-4 shadow rounded-4 p-4 dashboard-card">
+                <strong class="text-primary" id="edit-risk-title">{{ edit_risk_title }}</strong> 
+                <p class="mb-0" id="edit-risk-desc">{{ edit_risk_desc }}</p>
+            </div>
+            <div class="col-md-4 shadow rounded-4 p-4 dashboard-card">
+                <strong class="text-primary" id="edit-aware-title">{{ edit_aware_title }}</strong> 
+                <p class="mb-0" id="edit-aware-desc">{{ edit_aware_desc }}</p>
+            </div>
+        </div>
+    </div>
+    {% if user.is_superuser %}
+    <div class="text-end mt-2">
+        <button class="btn btn-outline-primary" onclick="editTextModal()">Edit Text</button>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Modal for editing text -->
+<div class="modal fade" id="editTextModal" tabindex="-1" aria-labelledby="editTextModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editTextModalLabel">Edit Section Text</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="editTextForm">
+          <div class="mb-3">
+            <label for="whyTrainTitle" class="form-label">Section Title</label>
+            <input type="text" class="form-control" id="whyTrainTitle" name="whyTrainTitle">
+          </div>
+          <div class="mb-3">
+            <label for="whyTrainLead1" class="form-label">Lead 1</label>
+            <input type="text" class="form-control" id="whyTrainLead1" name="whyTrainLead1">
+          </div>
+          <div class="mb-3">
+            <label for="whyTrainLead2" class="form-label">Lead 2</label>
+            <input type="text" class="form-control" id="whyTrainLead2" name="whyTrainLead2">
+          </div>
+          <div class="mb-3">
+            <label for="whyTrainLead3" class="form-label">Lead 3</label>
+            <input type="text" class="form-control" id="whyTrainLead3" name="whyTrainLead3">
+          </div>
+          <div class="mb-3">
+            <label for="riskRealTitle" class="form-label">Risk Title</label>
+            <input type="text" class="form-control" id="riskRealTitle" name="riskRealTitle">
+          </div>
+          <div class="mb-3">
+            <label for="riskRealDesc" class="form-label">Risk Description</label>
+            <input type="text" class="form-control" id="riskRealDesc" name="riskRealDesc">
+          </div>
+          <div class="mb-3">
+            <label for="awarenessTitle" class="form-label">Awareness Title</label>
+            <input type="text" class="form-control" id="awarenessTitle" name="awarenessTitle">
+          </div>
+          <div class="mb-3">
+            <label for="awarenessDesc" class="form-label">Awareness Description</label>
+            <input type="text" class="form-control" id="awarenessDesc" name="awarenessDesc">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="saveTextEdits()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function editTextModal() {
+    document.getElementById('whyTrainTitle').value = document.getElementById('why-train-title').innerText;
+    document.getElementById('whyTrainLead1').value = document.getElementById('why-train-lead-1').innerText;
+    document.getElementById('whyTrainLead2').value = document.getElementById('why-train-lead-2').innerText;
+    document.getElementById('whyTrainLead3').value = document.getElementById('why-train-lead-3').innerText;
+    document.getElementById('riskRealTitle').value = document.getElementById('risk-real-title').innerText;
+    document.getElementById('riskRealDesc').value = document.getElementById('risk-real-desc').innerText;
+    document.getElementById('awarenessTitle').value = document.getElementById('awareness-title').innerText;
+    document.getElementById('awarenessDesc').value = document.getElementById('awareness-desc').innerText;
+    var modal = new bootstrap.Modal(document.getElementById('editTextModal'));
+    modal.show();
+}
+function saveTextEdits() {
+    const data = {
+        whyTrainTitle: document.getElementById('whyTrainTitle').value,
+        whyTrainLead1: document.getElementById('whyTrainLead1').value,
+        whyTrainLead2: document.getElementById('whyTrainLead2').value,
+        whyTrainLead3: document.getElementById('whyTrainLead3').value,
+        riskRealTitle: document.getElementById('riskRealTitle').value,
+        riskRealDesc: document.getElementById('riskRealDesc').value,
+        awarenessTitle: document.getElementById('awarenessTitle').value,
+        awarenessDesc: document.getElementById('awarenessDesc').value
+    };
+    fetch('{% url "admin_home" %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Failed to save.');
+        }
+    });
+}
+</script>
+
+<div class="bubbles"></div>
+<script>
+    // Bubbles script
+    const bubblesContainer = document.querySelector('.bubbles');
+    function createBubble() {
+        const bubble = document.createElement('div');
+        bubble.classList.add('bubble');
+        const size = Math.random() * 20 + 10;
+        bubble.style.width = `${size}px`;
+        bubble.style.height = `${size}px`;
+        bubble.style.left = `${Math.random() * 100}%`;
+        bubble.style.bottom = '-10px';
+        bubble.style.animationDuration = `${Math.random() * 3 + 2}s`;
+        bubblesContainer.appendChild(bubble);
+        bubble.addEventListener('animationend', () => {
+            bubble.remove();
+        });
+    }
+    for (let i = 0; i < 15; i++) {
+        setTimeout(createBubble, i * 200);
+    }
+    setInterval(createBubble, 1000);
+
+    // pageshow script (kept from original for compatibility)
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted) {
+            window.location.reload();
+        }
+    });
+</script>
+{% endblock %}

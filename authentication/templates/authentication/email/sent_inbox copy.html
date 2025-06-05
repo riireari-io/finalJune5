@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+{% block title %}Inbox{% endblock %}
+{% block content %}
+<div class="container mt-5 pt-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-10">
+            <ul class="nav nav-tabs mb-4" id="inboxTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="sent-tab" data-bs-toggle="tab" data-bs-target="#sent-tab-pane" type="button" role="tab">Sent Emails</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="reported-tab" data-bs-toggle="tab" data-bs-target="#reported-tab-pane" type="button" role="tab">Reported Emails</button>
+                </li>
+            </ul>
+            <div class="tab-content" id="inboxTabsContent">
+                <div class="tab-pane fade show active" id="sent-tab-pane" role="tabpanel">
+                    <div class="d-flex flex-column gap-3">
+                        {% if sent_emails %}
+                            <h2 class="text-center">📧 Inbox</h2>
+                            {% for email in sent_emails %}
+                            <div class="bg-white border shadow-sm rounded-4 p-3 d-flex flex-column flex-md-row align-items-md-center justify-content-between" style="min-height: 80px;">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex align-items-center mb-1">
+                                        <span class="fw-bold me-2" style="font-size:1.1rem;">{{ email.sender_name }}</span>
+                                    </div>
+                                    <div class="text-muted" style="font-size:1.05rem;">{{ email.subject }}</div>
+                                </div>
+                                <div class="d-flex flex-column align-items-end ms-md-3 mt-2 mt-md-0">
+                                    <span class="text-secondary" style="font-size:0.95rem;">{{ email.sent_at|date:"l, h:i A" }}</span>
+                                </div>
+                                <div class="mt-2 mt-md-0 ms-md-3 d-flex gap-2">
+                                    <a href="#" class="btn btn-outline-primary rounded-4">View</a>
+                                    <button type="button" class="btn btn-outline-danger rounded-4" data-bs-toggle="modal" data-bs-target="#reportModal{{ email.id }}">Report</button>
+                                </div>
+                            </div>
+
+                            <!-- Modal -->
+                            <div class="modal fade" id="reportModal{{ email.id }}" tabindex="-1" aria-labelledby="reportModalLabel{{ email.id }}" aria-hidden="true">
+                              <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                  <div class="modal-header">
+                                    <h5 class="modal-title" id="reportModalLabel{{ email.id }}">Your Account Security Alert - Action Required Immediately</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                  </div>
+                                  <div class="modal-body">
+                                    <div class="mb-2"><strong>From:</strong> {{ email.sender_name }} </div>
+                                    <div class="mb-2 text-secondary">{{ email.sent_at|date:"l, h:i A" }}</div>
+                                    <hr>
+                                    <div class="mb-2">{{ email.message|linebreaksbr }}</div>
+                                    <div class="mb-2">
+                                        <a href="#" class="text-primary">here</a> to confirm your account details and prevent any interruption to your service.
+                                    </div>
+                                    <div class="mb-2">Thank you for your cooperation,<br>{{ email.sender_name }}</div>
+                                    <div class="alert alert-warning mt-3">
+                                        <strong>⚠️ Phishing Red Flags</strong>
+                                        <ul class="mb-0">
+                                            <li>Misspelled sender email (Yes)</li>
+                                            <li>Creates false urgency with threat of account restriction</li>
+                                            <li>Generic greeting instead of using your name</li>
+                                            <li>Link doesn't show a legitimate domain</li>
+                                            <li>Requesting immediate action without detailed information about the suspicious activity</li>
+                                        </ul>
+                                    </div>
+                                    <form method="post" action="{% url 'report_sent_email' email.id %}">
+                                        {% csrf_token %}
+                                        <div class="mb-3">
+                                            <label for="reason{{ email.id }}" class="form-label">Reason for reporting:</label>
+                                            <input type="text" class="form-control" id="reason{{ email.id }}" name="reason" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="details{{ email.id }}" class="form-label">Details (optional):</label>
+                                            <textarea class="form-control" id="details{{ email.id }}" name="details" rows="3"></textarea>
+                                        </div>
+                                        <div class="d-flex gap-2">
+                                            <button type="submit" class="btn btn-danger flex-grow-1">Report Phishing</button>
+                                            <button type="button" class="btn btn-secondary flex-grow-1" data-bs-dismiss="modal">Mark as Read</button>
+                                        </div>
+                                    </form>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="alert alert-info text-center mb-0">No sent emails yet.</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="reported-tab-pane" role="tabpanel">
+                    <div class="d-flex flex-column gap-3">
+                        {% if reported_emails %}
+                            <h2 class="text-center">🚩 Reported Emails</h2>
+                            {% for report in reported_emails %}
+                            <div class="bg-white shadow-sm rounded-4 p-3 d-flex flex-column flex-md-row align-items-md-center justify-content-between"
+                                 style="min-height: 80px; border: 2px solid {% if not report.is_real %}#198754{% else %}#dc3545{% endif %}; background-color: {% if not report.is_real %}#e9fbe8{% else %}#fff5f5{% endif %};">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex align-items-center mb-1">
+                                        <span class="fw-bold me-2" style="font-size:1.1rem;">{{ report.sender_name }}</span>
+                                    </div>
+                                    <div class="text-muted" style="font-size:1.05rem;">{{ report.subject }}</div>
+                                    <div class="mb-1"><span class="fw-bold">To:</span> {{ report.receiver_email }}</div>
+                                    <div class="mb-1"><span class="fw-bold">Message:</span> <span>{{ report.message|linebreaksbr }}</span></div>
+                                    <div class="mb-1"><span class="fw-bold">Reason:</span> {{ report.reason }}</div>
+                                    {% if report.details %}
+                                    <div class="mb-1"><span class="fw-bold">Details:</span> {{ report.details }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="d-flex flex-column align-items-end ms-md-3 mt-2 mt-md-0">
+                                    <span class="text-secondary" style="font-size:0.95rem;">{{ report.reported_at|date:"l, h:i A" }}</span>
+                                    {% if not report.is_real %}
+                                        <span class="badge bg-success mt-2">Fake Email Reported</span>
+                                    {% else %}
+                                        <span class="badge bg-danger mt-2">Real Email Reported</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="alert alert-info text-center mb-0">No reported emails yet.</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted) {
+            window.location.reload();
+        }
+    });
+</script>
+{% endblock %}

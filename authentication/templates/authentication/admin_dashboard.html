@@ -1,0 +1,576 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block content %}
+<style id="admin-dashboard-style">
+    /* General body/base styles from the main design */
+    body {
+        background-color: #0d1a26;
+        color: #e0e0e0; /* Light text for contrast */
+        font-family: 'Arial', sans-serif;
+        overflow-x: hidden; /* Prevent horizontal scroll from accidental overflows */
+    }
+
+    /* Container adjustments to match main layout padding and for overall centering */
+    .container {
+        padding-left: 60px; /* Balanced with padding-right for desktop view */
+        padding-right: 60px;
+        padding-top: 60px;
+        padding-bottom: 60px; /* Adjust as needed */
+        max-width: none; /* Allow container to expand if needed for table */
+        display: flex; /* Use flexbox to center content */
+        flex-direction: column; /* Stack children vertically */
+        align-items: center; /* Center horizontally */
+    }
+
+    /* Admin Dashboard Specific Styles */
+    h1.text-primary {
+        font-family: 'Segoe UI', 'Arial', sans-serif !important;
+        font-weight: 800;
+        font-size: 2.7rem;
+        letter-spacing: -1px;
+        color: #1a75ff !important;
+        display: flex;
+        align-items: center;
+        gap: 0.5em;
+        margin-bottom: 2rem;
+        width: 100%; /* Ensure heading takes full width for centering */
+        text-align: center; /* Center the heading text */
+    }
+
+    @media (max-width: 768px) {
+        h1.text-primary {
+            font-size: 2rem;
+        }
+    }
+
+    /* Table Container for Horizontal Scrolling and Centering */
+    .table-responsive-custom {
+        overflow-x: auto; /* Enable horizontal scrolling for smaller screens */
+        -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+        padding-bottom: 1rem; /* Space for scrollbar */
+        width: 100%; /* Take full width of parent container */
+        max-width: 1600px; /* Limit the max width of the table itself for better control */
+        margin: 0 auto; /* Center the table if it doesn't take full width */
+    }
+
+    .admin-dashboard-header,
+    .admin-card-row {
+        display: grid;
+        /* Refined grid-template-columns for better alignment and spacing.
+           Values are relative fractions (fr) for flexibility.
+           User, Email, Phone, Role, Last Login, 3xCheckmarks, Progress, Reported
+           Adjusted last two columns for more space and distinct separation.
+        */
+        grid-template-columns: 1.2fr 2fr 1.5fr 1fr 1.5fr repeat(3, 0.8fr) 1.2fr 1.2fr; /* Slightly adjusted fractions */
+        gap: 1rem; /* Increased gap between columns for better visual separation */
+        padding: 1rem 1.5rem; /* Consistent padding for rows and header */
+        box-sizing: border-box; /* Include padding in element's total width */
+        min-width: 1200px; /* Increased min-width to accommodate more content on larger screens before horizontal scroll */
+    }
+
+    .admin-dashboard-header {
+        background: #1c2a38; /* Darker background for header */
+        color: #1a75ff; /* Blue accent for header text */
+        font-weight: bold;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Match card shadow */
+        border-radius: 15px; /* Match card border-radius */
+        border: 1px solid #334e68; /* Subtle border */
+        position: sticky; /* Make header sticky if needed */
+        top: 0; /* Align to top when sticky */
+        z-index: 10; /* Ensure header is above cards when scrolling */
+        margin-bottom: 1.2rem; /* Restore margin for header */
+
+        /* Align text within header columns */
+        text-align: left; /* Default for most */
+    }
+
+    /* Center specific header columns' text and content */
+    .admin-dashboard-header > div:nth-child(6), /* Email Phishing Basics Header */
+    .admin-dashboard-header > div:nth-child(7), /* Suspicious URLs & Domains Header */
+    .admin-dashboard-header > div:nth-child(8), /* Phishing Techniques Advance Header */
+    .admin-dashboard-header > div:nth-child(9), /* Progress Header */
+    .admin-dashboard-header > div:nth-child(10) { /* Reported Header */
+        text-align: center; /* Center the text */
+        display: flex; /* Use flexbox for robust centering of content */
+        justify-content: center; /* Center horizontally */
+        align-items: center; /* Center vertically */
+        flex-direction: column; /* Allow text to stack if needed */
+    }
+
+
+    .admin-card-row {
+        background: #0d1a26; /* Main card background */
+        color: #e0e0e0; /* Light text */
+        border-radius: 15px; /* Matched from dashboard-card */
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Matched from dashboard-card */
+        border: 1px solid #334e68; /* Matched from dashboard-card */
+        margin-bottom: 0.8rem; /* Slightly reduced margin for tighter rows */
+        transition: transform 0.2s ease-in-out; /* Smooth hover effect */
+        align-items: center; /* Ensure all items are vertically centered in the grid row */
+    }
+
+    .admin-card-row:hover {
+        transform: translateY(-3px); /* Subtle lift effect on hover */
+    }
+
+    .admin-card-col {
+        min-width: 0; /* Allows content to shrink beyond intrinsic size */
+        display: flex;
+        flex-direction: column; /* Default for most columns to stack label and value on mobile */
+        align-items: flex-start; /* Default alignment for text content (User, Email, Phone) */
+        word-break: break-word; /* Ensure text breaks within column */
+        overflow-wrap: break-word; /* Ensure text wraps within column */
+        white-space: normal; /* Allow normal wrapping */
+        height: 100%; /* Ensure it takes full height of the row for perfect vertical centering */
+        justify-content: center; /* Center content vertically */
+    }
+
+    /* Override flex-direction and alignment for specific columns that should be centered on desktop */
+    .admin-card-col:nth-child(6), /* Email Phishing Basics (checkmark/cross) */
+    .admin-card-col:nth-child(7), /* Suspicious URLs & Domains (checkmark/cross) */
+    .admin-card-col:nth-child(8) { /* Phishing Techniques Advance (checkmark/cross) */
+        flex-direction: row; /* Ensure checkmark is centered as a single item */
+        justify-content: center; /* Center horizontally */
+        align-items: center; /* Center vertically */
+    }
+
+    .admin-card-col:nth-child(9), /* Progress column */
+    .admin-card-col:nth-child(10) { /* Reported button column */
+        flex-direction: row; /* Ensure progress bar/button is centered as a single item */
+        justify-content: center; /* Center horizontally */
+        align-items: center; /* Center vertically */
+    }
+
+
+    .admin-card-label {
+        display: none; /* Hidden on desktop */
+        color: #b0b0b0; /* Lighter grey for labels */
+        font-size: 0.95em;
+        font-weight: normal; /* Less bold for labels */
+    }
+
+    .admin-card-col span {
+        color: #e0e0e0; /* Default text color for span inside card columns */
+    }
+
+    .admin-card-col .fw-bold {
+        color: #fff; /* White for important text like username */
+    }
+
+    /* Progress bar styling */
+    .progress {
+        background-color: #334e68; /* Darker background for the progress track */
+        border-radius: 10px; /* Slightly more rounded */
+        width: 100%; /* Ensure progress bar takes full available width in its column */
+        max-width: 100px; /* Constrain max-width for better spacing in grid */
+    }
+
+    .progress-bar {
+        background-color: #1a75ff !important; /* Blue accent for progress bar fill */
+    }
+
+    /* Badges (Check/Cross marks) */
+    .admin-card-badge {
+        font-size: 1.4em; /* Make check/cross marks slightly larger for visibility */
+        line-height: 1; /* Adjust line height to prevent extra space around check/cross */
+        /* To ensure the badge itself is a perfect circle or square, if applicable */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px; /* Fixed width */
+        height: 30px; /* Fixed height to ensure it's a square/circle */
+        padding: 0; /* Remove padding if added by Bootstrap for precise control */
+    }
+
+    .badge.bg-success {
+        background-color: #1a75ff !important; /* Blue for success/checkmarks */
+        color: #fff;
+        border-radius: 50%; /* Make it circular */
+    }
+
+    .badge.bg-secondary {
+        background-color: #334e68 !important; /* Darker grey for secondary/cross marks */
+        color: #e0e0e0;
+        border-radius: 50%; /* Make it circular */
+    }
+
+    /* Buttons */
+    .btn-outline-primary {
+        color: #1a75ff;
+        border-color: #1a75ff;
+        border-radius: 35px; /* More rounded like the main button */
+        font-weight: bold;
+        transition: background-color 0.3s ease, color 0.3s ease;
+        padding: 0.6rem 1.2rem; /* Adjusted padding for better button size */
+        white-space: nowrap; /* Prevent button text from wrapping */
+        min-width: 120px; /* Ensure button has a minimum width */
+    }
+
+    .btn-outline-primary:hover {
+        background-color: #1a75ff;
+        color: #fff;
+    }
+
+    /* Modal styling (kept as is, assuming it's working fine) */
+    .modal-content {
+        background-color: #0d1a26; /* Dark background */
+        color: #e0e0e0; /* Light text */
+        border: 1px solid #334e68;
+        border-radius: 15px;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-header {
+        border-bottom-color: #334e68; /* Darker border for header */
+    }
+
+    .modal-title {
+        color: #1a75ff; /* Blue accent for modal title */
+    }
+
+    .btn-close {
+        filter: invert(1); /* Invert color for visibility on dark background */
+    }
+
+    .nav-tabs {
+        border-bottom-color: #334e68;
+    }
+
+    .nav-tabs .nav-link {
+        color: #b0b0b0; /* Light grey for inactive tabs */
+        border-color: transparent;
+        transition: color 0.3s ease, border-color 0.3s ease;
+    }
+
+    .nav-tabs .nav-link.active {
+        color: #1a75ff; /* Blue accent for active tab */
+        background-color: #1c2a38; /* Slightly darker background for active tab */
+        border-color: #334e68 #334e68 #1c2a38; /* Match borders to background, bottom to active tab bg */
+    }
+
+    .nav-tabs .nav-link:hover:not(.active) {
+        color: #e0e0e0; /* Lighter on hover for inactive */
+        border-color: transparent;
+    }
+
+    .modal-body .card {
+        background-color: #1c2a38; /* Darker background for cards within modal */
+        border: 1px solid #334e68;
+        color: #e0e0e0;
+        border-radius: 10px;
+    }
+
+    .modal-body .card strong {
+        color: #1a75ff; /* Blue accent for strong text in modal cards */
+    }
+
+    .modal-body .badge.bg-danger {
+        background-color: #dc3545 !important; /* Keep Bootstrap red for danger */
+    }
+
+    .modal-body .badge.bg-success {
+        background-color: #1a75ff !important; /* Blue for success in modal cards */
+    }
+
+
+    /* --- Responsive Adjustments --- */
+    @media (max-width: 1400px) {
+        .container {
+            padding-left: 20px; /* Less padding on smaller screens */
+            padding-right: 20px;
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+
+        .table-responsive-custom {
+            overflow-x: auto; /* Ensure horizontal scrolling is active */
+            max-width: 100%; /* Allow it to take full width of container */
+            margin: 0; /* Remove auto margin */
+        }
+
+        /* Hide the grid header for smaller screens */
+        .admin-dashboard-header {
+            display: none !important;
+        }
+
+        .admin-card-row {
+            display: flex !important; /* Switch to flexbox for stacking */
+            flex-direction: column !important; /* Stack columns vertically */
+            align-items: flex-start !important; /* Align items to the left */
+            padding: 1.2rem 1rem !important;
+            gap: 0.5rem !important; /* Adjusted gap */
+            margin-bottom: 1rem; /* Slightly less margin */
+            min-width: unset; /* Reset min-width for mobile */
+        }
+
+        .admin-card-col {
+            width: 100% !important;
+            margin-bottom: 0.2rem !important; /* Reduced margin */
+            display: flex !important;
+            flex-direction: row !important; /* Keep content in row for labels */
+            align-items: center !important;
+            gap: 0.5rem !important;
+            /* Reset specific centering for stacked view */
+            justify-content: flex-start !important; /* Align everything to the start on mobile */
+            height: auto !important; /* Reset height for mobile */
+        }
+
+        /* For the checkmark/progress/button columns on mobile, ensure the actual content is still reasonably positioned
+           relative to its label, but the overall column starts at the left. */
+        .admin-card-col:nth-child(6),
+        .admin-card-col:nth-child(7),
+        .admin-card-col:nth-child(8),
+        .admin-card-col:nth-child(9),
+        .admin-card-col:nth-child(10) {
+            justify-content: flex-start !important; /* Explicitly align to start */
+        }
+
+        .admin-card-label {
+            display: inline-block !important; /* Show label on smaller screens */
+            min-width: 130px; /* Slightly wider to accommodate labels */
+            color: #b0b0b0;
+            font-size: 0.9em; /* Slightly smaller font for label */
+            font-weight: normal;
+            flex-shrink: 0; /* Prevent label from shrinking */
+        }
+
+        .admin-card-badge {
+            margin-left: 0; /* Remove margin-left on mobile to align with label */
+            font-size: 1em; /* Smaller badge on mobile */
+            width: 25px; /* Adjust badge size for mobile */
+            height: 25px;
+        }
+
+        /* Adjust progress bar in mobile view */
+        .admin-card-col .progress {
+            width: auto; /* Allow progress bar to adapt */
+            flex-grow: 1; /* Allow it to grow */
+            max-width: none; /* Remove max-width on mobile */
+        }
+    }
+
+    @media (max-width: 768px) {
+        h1.text-primary {
+            font-size: 2rem;
+        }
+        .admin-card-row {
+            padding: 1rem 0.8rem !important;
+        }
+        .admin-card-col {
+            flex-wrap: wrap; /* Allow items to wrap if content is long */
+            gap: 0.3rem !important;
+        }
+        .admin-card-label {
+            min-width: 100px;
+            font-size: 0.85em;
+        }
+        .btn-outline-primary {
+            font-size: 0.9em;
+            padding: 0.5rem 1rem;
+            min-width: unset; /* Remove min-width on very small screens */
+        }
+    }
+
+    @media (max-width: 480px) {
+        .container {
+            padding: 15px; /* Even less padding on very small screens */
+        }
+        .admin-card-row {
+            padding: 0.8rem 0.5rem !important; /* Further reduced padding */
+        }
+        .admin-card-label {
+            min-width: 80px;
+            font-size: 0.8em;
+        }
+    }
+
+</style>
+
+<div class="container py-5">
+    <h1 class="text-primary mb-4">
+        <i class="bi bi-speedometer2"></i>
+        Admin Dashboard
+        <a href="{% url 'admin_home' %}" class="btn btn-outline-primary ms-3 d-flex align-items-center" style="font-size: 1.1rem;">
+            <i class="bi bi-house-door-fill me-1"></i> Edit Home
+        </a>
+    </h1>
+    <div class="table-responsive-custom"> {# Added a wrapper for horizontal scrolling #}
+        <div class="admin-dashboard-header d-none d-md-grid">
+            <div>User</div>
+            <div>Email</div>
+            <div>Phone Number</div>
+            <div>Role</div>
+            <div>Last Login</div>
+            <div>Email Phishing Basics</div>
+            <div>Suspicious URLs & Domains</div>
+            <div>Phishing Techniques Advance</div>
+            <div>Progress</div>
+            <div>Reported</div>
+        </div>
+        {% for entry in user_progress %}
+        <div class="admin-card-row">
+            <div class="admin-card-col">
+                <span class="admin-card-label">User</span>
+                <span class="fw-bold">{% if entry.user.first_name or entry.user.last_name %}{{ entry.user.first_name }} {{ entry.user.last_name }}{% else %}{{ entry.user.email }}{% endif %}</span>
+            </div>
+            <div class="admin-card-col">
+                <span class="admin-card-label">Email</span>
+                <span>{{ entry.user.email }}</span>
+            </div>
+            <div class="admin-card-col">
+                <span class="admin-card-label">Phone Number</span>
+                <span>{{ entry.user.phone_number|default:'N/A' }}</span>
+            </div>
+            <div class="admin-card-col">
+                <span class="admin-card-label">Role</span>
+                <span>{% if entry.user.is_superuser %}Superuser{% elif entry.user.is_staff %}Staff{% else %}User{% endif %}</span>
+            </div>
+            <div class="admin-card-col">
+                <span class="admin-card-label">Last Login</span>
+                <span>{{ entry.user.last_login|date:'Y-m-d H:i' }}</span>
+            </div>
+            <div class="admin-card-col">
+                <span class="admin-card-label">Email Phishing Basics</span>
+                <span class="admin-card-badge">{% if entry.progress.email_phishing_basics %}<span class="badge bg-success">✔</span>{% else %}<span class="badge bg-secondary">✗</span>{% endif %}</span>
+            </div>
+            <div class="admin-card-col">
+                <span class="admin-card-label">Suspicious URLs & Domains</span>
+                <span class="admin-card-badge">{% if entry.progress.suspicious_urls_domains %}<span class="badge bg-success">✔</span>{% else %}<span class="badge bg-secondary">✗</span>{% endif %}</span>
+            </div>
+            <div class="admin-card-col">
+                <span class="admin-card-label">Phishing Techniques Advance</span>
+                <span class="admin-card-badge">{% if entry.progress.phishing_techniques_advance %}<span class="badge bg-success">✔</span>{% else %}<span class="badge bg-secondary">✗</span>{% endif %}</span>
+            </div>
+            <div class="admin-card-col">
+                <span class="admin-card-label">Progress</span>
+                <div class="progress" style="height: 20px;">
+                    <div class="progress-bar bg-primary" role="progressbar" style="width: {{ entry.percent_complete }}%;" aria-valuenow="{{ entry.percent_complete }}" aria-valuemin="0" aria-valuemax="100">{{ entry.percent_complete }}%</div>
+                </div>
+            </div>
+            <div class="admin-card-col">
+                <span class="admin-card-label">Reported</span>
+                <button type="button" class="btn btn-outline-primary rounded-4 text-nowrap" data-bs-toggle="modal" data-bs-target="#reportedModal{{ entry.user.id }}">
+                    Reported({{ entry.reported_emails.count|add:entry.reported_sms.count }})
+                </button>
+            </div>
+        </div>
+
+        <!-- Modal for Reported Messages -->
+        <div class="modal fade" id="reportedModal{{ entry.user.id }}" tabindex="-1" aria-labelledby="reportedModalLabel{{ entry.user.id }}" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="reportedModalLabel{{ entry.user.id }}">Reported Messages - {{ entry.user.email }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Tabs navigation -->
+                        <ul class="nav nav-tabs mb-3" id="reportTabs{{ entry.user.id }}" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="email-tab{{ entry.user.id }}" data-bs-toggle="tab" data-bs-target="#emailTabPane{{ entry.user.id }}" type="button" role="tab" aria-controls="emailTabPane{{ entry.user.id }}" aria-selected="true">Email</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="sms-tab{{ entry.user.id }}" data-bs-toggle="tab" data-bs-target="#smsTabPane{{ entry.user.id }}" type="button" role="tab" aria-controls="smsTabPane{{ entry.user.id }}" aria-selected="false">SMS</button>
+                            </li>
+                        </ul>
+                        <div class="tab-content" id="reportTabsContent{{ entry.user.id }}">
+                            <!-- Email Tab -->
+                            <div class="tab-pane fade show active" id="emailTabPane{{ entry.user.id }}" role="tabpanel" aria-labelledby="email-tab{{ entry.user.id }}">
+                                {% for report in entry.reported_emails %}
+                                    <div class="card mb-3">
+                                        <div class="card-body">
+                                            <div class="mb-2">
+                                                <strong>From:</strong> {{ report.sender_name }} &lt;{{ report.sender_email }}&gt;
+                                            </div>
+                                            <div class="mb-2">
+                                                <strong>To:</strong> {{ report.receiver_email }}
+                                            </div>
+                                            <div class="mb-2">
+                                                <strong>Subject:</strong> {{ report.subject }}
+                                            </div>
+                                            <div class="mb-2">
+                                                <strong>Message:</strong><br>
+                                                {{ report.message|linebreaksbr }}
+                                            </div>
+                                            <div class="mb-2">
+                                                <strong>Reason for reporting:</strong> {{ report.reason }}
+                                            </div>
+                                            {% if report.details %}
+                                                <div class="mb-2">
+                                                    <strong>Details:</strong> {{ report.details }}
+                                                </div>
+                                            {% endif %}
+                                            <div class="mb-2">
+                                                <strong>Reported at:</strong> {{ report.reported_at|date:"Y-m-d H:i" }}
+                                            </div>
+                                            <div class="badge {% if report.is_real %}bg-danger{% else %}bg-success{% endif %}">
+                                                {% if report.is_real %}Real Email Reported{% else %}Fake Email Reported{% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% empty %}
+                                    <div class="alert alert-info mb-0">No reported emails found.</div>
+                                {% endfor %}
+                            </div>
+                            <!-- SMS Tab -->
+                            <div class="tab-pane fade" id="smsTabPane{{ entry.user.id }}" role="tabpanel" aria-labelledby="sms-tab{{ entry.user.id }}">
+                                {% for sms in entry.reported_sms %}
+                                    <div class="card mb-3">
+                                        <div class="card-body">
+                                            <div class="mb-2">
+                                                <strong>From:</strong> {{ sms.original_sender_email|default:sms.reported_by.email|default:"Unknown" }}
+                                            </div>
+                                            <div class="mb-2">
+                                                <strong>To:</strong> {{ sms.receiver_number|default:sms.original_receiver_number }}
+                                            </div>
+                                            <div class="mb-2">
+                                                <strong>Message:</strong><br>
+                                                {{ sms.original_message|linebreaksbr|default_if_none:"" }}
+                                            </div>
+                                            <div class="mb-2">
+                                                <strong>Reason for reporting:</strong> {{ sms.reason }}
+                                            </div>
+                                            {% if sms.details %}
+                                                <div class="mb-2">
+                                                    <strong>Details:</strong> {{ sms.details }}
+                                                </div>
+                                            {% endif %}
+                                            <div class="mb-2">
+                                                <strong>Reported at:</strong> {{ sms.reported_at|date:"Y-m-d H:i" }}
+                                            </div>
+                                            <div class="badge {% if sms.is_original_real or sms.is_real %}bg-danger{% else %}bg-success{% endif %}">
+                                                {% if sms.is_original_real or sms.is_real %}Real SMS Reported{% else %}Fake SMS Reported{% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% empty %}
+                                    <div class="alert alert-info mb-0">No reported SMS found.</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div> {# End of table-responsive-custom wrapper #}
+</div>
+
+<script>
+    // The previous setAdminDashboardStyle function is no longer needed as CSS handles responsiveness.
+    // The bubble script from your other template should be in base.html if you want it site-wide,
+    // or you can add it here if this is the only page it's needed on.
+    // Assuming base.html handles the bubbles, this script block is empty.
+
+    // This reloads the page on back/forward button to ensure fresh data.
+    // This is good for admin dashboards where data changes frequently.
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted) {
+            window.location.reload();
+        }
+    });
+</script>
+{% endblock %}

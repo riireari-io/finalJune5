@@ -1,0 +1,613 @@
+{% extends 'base.html' %}
+{% block title %}Phishing Techniques Advance - Lesson 3{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<style>
+    body {
+        background: #0F1C2E; /* Slightly darker, richer blue */
+        color: #E6EAF0; /* Softer white for text */
+        font-family: 'Inter', 'Segoe UI', 'Arial', sans-serif; /* Modern font choice */
+        line-height: 1.6;
+    }
+
+
+    #lesson3-content {
+        background: rgba(23, 50, 80, 0.5); /* More opaque, darker blue tint */
+        border-radius: 20px; /* Slightly more rounded */
+        box-shadow: 0 12px 40px rgba(0,0,0,0.4); /* Deeper shadow */
+        border: 1px solid rgba(50, 150, 255, 0.2); /* Lighter, more vibrant border */
+        backdrop-filter: blur(15px) saturate(1.5); /* Stronger blur and saturation */
+        -webkit-backdrop-filter: blur(15px) saturate(1.5);
+        padding: 40px 30px;
+        margin-top: 40px;
+        margin-bottom: 40px;
+        position: relative;
+        z-index: 1;
+        animation: fadeIn 0.8s ease-out; /* Add a fade-in animation */
+    }
+
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+
+    .lesson-title {
+        background: linear-gradient(90deg, rgba(50, 150, 255, 0.2), rgba(20, 90, 200, 0.2)); /* Subtle gradient */
+        color: #79C2F5 !important; /* Brighter blue for title */
+        font-weight: 700;
+        border-radius: 15px; /* Slightly more rounded */
+        font-size: 1.6rem;
+        padding: 18px 25px; /* More padding */
+        border: 1px solid rgba(50, 150, 255, 0.3); /* Defined border */
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2); /* Subtle shadow for title */
+    }
+
+
+    h1, h2, h3, h4 {
+        font-family: 'Inter', 'Segoe UI', 'Arial', sans-serif;
+        font-weight: 700;
+    }
+    h1 {
+        color: #50A3FF; /* Brighter blue for main heading */
+        font-size: 2.8em; /* Larger main heading */
+        text-shadow: 0 2px 8px rgba(0,0,0,0.3); /* Subtle text shadow */
+    }
+    h2 {
+        color: #79C2F5; /* Matches lesson title blue */
+        font-size: 2.2em;
+        padding-bottom: 5px;
+        border-bottom: 1px solid rgba(50, 150, 255, 0.1); /* Subtle underline effect */
+        margin-top: 3.5rem; /* More space above H2 */
+    }
+    h3 {
+        color: #A3D4FF; /* Lighter blue for sub-headings */
+        font-size: 1.8em;
+        margin-top: 2.5rem; /* More space above H3 */
+    }
+    h4 {
+        color: #C1E1FF; /* Even lighter blue */
+    }
+
+
+    .example {
+        background: rgba(255,255,255,0.08) !important; /* Slightly more visible background */
+        border-left: 6px solid #50A3FF !important; /* Thicker, more vibrant border */
+        color: #E6EAF0 !important;
+        border-radius: 12px; /* Slightly more rounded */
+        padding: 25px; /* More padding */
+        margin-top: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+
+    .highlight {
+        background: #FFD700; /* Gold-like yellow */
+        color: #2C3E50; /* Darker text for contrast */
+        border-radius: 6px; /* More rounded highlight */
+        padding: 2px 6px;
+        font-weight: 600; /* Make highlight text bolder */
+    }
+
+
+    .quiz-section {
+        background: rgba(30, 80, 130, 0.4); /* Deeper blue for quiz section */
+        border: 1px solid rgba(50, 150, 255, 0.3);
+        border-radius: 16px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+        padding: 30px;
+    }
+
+
+    .choices .btn {
+        font-size: 1.1em;
+        border-radius: 10px; /* More rounded buttons */
+        margin-bottom: 0.6em;
+        background: rgba(255,255,255,0.05); /* Slightly more transparent */
+        color: #B7D6FF;
+        border: 1px solid #50A3FF; /* More vibrant border */
+        transition: all 0.3s ease; /* Smoother transition */
+        padding: 12px 18px; /* More padding */
+    }
+    .choices .btn:hover, .choices .btn:focus {
+        background: #50A3FF; /* Solid blue on hover */
+        color: #fff;
+        transform: translateY(-2px); /* Slight lift effect */
+        box-shadow: 0 4px 12px rgba(80,163,255,0.4); /* Shadow on hover */
+    }
+
+
+    .feedback {
+        font-size: 1.15em; /* Slightly larger feedback text */
+        margin-top: 1em;
+        padding: 1em 1.2em;
+        border-radius: 10px;
+        font-weight: 500;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    .feedback.correct, .result.correct {
+        background: rgba(40, 200, 120, 0.2); /* Softer green */
+        color: #6CFFB4; /* Brighter green text */
+        border: 1px solid #28C878;
+    }
+    .feedback.wrong, .result.wrong {
+        background: rgba(255, 80, 100, 0.2); /* Softer red */
+        color: #FF8B99; /* Brighter red text */
+        border: 1px solid #FF5064;
+    }
+
+
+    .btn-primary, .btn-success, .btn-secondary {
+        border-radius: 10px; /* Consistent button rounding */
+        font-weight: 600;
+        padding: 12px 25px; /* More padding */
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+    .btn-primary {
+        background: linear-gradient(45deg, #1a75ff, #0056b3); /* Gradient for primary button */
+        border: none;
+    }
+    .btn-primary:hover, .btn-primary:focus {
+        background: linear-gradient(45deg, #0056b3, #1a75ff);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(26,117,255,0.4);
+    }
+    .btn-success {
+        background: linear-gradient(45deg, #28a745, #157347); /* Gradient for success button */
+        border: none;
+    }
+    .btn-success:hover, .btn-success:focus {
+        background: linear-gradient(45deg, #157347, #28a745);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(40,167,69,0.4);
+    }
+    .btn-secondary {
+        background: linear-gradient(45deg, #4F6D8C, #324D68); /* Gradient for secondary button */
+        border: none;
+    }
+    .btn-secondary:hover, .btn-secondary:focus {
+        background: linear-gradient(45deg, #324D68, #4F6D8C);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(51,78,104,0.4);
+    }
+
+
+    #scrollTopBtn {
+        background: linear-gradient(45deg, #1a75ff, #0056b3); /* Gradient for scroll to top */
+        color: #fff;
+        border: none;
+        border-radius: 50%; /* Perfect circle */
+        width: 60px; /* Fixed width/height */
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 6px 20px rgba(26,117,255,0.4);
+        font-size: 1.4em; /* Larger icon */
+        z-index: 9999;
+        opacity: 0.9; /* Slightly transparent */
+        transition: all 0.3s ease;
+        bottom: 30px;
+        right: 30px;
+    }
+    #scrollTopBtn:hover {
+        background: linear-gradient(45deg, #0056b3, #1a75ff);
+        opacity: 1;
+        transform: translateY(-3px) scale(1.05); /* Lift and slight scale */
+        box-shadow: 0 8px 25px rgba(26,117,255,0.6);
+    }
+
+
+    /* General utility classes adjusted for new theme */
+    .bg-success.bg-opacity-10 { background: rgba(40, 200, 120, 0.1) !important; }
+    .bg-info.bg-opacity-10 { background: rgba(50, 150, 255, 0.1) !important; }
+    .bg-info.bg-opacity-25 { background: rgba(50, 150, 255, 0.25) !important; }
+    .border-info { border-color: #50A3FF !important; }
+    .border-success { border-color: #28C878 !important; }
+    .border-primary { border-color: #50A3FF !important; }
+    .text-primary { color: #50A3FF !important; } /* Ensure text-primary aligns with new h1 color */
+    .text-success { color: #28C878 !important; } /* Ensure text-success aligns with new green */
+    .text-danger { color: #FF5064 !important; } /* Ensure text-danger aligns with new red */
+
+
+
+
+    @media (max-width: 768px) {
+        #lesson3-content {
+            padding: 25px 5vw;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        h1 { font-size: 1.8em; }
+        h2 { font-size: 1.4em; }
+        h3 { font-size: 1.2em; }
+        .lesson-title { font-size: 1.2rem; padding: 15px 20px;}
+        .choices .btn { font-size: 1em; padding: 10px 15px; }
+        #scrollTopBtn { width: 50px; height: 50px; font-size: 1.2em; bottom: 20px; right: 20px;}
+    }
+</style>
+<div class="container mt-5 pt-5 mb-5" id="lesson3-content">
+    <h1 class="text-center" style="font-size:2.8em;">Welcome to Triton's Trident! <span class="bi bi-shield-lock-fill"></span></h1>
+    <p class="text-center" style="font-size:1.15em; color: #D5DDF0;">Get ready to become a cybersecurity detective! These quick lessons will arm you with the essential skills to spot and avoid sneaky phishing attempts that try to steal your personal information. Let's dive in and make you a phishing pro!</p>
+    <div class="lesson-title p-3 rounded-4 mb-4 mt-4 text-center fw-bold">Case Study: The Rise of Phishing Attacks in the Philippines During the COVID-19 Pandemic</div>
+    <p>During the COVID-19 pandemic, the Philippines saw a dramatic increase in phishing and smishing attacks. With more people working remotely and relying heavily on digital communication, cybercriminals exploited this shift to launch targeted scams.</p>
+    <p><b>How it Happend:</b></p>
+    <p>The National Bureau of Investigation's Cybercrime Division reported a 200% increase in phishing scams since the start of lockdowns in March 2020. These scams often impersonated banks, government agencies, or well-known companies to trick victims into revealing sensitive information such as login credentials, bank account numbers, and credit card details.</p>
+    <p><b>Method:</b></p>
+    <p>Attackers sent fraudulent emails or SMS messages that appeared to come from trusted institutions. For example, phishing emails claimed to be about mandatory password updates or changes in HR policies, which triggered anxiety and urgency among recipients. Smishing texts often pretended to be from banks asking users to verify account details via fake websites.</p>
+   <p><b>Impact:</b></p>
+   <p>Victims lost money through unauthorized bank transactions, experienced identity theft, and suffered breaches of personal information. The widespread nature of these attacks created panic and eroded trust in digital communication channels.</p>
+   <p><b>Response:</b></p>
+   <p>Authorities emphasized the importance of digital literacy and public awareness campaigns. Organizations began conducting phishing simulations and security training for employees. Cybersecurity firms urged users to be cautious with links in texts and emails and to verify information through official channels.</p>
+   <p><b>Lessons Learned:</b></p>
+    <ul>
+        <li>Phishing and smishing thrive on urgency and emotional manipulation.</li>
+        <li>Verifying suspicious messages by contacting institutions directly can prevent falling victim.</li>
+        <li>Multi-factor authentication and strong passwords significantly reduce risk.</li>
+        <li>Continuous user education and awareness remain key defenses.</li>
+    </ul>
+       <p>Source: OpenGov Asia <a href="https://opengovasia.com/2021/07/14/dealing-with-the-rise-in-phishing-attacks-in-the-philippines/">Dealing with the Rise in Phishing Attacks in the Philippines</a></p>
+    <a href="/assessment/phishing-philippines-covid19/" class="btn btn-primary mt-4">Go to Assessment: Case Study - Phishing in the Philippines During COVID-19</a>
+    ---
+    <div class="lesson-title p-3 rounded-4 mb-4 mt-4 text-center fw-bold">Case Study: Real-Life Phishing Incident - What went wrong and how to prevent similar attack</div>
+    <p>In late 2013, Target Corporation, one of the largest retail chains in the United States, experienced a massive data breach that compromised the credit and debit card details of over 40 million customers. Interestingly, the breach was not caused directly by a vulnerability in Target's own systems, but rather by a successful phishing attack targeting a third-party vendor—specifically, a small HVAC company that had billing access to Target's network.</p><br>
+    <p>An employee at the vendor company received a phishing email that appeared to be legitimate. The email contained either a malicious link or a malware-laden attachment, which the employee unsuspectingly clicked. This action granted cybercriminals unauthorized access to the vendor's internal systems. Because the vendor had network permissions tied to Target's infrastructure, the attackers were able to move laterally through the network and eventually gain access to Target's point-of-sale systems. From there, they extracted a significant amount of sensitive customer data, including card numbers and expiration dates.</p>
+    <p><b>This incident highlights several critical vulnerabilities:</b></p>
+    <ul>
+        <li><b>Third-party access mismanagement:</b>  Target's system lacked proper network segmentation. When the vendor was compromised, attackers were able to navigate across the network freely.</li>
+        <li><b>Employee unawareness:</b> The vendor employee fell for a phishing email due to insufficient training and lack of awareness about phishing tactics.</li>
+        <li><b>Inadequate detection systems:</b> Target's security systems did not recognize or act on early warning signs of the breach until the data had already been stolen.</li>
+    </ul>
+    <p><b>The Target case underscores several lessons organizations can learn to prevent similar breaches:</b></p>
+    <ul>
+        <li><b>Strengthen third-party access control:</b> Limit vendor access to only necessary systems and conduct regular security assessments.</li>
+        <li><b>Invest in employee training:</b> Conduct ongoing phishing simulations and security awareness sessions to ensure employees know how to detect and report phishing attempts.</li>
+        <li><b>Implement strong detection systems:</b> Use real-time monitoring tools and incident response protocols to detect unusual activity and react quickly.</li>
+        <li><b>Use multi-factor authentication (MFA):</b> Require MFA for all employees and third parties to reduce the risk of unauthorized access.</li>
+        <li><b>Keep systems and software updated:</b> Regularly patch vulnerabilities to prevent attackers from exploiting known weaknesses.</li>
+    </ul>
+    <p>This breach remains one of the most well-known examples of how phishing, even through an indirect target like a vendor, can lead to a large-scale cybersecurity incident. It serves as a powerful reminder of the importance of both human awareness and technical safeguards in defending against phishing attacks.</p>
+    <p>Source: CyberExperts.com. (2023). <a href="https://sosintel.co.uk/case-study-real-life-phishing-incident-what-went-wrong-and-how-to-prevent-similar-attacks/">Phishing Case Studies: Lessons Learned From Real-Life Attacks</a></p>
+
+
+
+
+    ---
+    <div class="lesson-title p-3 rounded-4 mb-4 mt-4 text-center fw-bold">Phishing simulation exercise in a large hospital: A case study</div>
+<p>Phishing poses a significant threat to healthcare organizations, which manage large volumes of sensitive personal and medical data. Recognizing this vulnerability, a major hospital in Italy with over 6,000 healthcare staff conducted a phishing simulation as part of its annual cybersecurity training and risk assessment. The goal was to evaluate the staff's response to phishing emails and identify areas for improvement in human defenses.</p>
+<p>The simulation involved three campaigns rolled out over the span of a year, each launched roughly four months apart. The emails sent in these campaigns were designed to test whether staff would respond differently to generic phishing emails versus customized messages tailored to local or organizational context.</p>
+<p>The results revealed a crucial insight: personalized phishing emails were far more effective at deceiving recipients. In the first campaign, 64% of staff ignored the general phishing email, while only 38% ignored the custom phishing email. The click rate—indicating the number of staff who actually clicked on the malicious link—was significantly higher for the customized messages, demonstrating that targeted phishing emails are more dangerous than generic ones.</p>  
+<p>However, the hospital encountered several internal issues during the simulation. The campaigns could not be executed as originally planned due to organizational constraints, including staff concerns and union pushback. These challenges underscored the ethical and logistical difficulties of conducting phishing simulations in a sensitive environment like healthcare.</p>
+<p><b>Some key takeaways from the simulation include:</b></p>
+<ul>
+    <li><b>Customization increases risk: </b> Phishing messages that reference current events or internal topics are more believable and more likely to be acted upon.</li>
+    <li><b>Simulation is useful but complex:</b> Effective phishing simulations require proper coordination, timing, and subtlety to avoid raising suspicion or causing distress.</li>
+    <li><b>Ethical concerns must be addressed:</b> Misleading emails that contain false threats or promises can damage trust, leading to backlash from staff or labor organizations.</li>
+    <li><b>Training must reflect reality:</b> Phishing education should incorporate real-world examples and tailored scenarios relevant to the staff's actual work environment.</li>
+</ul>
+<p>Ultimately, the study concluded that phishing simulations can be valuable tools for assessing organizational readiness, but they require thoughtful design, ethical execution, and collaboration across departments. The hospital's experience offers important lessons for other healthcare institutions aiming to strengthen their cybersecurity posture through social engineering testing.</p>
+
+
+    <p>Source: 1. Rizzoni F, Magalini S, Casaroli A, Mari P, Dixon M, Coventry L.
+   <a href="https://journals.sagepub.com/doi/full/10.1177/20552076221081716">Phishing simulation exercise in a large hospital: A case study. DIGITAL HEALTH. 2022</a></p>
+
+
+    ---
+
+
+    <button onclick="scrollToTop()" id="scrollTopBtn" class="btn btn-primary position-fixed bottom-0 end-0 m-4 shadow-lg">
+        <i class="bi bi-arrow-up-circle-fill"></i>
+    </button>
+
+
+    ---
+
+
+    <div id="quiz-lesson3" class="quiz-section rounded-4 p-4 mt-5 shadow-sm">
+        <h2 class="text-center mb-4">Quiz Time: Sharpen Your Mind! 🧠</h2>
+        <div id="quiz3-question-1">
+            <p class="question fw-bold">Question 1: What was the entry point for the hackers in the Target phishing attack?</p>
+            <div class="choices mb-3">
+                <button class="btn w-100 text-start mb-2" onclick="checkAnswer3(1, 'wrong', this)">A) Target's internal employee</button>
+                <button class="btn w-100 text-start mb-2" onclick="checkAnswer3(1, 'correct', this)">B)  An HVAC vendor's compromised credentials</button>
+                <button class="btn w-100 text-start" onclick="checkAnswer3(1, 'wrong', this)">C) A vulnerability in the POS system</button>
+                <button class="btn w-100 text-start" onclick="checkAnswer3(1, 'wrong', this)">D) A customer data breach</button>
+
+
+            </div>
+            <div id="feedback3-1" class="feedback"></div>
+            <div class="text-center mt-3">
+                <button id="next-btn3-1" class="next-question-btn btn btn-success" style="display:none;" onclick="showNextQuestion3(2)">Next Question</button>
+            </div>
+        </div>
+        <div id="quiz3-question-2" style="display:none;">
+            <p class="question fw-bold">Question 2: Which of the following was a key failure in Target's defense system? </p>
+            <div class="choices mb-3">
+                <button class="btn w-100 text-start mb-2" onclick="checkAnswer3(2, 'wrong', this)">A) Weak firewall</button>
+                <button class="btn w-100 text-start mb-2" onclick="checkAnswer3(2, 'wrong', this)">B)  Lack of antivirus software</button>
+                <button class="btn w-100 text-start" onclick="checkAnswer3(2, 'correct', this)">C)  Inadequate vendor access management and network segmentation</button>
+                <button class="btn w-100 text-start" onclick="checkAnswer3(2, 'wrong', this)">D) Overuse of encrypted data</button>
+
+
+            </div>
+            <div id="feedback3-2" class="feedback"></div>
+            <div class="text-center mt-3">
+                <button id="next-btn3-2" class="next-lesson-btn btn btn-success" style="display:none;" onclick="showNextQuestion3(3)">Next Question</button>
+            </div>
+        </div>
+        <div id="quiz3-question-3" style="display:none;">
+            <p class="question fw-bold">Question 3:Which lesson was emphasized from the Target breach?</p>
+            <div class="choices mb-3">
+                <button class="btn w-100 text-start mb-2" onclick="checkAnswer3(3, 'wrong', this)">A) Avoid allowing employee remote access</button>
+                <button class="btn w-100 text-start mb-2" onclick="checkAnswer3(3, 'wrong', this)">B) Never use third-party vendors</button>
+                <button class="btn w-100 text-start" onclick="checkAnswer3(3, 'correct', this)">C) Train employees and strengthen vendor security</button>
+                <button class="btn w-100 text-start" onclick="checkAnswer3(3, 'wrong', this)">D)  Always store data offline</button>
+
+
+            </div>
+            <div id="feedback3-3" class="feedback"></div>
+            <div class="text-center mt-3">
+                <button id="next-btn3-3" class="next-lesson-btn btn btn-success" style="display:none;" onclick="showNextQuestion3(4)">Next Question</button>
+            </div>
+        </div>
+        <div id="quiz3-question-4" style="display:none;">
+            <p class="question fw-bold">Question 4: What was the purpose of the phishing simulation in the Italian hospital? </p>
+            <div class="choices mb-3">
+                <button class="btn w-100 text-start mb-2" onclick="checkAnswer3(4, 'wrong', this)">A)  To test firewalls </button>
+                <button class="btn w-100 text-start mb-2" onclick="checkAnswer3(4, 'wrong', this)">B) To upgrade security software </button>
+                <button class="btn w-100 text-start" onclick="checkAnswer3(4, 'correct', this)">C) To assess staff susceptibility to phishing </button>
+                <button class="btn w-100 text-start" onclick="checkAnswer3(4, 'wrong', this)">D) To simulate ransomware</button>
+
+
+            </div>
+            <div id="feedback3-4" class="feedback"></div>
+            <div class="text-center mt-3">
+                <button id="next-btn3-4" class="next-lesson-btn btn btn-success" style="display:none;" onclick="showNextQuestion3(5)">Next Question</button>
+            </div>
+        </div>
+        <div id="quiz3-question-5" style="display:none;">
+            <p class="question fw-bold">Question 5: Why were the customized phishing emails more effective than general ones in the simulation?</p>
+            <div class="choices mb-3">
+                <button class="btn w-100 text-start mb-2" onclick="checkAnswer3(5, 'wrong', this)">A) They offered cash prizes </button>
+                <button class="btn w-100 text-start mb-2" onclick="checkAnswer3(5, 'wrong', this)">B) They resembled common spam</button>
+                <button class="btn w-100 text-start" onclick="checkAnswer3(5, 'wrong', this)">C) They used poor grammar </button>
+                <button class="btn w-100 text-start" onclick="checkAnswer3(5, 'correct', this)">D) They related to current, local events </button>
+
+
+            </div>
+            <div id="feedback3-5" class="feedback"></div>
+            <div class="text-center mt-3">
+                <button id="next-btn3-5" class="next-lesson-btn btn btn-success" style="display:none;" onclick="showNextQuestion3(6)">Next Question</button>
+            </div>
+        </div>
+        <div id="quiz3-question-6" style="display:none;">
+            <p class="question fw-bold">Question 6:What major concern arose from the phishing simulations? </p>
+            <div class="choices mb-3">
+                <button class="btn w-100 text-start mb-2" onclick="checkAnswer3(6, 'wrong', this)">A) The emails weren't delivered</button>
+                <button class="btn w-100 text-start mb-2" onclick="checkAnswer3(6, 'correct', this)">B) Unions and staff raised ethical issues</button>
+                <button class="btn w-100 text-start" onclick="checkAnswer3(6, 'wrong', this)">C)  No one clicked the emails</button>
+                <button class="btn w-100 text-start" onclick="checkAnswer3(6, 'wrong', this)">D) The IT team was unaware </button>
+
+
+            </div>
+            <div id="feedback3-6" class="feedback"></div>
+            <div class="text-center mt-3">
+                <button id="next-btn3-6" class="next-lesson-btn btn btn-success" style="display:none;" onclick="showNextQuestion3(7)">Next Question</button>
+            </div>
+        </div>
+        <div id="quiz3-question-7" style="display:none;">
+            <p class="question fw-bold">Question 7: What was the top reported cybercrime in the Philippines during the pandemic? </p>
+            <div class="choices mb-3">
+                <button class="btn w-100 text-start mb-2" onclick="checkAnswer3(7, 'wrong', this)">A) Fake news dissemination </button>
+                <button class="btn w-100 text-start mb-2" onclick="checkAnswer3(7, 'wrong', this)">B) Online selling scams</button>
+                <button class="btn w-100 text-start" onclick="checkAnswer3(7, 'correct', this)">C) Phishing</button>
+                <button class="btn w-100 text-start" onclick="checkAnswer3(7, 'wrong', this)">D) Social media impersonation</button>
+
+
+            </div>
+            <div id="feedback3-7" class="feedback"></div>
+            <div class="text-center mt-3">
+                <button id="next-btn3-7" class="next-lesson-btn btn btn-success" style="display:none;" onclick="showNextQuestion3(8)">Next Question</button>
+            </div>
+        </div>
+        <div id="quiz3-question-8" style="display:none;">
+            <p class="question fw-bold">Question 8: Which of the following did cybercriminals exploit in the Philippines during the pandemic? </p>
+            <div class="choices mb-3">
+                <button class="btn w-100 text-start mb-2" onclick="checkAnswer3(8, 'wrong', this)">A) High banking regulation </button>
+                <button class="btn w-100 text-start mb-2" onclick="checkAnswer3(8, 'wrong', this)">B) Social media privacy tools</button>
+                <button class="btn w-100 text-start" onclick="checkAnswer3(8, 'correct', this)">C) Low digital literacy and increased online activity </button>
+                <button class="btn w-100 text-start" onclick="checkAnswer3(8, 'wrong', this)">D) Strong IT laws</button>
+
+
+            </div>
+            <div id="feedback3-8" class="feedback"></div>
+            <div class="text-center mt-3">
+                <button id="next-btn3-8" class="next-lesson-btn btn btn-success" style="display:none;" onclick="showNextQuestion3(9)">Next Question</button>
+            </div>
+        </div>
+        <div id="quiz3-question-9" style="display:none;">
+            <p class="question fw-bold">Question 9: What platform was mentioned as commonly used for phishing in the Philippines?</p>
+            <div class="choices mb-3">
+                <button class="btn w-100 text-start mb-2" onclick="checkAnswer3(9, 'correct', this)">A) LinkedIn </button>
+                <button class="btn w-100 text-start mb-2" onclick="checkAnswer3(9, 'wrong', this)">B) TikTok</button>
+                <button class="btn w-100 text-start" onclick="checkAnswer3(9, 'wrong', this)">C) Pinterest </button>
+                <button class="btn w-100 text-start" onclick="checkAnswer3(9, 'wrong', this)">D) Reddit </button>
+
+
+            </div>
+            <div id="feedback3-9" class="feedback"></div>
+            <div class="text-center mt-3">
+                <button id="next-btn3-9" class="next-lesson-btn btn btn-success" style="display:none;" onclick="showNextQuestion3(10)">Next Question</button>
+            </div>
+        </div>
+        <div id="quiz3-question-10" style="display:none;">
+            <p class="question fw-bold">Question 10: Why were HR-related phishing emails becoming more common post-pandemic?</p>
+            <div class="choices mb-3">
+                <button class="btn w-100 text-start mb-2" onclick="checkAnswer3(10, 'wrong', this)">A) HR emails were usually marked as spam</button>
+                <button class="btn w-100 text-start mb-2" onclick="checkAnswer3(10, 'wrong', this)">B)  Staff had fewer responsibilities </button>
+                <button class="btn w-100 text-start" onclick="checkAnswer3(10, 'wrong', this)">C) HR departments were unreliable </button>
+                <button class="btn w-100 text-start" onclick="checkAnswer3(10, 'correct', this)">D) Policies kept changing and people were eager for updates</button>
+            </div>
+            <div id="feedback3-10" class="feedback"></div>
+            <div class="text-center mt-3">
+                <button id="next-btn3-10" class="next-lesson-btn btn btn-success" style="display:none;" onclick="completeLessonAndRedirect()">Start Inbox Simulation</button>
+            </div>
+        </div>
+        <div class="quiz-clear"></div>
+    </div>
+
+
+    <a href="{% url 'suspicious_urls_domains' %}" class="btn btn-secondary mt-5">← Back to Lesson 2</a>
+
+
+</div>
+<script>
+function checkRedFlag() {
+    const input = document.getElementById('redFlagInput').value.toLowerCase().trim();
+    const resultDiv = document.getElementById('redFlagResult');
+    resultDiv.style.display = 'block';
+    if (input.includes('grammar') || input.includes('spelling') || input.includes('error') || input.includes('typo') || input.includes('accont') || input.includes('varification') || input.includes('generic greeting') || input.includes('dear valued client')) {
+        resultDiv.textContent = "🥳 Excellent! You spotted multiple red flags like the spelling error 'Accont Varification' and the generic greeting 'Dear Valued Client.' This is a classic phishing attempt!";
+        resultDiv.classList.add('correct');
+        resultDiv.classList.remove('wrong');
+    } else {
+        resultDiv.textContent = "Not quite, but keep practicing! Look for spelling mistakes, awkward phrasing, or generic greetings. A professional company would rarely have such errors.";
+        resultDiv.classList.add('wrong');
+        resultDiv.classList.remove('correct');
+    }
+}
+function checkAnswer3(questionNum, type, button) {
+    const feedbackDiv = document.getElementById(`feedback3-${questionNum}`);
+    const nextButton = document.getElementById(`next-btn3-${questionNum}`);
+    const choicesDiv = button.closest('.choices');
+    Array.from(choicesDiv.children).forEach(btn => {
+        btn.disabled = true;
+        btn.style.opacity = '0.7';
+        btn.style.cursor = 'default';
+        if (btn === button) {
+            if (type === 'correct') {
+                btn.classList.add('btn-success');
+                btn.classList.remove('btn-outline-primary');
+            } else {
+                btn.classList.add('btn-danger');
+                btn.classList.remove('btn-outline-primary');
+            }
+        }
+    });
+
+
+    if (type === 'correct') {
+        feedbackDiv.textContent = feedbackCorrect3[questionNum] || "Correct!";
+        feedbackDiv.classList.add('correct');
+        feedbackDiv.classList.remove('wrong');
+    } else {
+        feedbackDiv.textContent = feedbackWrong3[questionNum] || "Not quite. Try again!";
+        feedbackDiv.classList.add('wrong');
+        feedbackDiv.classList.remove('correct');
+    }
+    feedbackDiv.style.display = 'block';
+    nextButton.style.display = 'block';
+}
+function showNextQuestion3(questionNum) {
+    document.getElementById(`quiz3-question-${questionNum - 1}`).style.display = 'none';
+    document.getElementById(`quiz3-question-${questionNum}`).style.display = 'block';
+}
+function resetQuiz(questionId, feedbackId, nextBtnId) {
+    const questionDiv = document.getElementById(questionId);
+    const feedbackDiv = document.getElementById(feedbackId);
+    const nextButton = document.getElementById(nextBtnId);
+    const choicesDiv = questionDiv.querySelector('.choices');
+    Array.from(choicesDiv.children).forEach(btn => {
+        btn.disabled = false;
+        btn.style.opacity = '1';
+        btn.style.cursor = 'pointer';
+        btn.classList.remove('btn-success', 'btn-danger'); // Remove old answer styles
+        btn.classList.add('btn-outline-primary'); // Add back default style
+    });
+    feedbackDiv.style.display = 'none';
+    nextButton.style.display = 'none';
+    feedbackDiv.classList.remove('correct', 'wrong');
+}
+function completeLessonAndRedirect() {
+    fetch("{% url 'phishing_techniques_advance' %}", {
+        method: "POST",
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'X-Requested-With': 'XMLHttpRequest',
+        },
+        body: ''
+    }).finally(function() {
+        window.location.assign("{% url 'assessment' %}");
+    });
+}
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('lesson3-content').style.display = 'block';
+    document.getElementById('quiz-lesson3').style.display = 'block';
+    resetQuiz('quiz3-question-1', 'feedback3-1', 'next-btn3-1');
+    resetQuiz('quiz3-question-2', 'feedback3-2', 'next-btn3-2');
+    document.getElementById('quiz3-question-1').style.display = 'block';
+    document.getElementById('quiz3-question-2').style.display = 'none';
+});
+
+
+// Scroll to Top logic
+window.addEventListener("scroll", function () {
+    const scrollBtn = document.getElementById("scrollTopBtn");
+    if (window.scrollY > window.innerHeight / 2) {
+        scrollBtn.style.display = "flex"; /* Use flex to center icon */
+    } else {
+        scrollBtn.style.display = "none";
+    }
+});
+
+
+function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+
+const feedbackCorrect3 = {
+    1: "Correct! The hackers got in through a vendor's compromised credentials.",
+    2: "Exactly! Target failed to properly manage vendor access and network segmentation.",
+    3: "Right! Employee training and vendor security are crucial lessons.",
+    4: "Correct! The simulation tested staff susceptibility to phishing.",
+    5: "Exactly! Custom emails about local/current events are more convincing.",
+    6: "Correct! Ethical concerns from staff and unions were a major issue.",
+    7: "Right! Phishing was the top reported cybercrime during the pandemic.",
+    8: "Correct! Low digital literacy and increased online activity were exploited.",
+    9: "Exactly! LinkedIn was commonly used for phishing in the Philippines.",
+    10: "Correct! Changing policies and eager staff made HR phishing more effective."
+};
+const feedbackWrong3 = {
+    1: "Not quite. Review how the hackers first got into Target's network.",
+    2: "No. The main failure was in vendor access and network segmentation.",
+    3: "Nope. The key lesson is about training and vendor security.",
+    4: "Incorrect. The simulation was about phishing awareness, not firewalls.",
+    5: "Not right. Custom, relevant emails are more effective than generic ones.",
+    6: "No. The biggest concern was ethical pushback from staff/unions.",
+    7: "No. Phishing was the most reported cybercrime during the pandemic.",
+    8: "Not quite. Attackers exploited low digital literacy and more online activity.",
+    9: "No. LinkedIn was the most mentioned phishing platform.",
+    10: "Not correct. HR phishing worked because people wanted policy updates."
+};
+</script>
+{% endblock %}
+
+

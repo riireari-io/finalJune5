@@ -1,0 +1,256 @@
+{% extends 'base.html' %}
+{% block title %}Assessment{% endblock %}
+
+{% block content %}
+<style>
+    /* Base styles */
+    body {
+        background-color: #0d1a26; /* Original darker blue background */
+        color: #e0e0e0; /* Light text for contrast */
+        font-family: 'Arial', sans-serif;
+        overflow-x: hidden;
+    }
+
+    /* Bubbles animation (copied directly from the provided design) */
+    .bubbles {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        overflow: hidden;
+        z-index: -1;
+    }
+
+    .bubble {
+        position: absolute;
+        background-color: rgba(26, 117, 255, 0.3); /* Original bubble transparency */
+        border-radius: 50%;
+        animation: floatAnimation 3s infinite linear;
+    }
+
+    @keyframes floatAnimation {
+        0% {
+            transform: translateY(0);
+            opacity: 0.8;
+        }
+        100% {
+            transform: translateY(-120vh);
+            opacity: 0;
+        }
+    }
+
+    /* Main container styling */
+    .container.py-5.mt-5 {
+        background-color: rgba(26, 117, 255, 0.05); /* Very subtle transparent blue background */
+        border-radius: 15px;
+        backdrop-filter: blur(8px); /* Frosted glass effect */
+        -webkit-backdrop-filter: blur(8px); /* Safari support */
+        border: 1px solid rgba(26, 117, 255, 0.1); /* Lighter border for definition */
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); /* Enhanced shadow for depth */
+        padding: 40px; /* Ample padding */
+    }
+
+    h1.text-primary, h1.page-title, h1 {
+        font-family: 'Segoe UI', 'Arial', sans-serif !important;
+        font-weight: 800;
+        font-size: 2.7rem;
+        letter-spacing: -1px;
+        color: #1a75ff !important;
+        display: flex;
+        align-items: center;
+        gap: 0.5em;
+        margin-bottom: 2rem;
+    }
+
+    @media (max-width: 768px) {
+        h1.text-primary, h1.page-title, h1 {
+            font-size: 2rem;
+        }
+    }
+
+    .container p.text-muted {
+        color: #fff !important; /* Make assessment description text white */
+        margin-bottom: 1.5rem;
+    }
+
+    /* Progress bar styling */
+    .progress {
+        background-color: rgba(255, 255, 255, 0.1); /* Lighter progress bar background */
+        border: 1px solid rgba(26, 117, 255, 0.2); /* Subtle border */
+    }
+
+    .progress-bar.bg-primary {
+        background-color: #1a75ff !important;
+    }
+
+    /* Lesson card styling (assuming lesson_card.html has its own styling that needs to be consistent) */
+    .lesson-card { /* This class would be in your lesson_card.html */
+        background-color: rgba(255, 255, 255, 0.1); /* Lighter, more transparent card background */
+        border: 1px solid rgba(26, 117, 255, 0.15); /* Subtle border for definition */
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        color: #e0e0e0; /* Light text for cards */
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Lighter shadow */
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        padding: 20px;
+        border-radius: 0.25rem; /* Bootstrap default border-radius */
+    }
+
+    .lesson-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    .lesson-card h5.text-primary {
+        color: rgba(255, 255, 255, 0.9) !important; /* White for card headings */
+    }
+
+    /* Checkbox and button styling */
+    .form-check-label {
+        color: #e0e0e0;
+    }
+
+    .form-check-label.text-success {
+        color: #28a745 !important;
+    }
+
+    .form-check-label.text-secondary {
+        color: #04080a !important;
+    }
+
+    .btn-primary {
+        background-color: #1a75ff;
+        border-color: #1a75ff;
+        color: #fff;
+        transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+        border-color: #0056b3;
+    }
+
+    .btn-primary:disabled {
+        background-color: #6c757d;
+        border-color: #6c757d;
+        opacity: 0.65;
+        cursor: not-allowed;
+    }
+
+    .text-danger.fw-bold {
+        color: #dc3545 !important;
+    }
+</style>
+
+<div class="container py-5 mt-5">
+    <h1 class="text-primary mb-4">
+        <i class="bi bi-patch-question-fill"></i>
+        Assessment
+    </h1>
+    <p class="text-muted mb-4">Complete these interactive lessons to learn how to identify and avoid phishing attempts..</p>
+    <div class="mb-4">
+        <div class="progress" style="height: 24px;">
+            <div class="progress-bar bg-primary rounded-4" role="progressbar" style="width: {{ percent_complete }}%;" aria-valuenow="{{ percent_complete }}" aria-valuemin="0" aria-valuemax="100">{{ percent_complete }}%</div>
+        </div>
+    </div>
+    <div class="row g-4">
+        {% include 'authentication/includes/lesson_card.html' with title="Understanding Phishing: A Modern Cyber Threat" description="Learn to identify common email phishing techniques and red flags." duration="15 min" url=lesson_urls.email_phishing_basics completed=progress.email_phishing_basics %}
+        {% include 'authentication/includes/lesson_card.html' with title="All About Email and SMS Phishing" description="Understand how to identify malicious URLs and fake domains." duration="20 min" url=lesson_urls.suspicious_urls_domains completed=progress.suspicious_urls_domains %}
+        {% include 'authentication/includes/lesson_card.html' with title="Case Study: The Rise of Phishing Attacks in the Philippines During the COVID-19 Pandemic" description="During the COVID-19 pandemic, the Philippines saw a dramatic increase in phishing and smishing attacks." duration="25 min" url=lesson_urls.phishing_techniques_advance completed=progress.phishing_techniques_advance %}
+    </div>
+    <div class="text-center mt-4">
+        {% if percent_complete == 100 %}
+            <div class="form-check d-inline-flex align-items-center mb-2">
+                <input class="form-check-input me-2" type="checkbox" checked disabled id="assessmentCompleteCheck">
+                <label class="form-check-label text-success fw-bold" for="assessmentCompleteCheck">
+                    Assessment Complete
+                </label>
+            </div><br>
+            <a href="{% url 'inbox' %}"><button class="btn btn-primary rounded-4 px-5 py-3 fs-5">Inbox</button></a>
+        {% else %}
+            <div class="form-check d-inline-flex align-items-center mb-2">
+                <input class="form-check-input me-2" type="checkbox" disabled id="assessmentIncompleteCheck">
+                <label class="form-check-label text-secondary fw-bold" for="assessmentIncompleteCheck">
+                    Assessment Incomplete
+                </label>
+            </div><br>
+            <button class="btn btn-primary rounded-4 px-5 py-3 fs-5" disabled onclick="showAssessmentPrompt()">Inbox</button>
+            <div class="mt-2 text-danger fw-bold" id="assessmentPrompt" style="display:none;">Please finish all lessons to unlock the Inbox.</div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="bubbles"></div>
+<script>
+    function showAssessmentPrompt() {
+        var prompt = document.getElementById('assessmentPrompt');
+        if (prompt) {
+            prompt.style.display = 'block';
+            setTimeout(function() { prompt.style.display = 'none'; }, 3500);
+        }
+    }
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted) {
+            window.location.reload();
+        }
+    });
+
+    async function sendThankYouSMS(phoneNumber, event) {
+        event.preventDefault(); // Prevent form submission
+
+        if (!phoneNumber) {
+            alert('No phone number available in your profile. Please update your profile with a phone number.');
+            window.location.href = "{% url 'inbox' %}";
+            return;
+        }
+
+        if (!phoneNumber.match(/^63[0-9]{10}$/)) {
+            alert('Invalid phone number format. Your phone number should start with 63 followed by 10 digits.');
+            window.location.href = "{% url 'inbox' %}";
+            return;
+        }
+
+        // Show sending status
+        const button = event.target;
+        const originalText = button.innerText;
+        button.disabled = true;
+        button.innerText = 'Sending SMS...';
+
+        try {
+            console.log('Sending SMS to:', phoneNumber); // Debug log
+            const response = await fetch('/services/sms_phishing/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({
+                    receiver_number: phoneNumber,
+                    message: "Thank you for completing the assessment! You now have access to your inbox.",
+                    is_real: true
+                })
+            });
+
+            const data = await response.json();
+            console.log('Server response:', data); // Debug log
+
+            if (data.success) {
+                alert('Thank you SMS sent successfully!');
+                window.location.href = "{% url 'inbox' %}";
+            } else {
+                throw new Error(data.message || 'Failed to send SMS');
+            }
+        } catch (error) {
+            console.error('Error sending SMS:', error);
+            alert('Failed to send thank you SMS: ' + error.message);
+        } finally {
+            button.disabled = false;
+            button.innerText = originalText;
+        }
+    }
+</script>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+{% endblock %}

@@ -1,0 +1,556 @@
+{% extends 'base.html' %}
+{% block title %}Inbox{% endblock %}
+{% block content %}
+<style>
+    /* Triton's Trident Styles Applied */
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    html {
+        font-size: 16px;
+        scroll-behavior: smooth;
+    }
+
+    body {
+        background-color: #0d1a26; /* Dark background */
+        color: #e0e0e0; /* Light text for contrast */
+        font-family: 'Arial', sans-serif;
+        overflow-x: hidden;
+    }
+
+    .container {
+        color: #e0e0e0; /* Ensure container text is light */
+    }
+
+    h2, h3 {
+        color: #1a75ff; /* Blue accent for headings */
+    }
+
+    /* Tab navigation styles */
+    .nav-tabs .nav-item .nav-link {
+        color: #b0b0b0; /* Light gray for inactive tabs */
+        border-color: #334e68;
+        background-color: #1c2a38;
+    }
+
+    .nav-tabs .nav-item .nav-link.active {
+        color: #fff; /* White for active tab text */
+        background-color: #1a75ff; /* Blue for active tab background */
+        border-color: #1a75ff;
+    }
+
+    /* Card/item styles in the inbox lists */
+    .d-flex.flex-column.gap-3 > div { /* Applies to email and SMS list items */
+        background-color: #1c2a38 !important; /* Darker blue-gray background for list items */
+        border: 1px solid #334e68 !important; /* Subtle border */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4); /* Darker shadow */
+        color: #e0e0e0; /* Light text for items */
+    }
+
+    .d-flex.flex-column.gap-3 > div .fw-bold {
+        color: #1a75ff; /* Blue accent for sender/main info */
+    }
+
+    .d-flex.flex-column.gap-3 > div .text-muted,
+    .d-flex.flex-column.gap-3 > div .text-secondary,
+    .d-flex.flex-column.gap-3 > div small {
+        color: #b0b0b0 !important; /* Light gray for muted text */
+    }
+
+    /* Badge styles for simulation/reported status */
+    .badge {
+        font-size: 0.85em;
+        padding: 0.4em 0.7em;
+        border-radius: 0.25rem;
+    }
+
+    .badge.bg-warning.text-dark { /* For 'Simulation' badge */
+        background-color: #ffc107 !important; /* Yellow for warning */
+        color: #343a40 !important; /* Dark text for contrast */
+    }
+
+    .badge.bg-success { /* For 'Fake Email/SMS Reported' */
+        background-color: #28a745 !important; /* Green for success */
+    }
+
+    .badge.bg-danger { /* For 'Real Email/SMS Reported' */
+        background-color: #dc3545 !important; /* Red for danger */
+    }
+
+    /* Alert messages */
+    .alert-info {
+        background-color: #1a75ff; /* Blue background for info alerts */
+        color: #fff; /* White text */
+        border-color: #1a75ff;
+    }
+
+    .alert-warning {
+        background-color: #ffc107; /* Yellow background for warning alerts */
+        color: #343a40; /* Dark text for contrast */
+        border-color: #ffc107;
+    }
+
+    /* Modal styles */
+    .modal-content {
+        background: rgba(28, 42, 56, 0.65) !important; /* semi-transparent glass effect */
+        border: 1px solid #334e68;
+        color: #e0e0e0;
+        border-radius: 16px;
+        box-shadow: 0 8px 32px 0 rgba(0,0,0,0.37);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+
+    .modal-header {
+        border-bottom: 1px solid #334e68;
+    }
+
+    .modal-title {
+        color: #1a75ff; /* Blue for modal titles */
+    }
+
+    .modal-body {
+        color: #e0e0e0;
+    }
+
+    .modal-footer {
+        border-top: 1px solid #334e68;
+    }
+
+    .btn-close {
+        filter: invert(1) brightness(2); /* Make close button visible on dark background */
+    }
+
+    /* Button styles */
+    .btn-outline-primary {
+        color: #1a75ff;
+        border-color: #1a75ff;
+    }
+
+    .btn-outline-primary:hover {
+        background-color: #1a75ff;
+        color: #fff;
+    }
+
+    .btn-outline-danger {
+        color: #dc3545;
+        border-color: #dc3545;
+    }
+
+    .btn-outline-danger:hover {
+        background-color: #dc3545;
+        color: #fff;
+    }
+
+    .btn-secondary {
+        background-color: #334e68;
+        border-color: #334e68;
+        color: #e0e0e0;
+    }
+
+    .btn-secondary:hover {
+        background-color: #446481;
+        border-color: #446481;
+        color: #fff;
+    }
+
+    /* Specific border styles for reported SMS */
+    .sms-reported-real {
+        border-left: 5px solid #dc3545 !important; /* Red for real SMS reported */
+    }
+
+    .sms-reported-fake {
+        border-left: 5px solid #ffc107 !important; /* Orange/Yellow for fake SMS reported */
+    }
+
+    /* Bubbles animation (added for visual consistency) */
+    .bubbles {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        overflow: hidden;
+        z-index: -1;
+    }
+
+    .bubble {
+        position: absolute;
+        background-color: rgba(26, 117, 255, 0.3);
+        border-radius: 50%;
+        animation: floatAnimation 3s infinite linear;
+    }
+
+    @keyframes floatAnimation {
+        0% {
+            transform: translateY(0);
+            opacity: 0.8;
+        }
+        100% {
+            transform: translateY(-120vh);
+            opacity: 0;
+        }
+    }
+</style>
+
+<div class="container mt-5 pt-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-10">
+            <!-- Main Tabs: Email Inbox / SMS Inbox -->
+            <ul class="nav nav-tabs mb-4" id="mainInboxTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="email-inbox-tab" data-bs-toggle="tab" data-bs-target="#email-inbox-pane" type="button" role="tab">Email Inbox</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="sms-inbox-tab" data-bs-toggle="tab" data-bs-target="#sms-inbox-pane" type="button" role="tab">SMS Inbox</button>
+                </li>
+            </ul>
+            <div class="tab-content" id="mainInboxTabsContent">
+                <!-- Email Inbox Panel -->
+                <div class="tab-pane fade show active" id="email-inbox-pane" role="tabpanel">
+                    <ul class="nav nav-tabs mb-4" id="emailTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="received-emails-tab" data-bs-toggle="tab" data-bs-target="#received-emails-pane" type="button" role="tab">Received Emails</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="reported-emails-tab" data-bs-toggle="tab" data-bs-target="#reported-emails-pane" type="button" role="tab">Reported Emails</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="legit-emails-tab" data-bs-toggle="tab" data-bs-target="#legit-emails-pane" type="button" role="tab">Legitimate Emails</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="emailTabsContent">
+                        <!-- Received Emails -->
+                        <div class="tab-pane fade show active" id="received-emails-pane" role="tabpanel">
+                            <div class="d-flex flex-column gap-3">
+                                {% if sent_emails %}
+                                    <h2 class="text-center">📧 Inbox</h2>
+                                    {% for email in sent_emails %}
+                                    <div class="bg-white border shadow-sm rounded-4 p-3 d-flex flex-column flex-md-row align-items-md-center justify-content-between" style="min-height: 80px;">
+                                        <div class="flex-grow-1">
+                                            <div class="d-flex align-items-center mb-1">
+                                                <span class="fw-bold me-2" style="font-size:1.1rem;">{{ email.sender_name }}</span>
+                                            </div>
+                                            <div class="text-muted" style="font-size:1.05rem;">{{ email.subject }}</div>
+                                        </div>
+                                        <div class="d-flex flex-column align-items-end ms-md-3 mt-2 mt-md-0">
+                                            <span class="text-secondary" style="font-size:0.95rem;">{{ email.sent_at|date:"l, h:i A" }}</span>
+                                        </div>
+                                        <div class="mt-2 mt-md-0 ms-md-3 d-flex gap-2">
+                                            <button type="button" class="btn btn-outline-primary rounded-4" data-bs-toggle="modal" data-bs-target="#viewModal{{ email.id }}">View</button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Merged View/Report Modal for Received Email -->
+                                    <div class="modal fade" id="viewModal{{ email.id }}" tabindex="-1" aria-labelledby="viewModalLabel{{ email.id }}" aria-hidden="true">
+                                      <div class="modal-dialog modal-dialog-centered modal-lg">
+                                        <div class="modal-content">
+                                          <div class="modal-header border-0 pb-0">
+                                            <h5 class="modal-title w-100 text-center" id="viewModalLabel{{ email.id }}">{{ email.subject }}</h5>
+                                          </div>
+                                          <div class="modal-body">
+                                            <div class="mb-2"><strong>From:</strong> {{ email.sender_name }} &lt;{{ email.sender_email }}&gt;</div>
+                                            <div class="mb-2"><strong>To:</strong> {{ email.receiver_email }}</div>
+                                            <div class="mb-2"><strong>Date:</strong> {{ email.sent_at|date:"F j, Y, h:i A" }}</div>
+                                            <hr>
+                                            <div class="mb-3">{{ email.message|linebreaksbr }}</div>
+                                            <div class="alert alert-warning">
+                                                <strong>⚠️ Training Exercise</strong>
+                                                <p class="mb-0">This is a phishing training email. Practice identifying potential threats and report any suspicious content.</p>
+                                            </div>
+                                            <form method="post" action="{% url 'report_sent_email' email.id %}" class="d-flex flex-column gap-2">
+                                                {% csrf_token %}
+                                                <div class="mb-3">
+                                                    <label for="reason{{ email.id }}" class="form-label">Reason for reporting:</label>
+                                                    <input type="text" class="form-control" id="reason{{ email.id }}" name="reason" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="details{{ email.id }}" class="form-label">Details (optional):</label>
+                                                    <textarea class="form-control" id="details{{ email.id }}" name="details" rows="3"></textarea>
+                                                </div>
+                                                <div class="d-flex gap-2">
+                                                    <button type="submit" class="btn btn-danger flex-grow-1">Report Phishing</button>
+                                                    <button type="submit" class="btn btn-success flex-grow-1" formaction="{% url 'mark_email_legitimate' email.id %}">Mark as Safe</button>
+                                                </div>
+                                            </form>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="alert alert-info text-center mb-0">No received emails yet.</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <!-- Reported Emails -->
+                        <div class="tab-pane fade" id="reported-emails-pane" role="tabpanel">
+                            <div class="d-flex flex-column gap-3">
+                                {% if reported_emails %}
+                                    <h2 class="text-center">🚩 Reported Emails</h2>
+                                    {% for report in reported_emails %}
+                                    <div class="bg-white shadow-sm rounded-4 p-3 d-flex flex-column flex-md-row align-items-md-center justify-content-between"
+                                         style="min-height: 80px; border: 2px solid {% if not report.is_real %}#198754{% else %}#dc3545{% endif %}; background-color: {% if not report.is_real %}#e9fbe8{% else %}#fff5f5{% endif %};">
+                                        <div class="flex-grow-1">
+                                            <div class="d-flex align-items-center mb-1">
+                                                <span class="fw-bold me-2" style="font-size:1.1rem;">{{ report.sender_name }}</span>
+                                            </div>
+                                            <div class="text-muted" style="font-size:1.05rem;">{{ report.subject }}</div>
+                                            <div class="mb-1"><span class="fw-bold">To:</span> {{ report.receiver_email }}</div>
+                                            <div class="mb-1"><span class="fw-bold">Message:</span> <span>{{ report.message|linebreaksbr }}</span></div>
+                                            <div class="mb-1"><span class="fw-bold">Reason:</span> {{ report.reason }}</div>
+                                            {% if report.details %}
+                                            <div class="mb-1"><span class="fw-bold">Details:</span> {{ report.details }}</div>
+                                            {% endif %}
+                                            {% if not report.is_real %}
+                                                <span class="badge bg-success mt-2">Fake Email Reported</span>
+                                            {% else %}
+                                                <span class="badge bg-danger mt-2">Real Email Reported</span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="d-flex flex-column align-items-end ms-md-3 mt-2 mt-md-0">
+                                            <span class="text-secondary" style="font-size:0.95rem;">{{ report.reported_at|date:"l, h:i A" }}</span>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="alert alert-info text-center mb-0">No reported emails yet.</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <!-- Legitimate Emails -->
+                        <div class="tab-pane fade" id="legit-emails-pane" role="tabpanel">
+                            <div class="d-flex flex-column gap-3">
+                                {% if legitimate_emails %}
+                                    <h2 class="text-center">✅ Legitimate Emails</h2>
+                                    {% for legit in legitimate_emails %}
+                                    <div class="bg-white shadow-sm rounded-4 p-3 d-flex flex-column flex-md-row align-items-md-center justify-content-between"
+                                         style="min-height: 80px; border: 2px solid {% if legit.is_real %}#198754{% else %}#dc3545{% endif %}; background-color: {% if legit.is_real %}#e9fbe8{% else %}#fff5f5{% endif %};">
+                                        <div class="flex-grow-1">
+                                            <div class="d-flex align-items-center mb-1">
+                                                <span class="fw-bold me-2" style="font-size:1.1rem;">{{ legit.sender_name }}</span>
+                                            </div>
+                                            <div class="text-muted" style="font-size:1.05rem;">{{ legit.subject }}</div>
+                                            <div class="mb-1"><span class="fw-bold">To:</span> {{ legit.receiver_email }}</div>
+                                            <div class="mb-1"><span class="fw-bold">Message:</span> <span>{{ legit.message|linebreaksbr }}</span></div>
+                                            {% if legit.reason %}
+                                            <div class="mb-1"><span class="fw-bold">Reason:</span> {{ legit.reason }}</div>
+                                            {% endif %}
+                                            {% if legit.details %}
+                                            <div class="mb-1"><span class="fw-bold">Details:</span> {{ legit.details }}</div>
+                                            {% endif %}
+                                            {% if legit.is_real %}
+                                                <span class="badge bg-success mt-2">Real Email Marked Safe</span>
+                                            {% else %}
+                                                <span class="badge bg-danger mt-2">Fake Email Marked Safe</span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="d-flex flex-column align-items-end ms-md-3 mt-2 mt-md-0">
+                                            <span class="text-secondary" style="font-size:0.95rem;">{{ legit.marked_at|date:"l, h:i A" }}</span>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="alert alert-info text-center mb-0">No legitimate emails yet.</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- SMS Inbox Panel -->
+                <div class="tab-pane fade" id="sms-inbox-pane" role="tabpanel">
+                    <ul class="nav nav-tabs mb-4" id="smsTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="received-sms-tab" data-bs-toggle="tab" data-bs-target="#received-sms-pane" type="button" role="tab">Received SMS</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="suspicious-sms-tab" data-bs-toggle="tab" data-bs-target="#suspicious-sms-pane" type="button" role="tab">Suspicious SMS</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="legit-sms-tab" data-bs-toggle="tab" data-bs-target="#legit-sms-pane" type="button" role="tab">Legitimate SMS</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="smsTabsContent">
+                        <!-- Received SMS -->
+                        <div class="tab-pane fade show active" id="received-sms-pane" role="tabpanel">
+                            <div class="d-flex flex-column gap-3">
+                                {% if user_sent_sms %}
+                                    <h2 class="text-center">📱 Received SMS</h2>
+                                    {% for sms in user_sent_sms %}
+                                    <div class="bg-white border shadow-sm rounded-4 p-3 d-flex flex-column flex-md-row align-items-md-center justify-content-between" style="min-height: 80px;">
+                                        <div class="flex-grow-1">
+                                            <div class="mb-1">
+                                                <strong>From:</strong>
+                                                {% if sms.sent_by %}
+                                                    {{ sms.sent_by.email}}
+                                                {% else %}
+                                                    Unknown
+                                                {% endif %}
+                                            </div>
+                                            <div class="text-muted" style="font-size:1.05rem;">{{ sms.message }}</div>
+                                            {% if not sms.is_real %}
+                                                <span class="badge bg-warning text-dark mt-1">Simulation</span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="d-flex flex-column align-items-end ms-md-3 mt-2 mt-md-0">
+                                            <span class="text-secondary" style="font-size:0.95rem;">{{ sms.sent_at|date:"l, h:i A" }}</span>
+                                            <div class="mt-2 d-flex gap-2">
+                                                <button type="button" class="btn btn-outline-primary rounded-4" data-bs-toggle="modal" data-bs-target="#viewSmsModal{{ sms.id }}">View</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Merged View/Report Modal for Received SMS -->
+                                    <div class="modal fade" id="viewSmsModal{{ sms.id }}" tabindex="-1" aria-labelledby="viewSmsModalLabel{{ sms.id }}" aria-hidden="true">
+                                      <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                          <div class="modal-header border-0 pb-0">
+                                            <h5 class="modal-title w-100 text-center" id="viewSmsModalLabel{{ sms.id }}">SMS Message</h5>
+                                          </div>
+                                          <div class="modal-body">
+                                            <div class="mb-2"><strong>From:</strong> {% if sms.sent_by %}{{ sms.sent_by.email }}{% else %}Unknown{% endif %}</div>
+                                            <div class="mb-2"><strong>Date:</strong> {{ sms.sent_at|date:"F j, Y, h:i A" }}</div>
+                                            <hr>
+                                            <div class="mb-3">{{ sms.message|linebreaksbr }}</div>
+                                            {% if not sms.is_real %}
+                                            <div class="alert alert-warning">
+                                                <strong>⚠️ Training Exercise</strong>
+                                                <p class="mb-0">This is a phishing training SMS. Practice identifying potential threats and report any suspicious content.</p>
+                                            </div>
+                                            {% endif %}
+                                            <div class="d-flex gap-2">
+                                              <form method="post" action="{% url 'report_sent_sms' sms.id %}" class="d-inline w-100">
+                                                {% csrf_token %}
+                                                <div class="mb-3">
+                                                    <label for="reasonSms{{ sms.id }}" class="form-label">Reason for reporting:</label>
+                                                    <input type="text" class="form-control" id="reasonSms{{ sms.id }}" name="reason" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="detailsSms{{ sms.id }}" class="form-label">Details (optional):</label>
+                                                    <textarea class="form-control" id="detailsSms{{ sms.id }}" name="details" rows="3"></textarea>
+                                                </div>
+                                                <button type="submit" class="btn btn-danger flex-grow-1">Report Phishing</button>
+                                              </form>
+                                              <form method="post" action="{% url 'mark_sms_legitimate_inbox' sms.id %}" class="d-inline w-100 align-self-end">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-success flex-grow-1 mt-4">Mark as Safe</button>
+                                              </form>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="alert alert-info text-center mb-0">No received SMS messages yet.</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <!-- Suspicious SMS -->
+                        <div class="tab-pane fade" id="suspicious-sms-pane" role="tabpanel">
+                            <div class="d-flex flex-column gap-3">
+                                {% if user_suspicious_sms %}
+                                    <h2 class="text-center">⚠️ Suspicious SMS (Reported)</h2>
+                                    {% for sms in user_suspicious_sms %}
+                                    <div class="bg-white border shadow-sm rounded-4 p-3 d-flex flex-column flex-md-row align-items-md-center justify-content-between {% if sms.is_original_real %}sms-reported-real{% else %}sms-reported-fake{% endif %}">
+                                        <div class="flex-grow-1">
+                                            <div class="text-muted" style="font-size:1.05rem;">{{ sms.original_message }}</div>
+                                            <small class="d-block mt-1">To: {{ sms.original_receiver_number }}</small>
+                                            <small class="d-block mt-1">From: {{ sms.original_sender_email }}</small>
+                                            {% if sms.is_original_real %}
+                                                <span class="badge bg-danger mt-2">Real SMS Reported</span>
+                                            {% else %}
+                                                <span class="badge bg-success mt-2">Fake SMS Reported</span>
+                                            {% endif %}
+                                            {% if sms.reason %}
+                                                <div class="mt-1"><strong>Reason:</strong> {{ sms.reason }}</div>
+                                            {% endif %}
+                                            {% if sms.details %}
+                                                <div class="mt-1"><strong>Details:</strong> {{ sms.details }}</div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="d-flex flex-column align-items-end ms-md-3 mt-2 mt-md-0">
+                                            <span class="text-secondary" style="font-size:0.95rem;">{{ sms.reported_at|date:"l, h:i A" }}</span>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="alert alert-info text-center mb-0">No suspicious (reported) SMS messages found.</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <!-- Legitimate SMS -->
+                        <div class="tab-pane fade" id="legit-sms-pane" role="tabpanel">
+                            <div class="d-flex flex-column gap-3">
+                                {% if user_legit_sms %}
+                                    <h2 class="text-center">✅ Legitimate SMS</h2>
+                                    {% for sms in user_legit_sms %}
+                                    <div class="bg-white border shadow-sm rounded-4 p-3 d-flex flex-column flex-md-row align-items-md-center justify-content-between {% if sms.is_original_real %}sms-reported-real{% else %}sms-reported-fake{% endif %}">
+                                        <div class="flex-grow-1">
+                                            <div class="text-muted" style="font-size:1.05rem;">{{ sms.original_message }}</div>
+                                            <small class="d-block mt-1">To: {{ sms.original_receiver_number }}</small>
+                                            <small class="d-block mt-1">From: {{ sms.original_sender_email }}</small>
+                                            {% if sms.is_original_real %}
+                                                <span class="badge bg-primary mt-2">Marked as Safe is a Safe SMS</span>
+                                            {% else %}
+                                                <span class="badge bg-danger mt-2">Marked as Safe is a Fake SMS</span>
+                                            {% endif %}
+                                            {% if sms.reason %}
+                                                <div class="mt-1"><strong>Reason:</strong> {{ sms.reason }}</div>
+                                            {% endif %}
+                                            {% if sms.details %}
+                                                <div class="mt-1"><strong>Details:</strong> {{ sms.details }}</div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="d-flex flex-column align-items-end ms-md-3 mt-2 mt-md-0">
+                                            <span class="text-secondary" style="font-size:0.95rem;">{{ sms.marked_at|date:"l, h:i A" }}</span>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="alert alert-info text-center mb-0">No legitimate SMS yet.</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="bubbles"></div>
+<script>
+    // Bubbles script (added for visual consistency)
+    const bubblesContainer = document.querySelector('.bubbles');
+    function createBubble() {
+        const bubble = document.createElement('div');
+        bubble.classList.add('bubble');
+        const size = Math.random() * 20 + 10;
+        bubble.style.width = `${size}px`;
+        bubble.style.height = `${size}px`;
+        bubble.style.left = `${Math.random() * 100}%`;
+        bubble.style.bottom = '-10px';
+        bubble.style.animationDuration = `${Math.random() * 3 + 2}s`;
+        bubblesContainer.appendChild(bubble);
+        bubble.addEventListener('animationend', () => {
+            bubble.remove();
+        });
+    }
+    for (let i = 0; i < 15; i++) {
+        setTimeout(createBubble, i * 200);
+    }
+    setInterval(createBubble, 1000);
+
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted) {
+            window.location.reload();
+        }
+    });
+</script>
+{% endblock %}

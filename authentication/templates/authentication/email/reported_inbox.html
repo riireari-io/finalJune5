@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block title %}Inbox{% endblock %}
+{% block content %}
+                <div class="tab-pane fade" id="reported-tab-pane" role="tabpanel">
+                    <div class="d-flex flex-column gap-3">
+                        {% if reported_emails %}
+                            <h2 class="text-center">🚩 Reported Emails</h2>
+                            {% for report in reported_emails %}
+                            <div class="bg-white shadow-sm rounded-4 p-3 d-flex flex-column flex-md-row align-items-md-center justify-content-between"
+                                 style="min-height: 80px; border: 2px solid {% if not report.is_real %}#198754{% else %}#dc3545{% endif %}; background-color: {% if not report.is_real %}#e9fbe8{% else %}#fff5f5{% endif %};">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex align-items-center mb-1">
+                                        <span class="fw-bold me-2" style="font-size:1.1rem;">{{ report.sender_name }}</span>
+                                    </div>
+                                    <div class="text-muted" style="font-size:1.05rem;">{{ report.subject }}</div>
+                                    <div class="mb-1"><span class="fw-bold">To:</span> {{ report.receiver_email }}</div>
+                                    <div class="mb-1"><span class="fw-bold">Message:</span> <span>{{ report.message|linebreaksbr }}</span></div>
+                                    <div class="mb-1"><span class="fw-bold">Reason:</span> {{ report.reason }}</div>
+                                    {% if report.details %}
+                                    <div class="mb-1"><span class="fw-bold">Details:</span> {{ report.details }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="d-flex flex-column align-items-end ms-md-3 mt-2 mt-md-0">
+                                    <span class="text-secondary" style="font-size:0.95rem;">{{ report.reported_at|date:"l, h:i A" }}</span>
+                                    {% if not report.is_real %}
+                                        <span class="badge bg-success mt-2">Fake Email Reported</span>
+                                    {% else %}
+                                        <span class="badge bg-danger mt-2">Real Email Reported</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="alert alert-info text-center mb-0">No reported emails yet.</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted) {
+            window.location.reload();
+        }
+    });
+</script>
+{% endblock %}
