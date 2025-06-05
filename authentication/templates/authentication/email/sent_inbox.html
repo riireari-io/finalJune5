@@ -264,7 +264,7 @@
                                                 <strong>⚠️ Training Exercise</strong>
                                                 <p class="mb-0">This is a phishing training email. Practice identifying potential threats and report any suspicious content.</p>
                                             </div>
-                                            <form method="post" action="{% url 'report_sent_email' email.id %}" class="d-flex flex-column gap-2">
+                                            <form method="post" action="{% url 'report_sent_email' email.id %}" class="d-flex flex-column gap-2 report-phishing-form" data-email-id="{{ email.id }}">
                                                 {% csrf_token %}
                                                 <div class="mb-3">
                                                     <label for="reason{{ email.id }}" class="form-label">Reason for reporting:</label>
@@ -275,10 +275,52 @@
                                                     <textarea class="form-control" id="details{{ email.id }}" name="details" rows="3"></textarea>
                                                 </div>
                                                 <div class="d-flex gap-2">
-                                                    <button type="submit" class="btn btn-danger flex-grow-1">Report Phishing</button>
-                                                    <button type="submit" class="btn btn-success flex-grow-1" formaction="{% url 'mark_email_legitimate' email.id %}">Mark as Safe</button>
+                                                    <button type="button" class="btn btn-danger flex-grow-1" onclick="showReportPhishingModal({{ email.id }}, {{ email.is_real|yesno:'true,false' }})">Report Phishing</button>
+                                                    <button type="button" class="btn btn-success flex-grow-1" data-safe-url="{% url 'mark_email_legitimate' email.id %}" onclick="showMarkSafeModal({{ email.id }}, {{ email.is_real|yesno:'true,false' }})">Mark as Safe</button>
                                                 </div>
                                             </form>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    <!-- Report Phishing Modal -->
+                                    <div class="modal fade" id="reportPhishingModal{{ email.id }}" tabindex="-1" aria-labelledby="reportPhishingModalLabel{{ email.id }}" aria-hidden="true">
+                                      <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content" style="background-color: {% if not email.is_real %}#d1f7d6{% else %}#ffeaea{% endif %};">
+                                          <div class="modal-body text-center">
+                                            {% if not email.is_real %}
+                                              <div style="font-size:2.5rem; color:#198754;">
+                                                <i class="bi bi-check-circle-fill"></i>
+                                              </div>
+                                              <h4 class="mt-3" style="color:#198754;">Congratulations! You've Reported a Phishing email!</h4>
+                                            {% else %}
+                                              <div style="font-size:2.5rem; color:#dc3545;">
+                                                <i class="bi bi-x-circle-fill"></i>
+                                              </div>
+                                              <h4 class="mt-3" style="color:#dc3545;">Sorry, but this is a legitimate one!</h4>
+                                            {% endif %}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    <!-- Mark as Safe Modal -->
+                                    <div class="modal fade" id="markSafeModal{{ email.id }}" tabindex="-1" aria-labelledby="markSafeModalLabel{{ email.id }}" aria-hidden="true">
+                                      <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content" style="background-color: {% if email.is_real %}#d1f7d6{% else %}#ffeaea{% endif %};">
+                                          <div class="modal-body text-center">
+                                            {% if email.is_real %}
+                                              <div style="font-size:2.5rem; color:#198754;">
+                                                <i class="bi bi-check-circle-fill"></i>
+                                              </div>
+                                              <h4 class="mt-3" style="color:#198754;">Nice! Good Catch! This is a legitimate email!</h4>
+                                            {% else %}
+                                              <div style="font-size:2.5rem; color:#dc3545;">
+                                                <i class="bi bi-x-circle-fill"></i>
+                                              </div>
+                                              <h4 class="mt-3" style="color:#dc3545;">Be careful! You almost got phished if this is real scenario</h4>
+                                            {% endif %}
                                           </div>
                                         </div>
                                       </div>
@@ -332,7 +374,7 @@
                                     {% for legit in legitimate_emails %}
                                     <div class="bg-white shadow-sm rounded-4 p-3 d-flex flex-column flex-md-row align-items-md-center justify-content-between"
                                          style="min-height: 80px; border: 2px solid {% if legit.is_real %}#198754{% else %}#dc3545{% endif %}; background-color: {% if legit.is_real %}#e9fbe8{% else %}#fff5f5{% endif %};">
-                                        <div class="flex-grow-1">
+                                        <div>
                                             <div class="d-flex align-items-center mb-1">
                                                 <span class="fw-bold me-2" style="font-size:1.1rem;">{{ legit.sender_name }}</span>
                                             </div>
@@ -353,7 +395,41 @@
                                         </div>
                                         <div class="d-flex flex-column align-items-end ms-md-3 mt-2 mt-md-0">
                                             <span class="text-secondary" style="font-size:0.95rem;">{{ legit.marked_at|date:"l, h:i A" }}</span>
+                                            <button type="button" class="btn btn-outline-primary rounded-4 mt-2" data-bs-toggle="modal" data-bs-target="#viewLegitModal{{ legit.id }}">View</button>
                                         </div>
+                                    </div>
+
+                                    <!-- Modal for Legitimate Email -->
+                                    <div class="modal fade" id="viewLegitModal{{ legit.id }}" tabindex="-1" aria-labelledby="viewLegitModalLabel{{ legit.id }}" aria-hidden="true">
+                                      <div class="modal-dialog modal-dialog-centered modal-lg">
+                                        <div class="modal-content" style="background-color: {% if legit.is_real %}#e9fbe8{% else %}#fff5f5{% endif %};">
+                                          <div class="modal-header border-0 pb-0">
+                                            <h5 class="modal-title w-100 text-center" id="viewLegitModalLabel{{ legit.id }}">{{ legit.subject }}</h5>
+                                          </div>
+                                          <div class="modal-body">
+                                            <div class="mb-2"><strong>From:</strong> {{ legit.sender_name }} &lt;{{ legit.sender_email }}&gt;</div>
+                                            <div class="mb-2"><strong>To:</strong> {{ legit.receiver_email }}</div>
+                                            <div class="mb-2"><strong>Date:</strong> {{ legit.sent_at|date:"F j, Y, h:i A" }}</div>
+                                            <hr>
+                                            <div class="mb-3">{{ legit.message|linebreaksbr }}</div>
+                                            {% if legit.is_real %}
+                                                <div class="alert" style="background-color: #d1f7d6; color: #155724; border: 1px solid #198754;">
+                                                    <strong>Nice! Good Catch! This is a legitimate email!</strong>
+                                                </div>
+                                            {% else %}
+                                                <div class="alert" style="background-color: #ffeaea; color: #842029; border: 1px solid #dc3545;">
+                                                    <strong>Be careful! You almost got phished if this is real scenario</strong>
+                                                </div>
+                                            {% endif %}
+                                            {% if legit.reason %}
+                                            <div class="mb-1"><span class="fw-bold">Reason:</span> {{ legit.reason }}</div>
+                                            {% endif %}
+                                            {% if legit.details %}
+                                            <div class="mb-1"><span class="fw-bold">Details:</span> {{ legit.details }}</div>
+                                            {% endif %}
+                                          </div>
+                                        </div>
+                                      </div>
                                     </div>
                                     {% endfor %}
                                 {% else %}
@@ -425,7 +501,7 @@
                                             </div>
                                             {% endif %}
                                             <div class="d-flex gap-2">
-                                              <form method="post" action="{% url 'report_sent_sms' sms.id %}" class="d-inline w-100">
+                                              <form method="post" action="{% url 'report_sent_sms' sms.id %}" class="d-inline w-100 sms-report-phishing-form" data-sms-id="{{ sms.id }}">
                                                 {% csrf_token %}
                                                 <div class="mb-3">
                                                     <label for="reasonSms{{ sms.id }}" class="form-label">Reason for reporting:</label>
@@ -435,13 +511,55 @@
                                                     <label for="detailsSms{{ sms.id }}" class="form-label">Details (optional):</label>
                                                     <textarea class="form-control" id="detailsSms{{ sms.id }}" name="details" rows="3"></textarea>
                                                 </div>
-                                                <button type="submit" class="btn btn-danger flex-grow-1">Report Phishing</button>
+                                                <button type="button" class="btn btn-danger flex-grow-1" data-sms-report-url="{% url 'report_sent_sms' sms.id %}" onclick="showReportPhishingModalSMS({{ sms.id }}, {{ sms.is_real|yesno:'true,false' }})">Report Phishing</button>
                                               </form>
-                                              <form method="post" action="{% url 'mark_sms_legitimate_inbox' sms.id %}" class="d-inline w-100 align-self-end">
+                                              <form method="post" action="{% url 'mark_sms_legitimate_inbox' sms.id %}" class="d-inline w-100 align-self-end sms-mark-safe-form" data-sms-id="{{ sms.id }}">
                                                 {% csrf_token %}
-                                                <button type="submit" class="btn btn-success flex-grow-1 mt-4">Mark as Safe</button>
+                                                <button type="button" class="btn btn-success flex-grow-1 mt-4" data-sms-safe-url="{% url 'mark_sms_legitimate_inbox' sms.id %}" onclick="showMarkSafeModalSMS({{ sms.id }}, {{ sms.is_real|yesno:'true,false' }})">Mark as Safe</button>
                                               </form>
                                             </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    <!-- Report Phishing Modal for SMS -->
+                                    <div class="modal fade" id="reportPhishingModalSMS{{ sms.id }}" tabindex="-1" aria-labelledby="reportPhishingModalSMSLabel{{ sms.id }}" aria-hidden="true">
+                                      <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content" style="background-color: {% if not sms.is_real %}#d1f7d6{% else %}#ffeaea{% endif %};">
+                                          <div class="modal-body text-center">
+                                            {% if not sms.is_real %}
+                                              <div style="font-size:2.5rem; color:#198754;">
+                                                <i class="bi bi-check-circle-fill"></i>
+                                              </div>
+                                              <h4 class="mt-3" style="color:#198754;">Congratulations! You've Reported a Phishing SMS!</h4>
+                                            {% else %}
+                                              <div style="font-size:2.5rem; color:#dc3545;">
+                                                <i class="bi bi-x-circle-fill"></i>
+                                              </div>
+                                              <h4 class="mt-3" style="color:#dc3545;">Sorry, but this is a legitimate one!</h4>
+                                            {% endif %}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    <!-- Mark as Safe Modal for SMS -->
+                                    <div class="modal fade" id="markSafeModalSMS{{ sms.id }}" tabindex="-1" aria-labelledby="markSafeModalSMSLabel{{ sms.id }}" aria-hidden="true">
+                                      <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content" style="background-color: {% if sms.is_real %}#d1f7d6{% else %}#ffeaea{% endif %};">
+                                          <div class="modal-body text-center">
+                                            {% if sms.is_real %}
+                                              <div style="font-size:2.5rem; color:#198754;">
+                                                <i class="bi bi-check-circle-fill"></i>
+                                              </div>
+                                              <h4 class="mt-3" style="color:#198754;">Nice! Good Catch! This is a legitimate SMS!</h4>
+                                            {% else %}
+                                              <div style="font-size:2.5rem; color:#dc3545;">
+                                                <i class="bi bi-x-circle-fill"></i>
+                                              </div>
+                                              <h4 class="mt-3" style="color:#dc3545;">Be careful! You almost got phished if this is real scenario</h4>
+                                            {% endif %}
                                           </div>
                                         </div>
                                       </div>
@@ -552,5 +670,56 @@
             window.location.reload();
         }
     });
+
+    function showReportPhishingModal(emailId, isReal) {
+        var modalId = '#reportPhishingModal' + emailId;
+        var modal = new bootstrap.Modal(document.querySelector(modalId));
+        modal.show();
+        setTimeout(function() {
+            // Submit the report phishing form after 1.5 seconds
+            document.querySelector('#viewModal' + emailId + ' .report-phishing-form').setAttribute('action', document.querySelector('#viewModal' + emailId + ' .report-phishing-form').getAttribute('action'));
+            document.querySelector('#viewModal' + emailId + ' .report-phishing-form').submit();
+        }, 1500);
+    }
+    function showMarkSafeModal(emailId, isReal) {
+        var modalId = '#markSafeModal' + emailId;
+        var modal = new bootstrap.Modal(document.querySelector(modalId));
+        modal.show();
+        setTimeout(function() {
+            var form = document.querySelector('#viewModal' + emailId + ' .report-phishing-form');
+            var btn = form.querySelector('.btn-success[data-safe-url]');
+            if (btn && btn.getAttribute('data-safe-url')) {
+                form.setAttribute('action', btn.getAttribute('data-safe-url'));
+            }
+            form.submit();
+        }, 1500);
+    }
+
+    function showReportPhishingModalSMS(smsId, isReal) {
+        var modalId = '#reportPhishingModalSMS' + smsId;
+        var modal = new bootstrap.Modal(document.querySelector(modalId));
+        modal.show();
+        setTimeout(function() {
+            var form = document.querySelector('#viewSmsModal' + smsId + ' .sms-report-phishing-form');
+            var btn = form.querySelector('.btn-danger[data-sms-report-url]');
+            if (btn && btn.getAttribute('data-sms-report-url')) {
+                form.setAttribute('action', btn.getAttribute('data-sms-report-url'));
+            }
+            form.submit();
+        }, 1500);
+    }
+    function showMarkSafeModalSMS(smsId, isReal) {
+        var modalId = '#markSafeModalSMS' + smsId;
+        var modal = new bootstrap.Modal(document.querySelector(modalId));
+        modal.show();
+        setTimeout(function() {
+            var form = document.querySelector('#viewSmsModal' + smsId + ' .sms-mark-safe-form');
+            var btn = form.querySelector('.btn-success[data-sms-safe-url]');
+            if (btn && btn.getAttribute('data-sms-safe-url')) {
+                form.setAttribute('action', btn.getAttribute('data-sms-safe-url'));
+            }
+            form.submit();
+        }, 1500);
+    }
 </script>
 {% endblock %}
