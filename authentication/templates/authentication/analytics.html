@@ -74,6 +74,44 @@
     .badge.bg-info { background-color: rgba(75, 192, 192, 1) !important; }
     .badge.bg-success { background-color: rgba(40, 167, 69, 1) !important; }
 
+    .analytics-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto;
+        gap: 32px;
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+    .analytics-grid .chart-container {
+        background: rgba(255,255,255,0.07);
+        border-radius: 15px;
+        box-shadow: 0 2px 12px rgba(26,117,255,0.10);
+        border: 1.5px solid #334e68;
+        padding: 18px 12px 12px 12px;
+        min-width: 0;
+        min-height: 220px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 0;
+    }
+    @media (max-width: 900px) {
+        .analytics-grid {
+            grid-template-columns: 1fr;
+            grid-template-rows: auto auto auto auto;
+        }
+        .analytics-grid .chart-container {
+            margin-bottom: 18px;
+            min-height: 180px;
+            padding: 10px 4px 8px 4px;
+        }
+    }
+    @media (max-width: 600px) {
+        .analytics-grid .chart-container {
+            padding: 4px 0 4px 0;
+            min-height: 120px;
+        }
+    }
 </style>
 
 <div class="container py-5">
@@ -106,17 +144,11 @@
             </li>
         </ul>
     </div>
-    <div class="chart-container mt-4" style="max-width:520px; margin:auto; min-height:260px;">
-        <canvas id="smsActionsBar" width="400" height="200"></canvas>
-    </div>
-    <div class="chart-container mt-4" style="max-width:520px; margin:auto;">
-        <canvas id="smsActionsPie" width="500" height="500"></canvas>
-    </div>
-    <div class="chart-container mt-4" style="max-width:520px; margin:auto; min-height:260px;">
-        <canvas id="legitEmailsBar" width="400" height="200"></canvas>
-    </div>
-    <div class="chart-container mt-4" style="max-width:520px; margin:auto;">
-        <canvas id="legitEmailsPie" width="500" height="500"></canvas>
+    <div class="analytics-grid mt-4">
+        <div class="chart-container"><canvas id="smsActionsBar" width="400" height="200"></canvas></div>
+        <div class="chart-container"><canvas id="smsActionsPie" width="400" height="400"></canvas></div>
+        <div class="chart-container"><canvas id="legitEmailsBar" width="400" height="200"></canvas></div>
+        <div class="chart-container"><canvas id="legitEmailsPie" width="400" height="400"></canvas></div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
