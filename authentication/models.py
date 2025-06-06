@@ -81,6 +81,7 @@ class LessonProgress(models.Model):
     lesson_fk = models.ForeignKey('AdminLesson', on_delete=models.CASCADE, null=True, blank=True)
     completed = models.BooleanField(default=False)
     completed_at = models.DateTimeField(null=True, blank=True)
+    score = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.user.email} - {self.lesson if isinstance(self.lesson, str) else self.lesson.title} - {'Done' if self.completed else 'Not Done'}"

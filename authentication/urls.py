@@ -37,6 +37,7 @@ urlpatterns = [
     path('lesson/<int:lesson_id>/', lesson_detail, name='lesson_detail'),
     path('sms/mark_legitimate/<int:sms_id>/', mark_sms_legitimate_inbox, name='mark_sms_legitimate_inbox'),
     path('admin-register/', admin_register, name='admin_register'),
+    path('save-quiz-score/', save_quiz_score, name='save_quiz_score'),
 ]
 
 

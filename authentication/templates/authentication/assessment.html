@@ -252,5 +252,111 @@
     }
 </script>
 
+<!-- Score Modal for Quiz 1 -->
+<div class="modal fade" id="scoreModal1" tabindex="-1" aria-labelledby="scoreModalLabel1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="scoreModalLabel1">Your Score</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+        <span id="scoreText1" style="font-size:2rem;font-weight:bold;"></span>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Score Modal for Quiz 2 -->
+<div class="modal fade" id="scoreModal2" tabindex="-1" aria-labelledby="scoreModalLabel2" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="scoreModalLabel2">Your Score</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+        <span id="scoreText2" style="font-size:2rem;font-weight:bold;"></span>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Score Modal for Quiz 3 -->
+<div class="modal fade" id="scoreModal3" tabindex="-1" aria-labelledby="scoreModalLabel3" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="scoreModalLabel3">Your Score</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+        <span id="scoreText3" style="font-size:2rem;font-weight:bold;"></span>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Quiz 1
+let quiz1Score = 0;
+const quiz1Total = 10; // Set to your number of questions for quiz 1
+function checkAnswer1(questionNum, type, button) {
+    // ... existing code ...
+    if (type === 'correct') {
+        quiz1Score += 1;
+    }
+    // ... existing code ...
+}
+function showScoreModal1() {
+    document.getElementById('scoreText1').textContent = `You scored ${quiz1Score} out of ${quiz1Total}!`;
+    var scoreModal = new bootstrap.Modal(document.getElementById('scoreModal1'));
+    scoreModal.show();
+}
+// Quiz 2
+let quiz2Score = 0;
+const quiz2Total = 10; // Set to your number of questions for quiz 2
+function checkAnswer2(questionNum, type, button) {
+    if (type === 'correct') {
+        quiz2Score += 1;
+    }
+    // ... your quiz2 logic ...
+}
+function showScoreModal2() {
+    document.getElementById('scoreText2').textContent = `You scored ${quiz2Score} out of ${quiz2Total}!`;
+    var scoreModal = new bootstrap.Modal(document.getElementById('scoreModal2'));
+    scoreModal.show();
+}
+// Quiz 3
+let quiz3Score = 0;
+const quiz3Total = 10; // Set to your number of questions for quiz 3
+function checkAnswer3(questionNum, type, button) {
+    if (type === 'correct') {
+        quiz3Score += 1;
+    }
+    // ... your quiz3 logic ...
+}
+function showScoreModal3() {
+    document.getElementById('scoreText3').textContent = `You scored ${quiz3Score} out of ${quiz3Total}!`;
+    var scoreModal = new bootstrap.Modal(document.getElementById('scoreModal3'));
+    scoreModal.show();
+}
+</script>
+
+<!-- Ensure Bootstrap JS is loaded -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- For each quiz, on the last question's button, use: -->
+<!-- Quiz 1: <button onclick="showScoreModal1()">See Your Score</button> -->
+<!-- Quiz 2: <button onclick="showScoreModal2()">See Your Score</button> -->
+<!-- Quiz 3: <button onclick="showScoreModal3()">See Your Score</button> -->
+
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 {% endblock %}

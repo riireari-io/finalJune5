@@ -523,7 +523,7 @@ Still, it's important to stay alert—some businesses and services do use text m
 
 </div>
 <script>
-
+let quiz2Score = 0;
 
 function checkAnswer2(questionNum, type, button) {
     const feedbackDiv = document.getElementById(`feedback2-${questionNum}`);
@@ -544,6 +544,7 @@ function checkAnswer2(questionNum, type, button) {
         }
     });
     if (type === 'correct') {
+        quiz2Score += 1;
         feedbackDiv.textContent = feedbackCorrect2[questionNum] || "Correct!";
         feedbackDiv.classList.add('correct');
         feedbackDiv.classList.remove('wrong');
@@ -578,7 +579,28 @@ function resetQuiz(questionId, feedbackId, nextBtnId) {
     nextButton.style.display = 'none';
     feedbackDiv.classList.remove('correct', 'wrong');
 }
+function submitQuizScore(lesson, score) {
+    fetch('/save-quiz-score/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({ lesson: lesson, score: score }),
+        credentials: 'include'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status !== 'ok') {
+            alert('Error saving score: ' + (data.message || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        alert('Network error: ' + error);
+    });
+}
 function completeLessonAndRedirect2() {
+    submitQuizScore('suspicious_urls_domains', quiz2Score); // Save the score
     fetch("{{ lesson_urls.suspicious_urls_domains }}", {
         method: "POST",
         headers: {

@@ -581,7 +581,8 @@ Because of this broad targeting, it's essential that all users are educated thro
 
 
 <script>
-    // Functions for quiz logic (kept as is)
+let quiz1Score = 0;
+
     function checkAnswer1(questionNum, type, button) {
         const feedbackDiv = document.getElementById(`feedback1-${questionNum}`);
         const nextButton = document.getElementById(`next-btn1-${questionNum}`);
@@ -601,6 +602,7 @@ Because of this broad targeting, it's essential that all users are educated thro
             }
         });
         if (type === 'correct') {
+        quiz1Score += 1;
             feedbackDiv.textContent = feedbackCorrect[questionNum] || "Correct!";
             feedbackDiv.classList.add('correct');
             feedbackDiv.classList.remove('wrong');
@@ -613,7 +615,6 @@ Because of this broad targeting, it's essential that all users are educated thro
         nextButton.style.display = 'block';
     }
 
-
     function showNextQuestion1(questionNum) {
         document.getElementById(`quiz1-question-${questionNum - 1}`).style.display = 'none';
         document.getElementById(`quiz1-question-${questionNum}`).style.display = 'block';
@@ -621,20 +622,40 @@ Because of this broad targeting, it's essential that all users are educated thro
         resetQuiz(`quiz1-question-${questionNum}`, `feedback1-${questionNum}`, `next-btn1-${questionNum}`);
     }
 
+function submitQuizScore(lesson, score) {
+    fetch('/save-quiz-score/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({ lesson: lesson, score: score }),
+        credentials: 'include'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status !== 'ok') {
+            alert('Error saving score: ' + (data.message || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        alert('Network error: ' + error);
+    });
+}
 
     function completeLessonAndRedirect1() {
-        fetch("{{ lesson_urls.email_phishing_basics }}", {
-            method: "POST",
-            headers: {
-                'X-CSRFToken': getCookie('csrftoken'),
-                'X-Requested-With': 'XMLHttpRequest',
-            },
-            body: ''
-        }).finally(function() {
-            window.location.assign('{{ lesson_urls.suspicious_urls_domains|escapejs }}');
-        });
-    }
-
+    submitQuizScore('email_phishing_basics', quiz1Score); // Save the score
+    fetch("{{ lesson_urls.email_phishing_basics }}", {
+        method: "POST",
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'X-Requested-With': 'XMLHttpRequest',
+        },
+        body: ''
+    }).finally(function() {
+        window.location.assign('{{ lesson_urls.suspicious_urls_domains|escapejs }}');
+    });
+}
 
     function getCookie(name) {
         let cookieValue = null;
@@ -650,7 +671,6 @@ Because of this broad targeting, it's essential that all users are educated thro
         }
         return cookieValue;
     }
-
 
     function resetQuiz(questionId, feedbackId, nextBtnId) {
         const questionDiv = document.getElementById(questionId);
@@ -669,7 +689,6 @@ Because of this broad targeting, it's essential that all users are educated thro
         feedbackDiv.classList.remove('correct', 'wrong');
     }
 
-
     document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('lesson1-content').style.display = 'block';
         document.getElementById('quiz-lesson1').style.display = 'block';
@@ -677,7 +696,6 @@ Because of this broad targeting, it's essential that all users are educated thro
         resetQuiz('quiz1-question-2', 'feedback1-2', 'next-btn1-2');
         document.getElementById('quiz1-question-1').style.display = 'block';
         document.getElementById('quiz1-question-2').style.display = 'none';
-
 
         // Initial check for scroll button visibility on load
         const scrollBtn = document.getElementById("scrollTopBtn");
@@ -690,11 +708,9 @@ Because of this broad targeting, it's essential that all users are educated thro
         });
     });
 
-
     function scrollToTop() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-
 
     const feedbackCorrect = {
         1: "Correct! Phishing is sending fraudulent messages pretending to be from trusted sources.",
@@ -708,7 +724,6 @@ Because of this broad targeting, it's essential that all users are educated thro
         9: "Correct! Attackers exploit distracted or emotional users during crises.",
         10: "Exactly! Never click unknown attachments in suspicious emails."
     };
-
 
     const feedbackWrong = {
         1: "Not quite. Review what phishing means and try again!",

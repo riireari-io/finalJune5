@@ -378,30 +378,37 @@ def custom_404_view(request, exception=None):
 
 @staff_member_required
 def admin_dashboard(request):
-    # Show all users' lesson progress
     users = CustomUser.objects.all()
-    # Use the same three lessons as user dashboard and assessment
-    lessons = ['email_phishing_basics', 'suspicious_urls_domains', 'phishing_techniques_advance']
+    lessons = [
+        'email_phishing_basics',
+        'suspicious_urls_domains',
+        'phishing_techniques_advance'
+    ]
     user_progress = []
     for user in users:
+        # Fetch lesson progress and scores for each lesson
+        lesson1 = LessonProgress.objects.filter(user=user, lesson='email_phishing_basics').first()
+        lesson2 = LessonProgress.objects.filter(user=user, lesson='suspicious_urls_domains').first()
+        lesson3 = LessonProgress.objects.filter(user=user, lesson='phishing_techniques_advance').first()
         progress = {lesson: LessonProgress.objects.filter(user=user, lesson=lesson, completed=True).exists() for lesson in lessons}
         completed_count = sum(progress.values())
         total_lessons = len(progress)
         percent_complete = int((completed_count / total_lessons) * 100) if total_lessons else 0
-        # Email reports
         reported_emails = ReportedEmail.objects.filter(reported_by=user).order_by('-reported_at')
-        # SMS reports
         from .models import ReportedSMS
         reported_sms = ReportedSMS.objects.filter(reported_by=user).order_by('-reported_at')
         reported_count = reported_emails.count() + reported_sms.count()
         user_progress.append({
             'user': user,
-            'phone_number': user.phone_number,  # Add phone number to context
+            'phone_number': user.phone_number,
             'progress': progress,
             'percent_complete': percent_complete,
             'reported_count': reported_count,
             'reported_emails': reported_emails,
-            'reported_sms': reported_sms
+            'reported_sms': reported_sms,
+            'lesson1_score': lesson1.score if lesson1 and lesson1.score is not None else None,
+            'lesson2_score': lesson2.score if lesson2 and lesson2.score is not None else None,
+            'lesson3_score': lesson3.score if lesson3 and lesson3.score is not None else None,
         })
     return render(request, 'authentication/admin_dashboard.html', {'user_progress': user_progress, 'lessons': lessons})
 
@@ -715,3 +722,28 @@ def admin_register(request):
         form = AdminUserCreationForm()
     response = render(request, 'authentication/admin_register.html', {'form': form})
     return set_no_cache_headers(response)
+
+@csrf_exempt
+def save_quiz_score(request):
+    if request.method != 'POST':
+        return JsonResponse({'status': 'error', 'message': 'POST required'}, status=405)
+    try:
+        data = json.loads(request.body)
+        lesson = data.get('lesson')
+        score = data.get('score')
+        if not lesson or score is None:
+            return JsonResponse({'status': 'error', 'message': 'Missing lesson or score'}, status=400)
+        user = request.user
+        if not user.is_authenticated:
+            return JsonResponse({'status': 'error', 'message': 'User not authenticated'}, status=403)
+        progress, created = LessonProgress.objects.get_or_create(
+            user=user, lesson=lesson,
+            defaults={'completed': True, 'score': score}
+        )
+        if not created:
+            progress.score = score
+            progress.completed = True
+            progress.save()
+        return JsonResponse({'status': 'ok'})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)

@@ -465,6 +465,8 @@
 
 </div>
 <script>
+let quiz3Score = 0;
+
 function checkRedFlag() {
     const input = document.getElementById('redFlagInput').value.toLowerCase().trim();
     const resultDiv = document.getElementById('redFlagResult');
@@ -500,6 +502,7 @@ function checkAnswer3(questionNum, type, button) {
 
 
     if (type === 'correct') {
+        quiz3Score += 1;
         feedbackDiv.textContent = feedbackCorrect3[questionNum] || "Correct!";
         feedbackDiv.classList.add('correct');
         feedbackDiv.classList.remove('wrong');
@@ -531,7 +534,28 @@ function resetQuiz(questionId, feedbackId, nextBtnId) {
     nextButton.style.display = 'none';
     feedbackDiv.classList.remove('correct', 'wrong');
 }
+function submitQuizScore(lesson, score) {
+    fetch('/save-quiz-score/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({ lesson: lesson, score: score }),
+        credentials: 'include'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status !== 'ok') {
+            alert('Error saving score: ' + (data.message || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        alert('Network error: ' + error);
+    });
+}
 function completeLessonAndRedirect() {
+    submitQuizScore('phishing_techniques_advance', quiz3Score); // Save the score
     fetch("{% url 'phishing_techniques_advance' %}", {
         method: "POST",
         headers: {
