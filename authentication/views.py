@@ -167,8 +167,8 @@ def email_phishing(request):
                 connection = get_connection(
                     host=settings.EMAIL_HOST,
                     port=settings.EMAIL_PORT,
-                    username=shoppee['shopie842@gmail.com'],
-                    password=shoppee['amlifjfxqpbxzfag'],
+                    username=shoppee['EMAIL_HOST_USER'],
+                    password=shoppee['EMAIL_HOST_PASSWORD'],
                     use_tls=settings.EMAIL_USE_TLS,
                     fail_silently=False
                 )

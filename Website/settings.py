@@ -154,7 +154,7 @@ EMAIL_HOST_PASSWORD = 'agtr iuck mwku pbnd' # Consider using environment variabl
 DEFAULT_FROM_EMAIL = f''
 
 EMAIL_ACCOUNTS = {
-    'Shoppee': {
+    'Shoppee Shipping': {
         'EMAIL_HOST_USER': 'shopie842@gmail.com',
         'EMAIL_HOST_PASSWORD': 'amlifjfxqpbxzfag',
     },
