@@ -18,6 +18,7 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 import sys
 import requests
+from django.db.models import Avg
 
 def set_no_cache_headers(response):
     response['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
@@ -433,6 +434,11 @@ def analytics(request):
     sms_legit_fake = LegitimateSMS.objects.filter(is_original_real=False).count()
     sms_reported_real = ReportedSMS.objects.filter(is_original_real=True).count()
     sms_reported_fake = ReportedSMS.objects.filter(is_original_real=False).count()
+    # Calculate average scores for each quiz
+    quiz1_avg = LessonProgress.objects.filter(lesson='email_phishing_basics', score__isnull=False).aggregate(avg=Avg('score'))['avg'] or 0
+    quiz2_avg = LessonProgress.objects.filter(lesson='suspicious_urls_domains', score__isnull=False).aggregate(avg=Avg('score'))['avg'] or 0
+    quiz3_avg = LessonProgress.objects.filter(lesson='phishing_techniques_advance', score__isnull=False).aggregate(avg=Avg('score'))['avg'] or 0
+    average_quiz_scores = [round(quiz1_avg, 2), round(quiz2_avg, 2), round(quiz3_avg, 2)]
     return render(request, 'authentication/analytics.html', {
         'total_sent_emails': total_sent_emails,
         'total_sent_sms': total_sent_sms,
@@ -448,6 +454,10 @@ def analytics(request):
         'sms_legit_fake': sms_legit_fake,
         'sms_reported_real': sms_reported_real,
         'sms_reported_fake': sms_reported_fake,
+        'average_quiz1_score': round(quiz1_avg, 2),
+        'average_quiz2_score': round(quiz2_avg, 2),
+        'average_quiz3_score': round(quiz3_avg, 2),
+        'average_quiz_scores': average_quiz_scores,
     })
 
 @login_required

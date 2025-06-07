@@ -394,30 +394,7 @@
             <i class="bi bi-house-door-fill me-1"></i> Edit Home
         </a>
     </h1>
-    <!-- Quiz Scores Section -->
-    <div class="mb-4 p-4 rounded-4" style="background:rgba(30,80,130,0.25);border:1px solid #50A3FF;max-width:600px;margin:0 auto 2rem auto;">
-        <h2 class="mb-3" style="color:#79C2F5;">Quiz Scores Overview</h2>
-        <table class="table table-bordered table-dark table-striped">
-            <thead>
-                <tr>
-                    <th>User</th>
-                    <th>Email Phishing Basics</th>
-                    <th>Suspicious URLs & Domains</th>
-                    <th>Phishing Techniques Advance</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for entry in user_progress %}
-                <tr>
-                    <td>{{ entry.user.email }}</td>
-                    <td>{% if entry.lesson1_score %}{{ entry.lesson1_score }}{% else %}-{% endif %}</td>
-                    <td>{% if entry.lesson2_score %}{{ entry.lesson2_score }}{% else %}-{% endif %}</td>
-                    <td>{% if entry.lesson3_score %}{{ entry.lesson3_score }}{% else %}-{% endif %}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+  
     <div class="table-responsive-custom"> {# Added a wrapper for horizontal scrolling #}
         <div class="admin-dashboard-header d-none d-md-grid">
             <div>User</div>
@@ -581,31 +558,34 @@
         </div>
         {% endfor %}
     </div> {# End of table-responsive-custom wrapper #}
-    <!-- Quiz Results Table -->
-    <div class="table-responsive-custom mt-5">
-        <table class="table table-dark table-striped">
-            <thead>
-                <tr>
-                    <th>User</th>
-                    <th>Quiz</th>
-                    <th>Score</th>
-                    <th>Total Questions</th>
-                    <th>Completed At</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for result in quiz_results %}
-                <tr>
-                    <td>{{ result.user.username }}</td>
-                    <td>{{ result.quiz_name }}</td>
-                    <td>{{ result.score }}</td>
-                    <td>{{ result.total_questions }}</td>
-                    <td>{{ result.completed_at }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+   
+
+      <!-- Quiz Scores Section -->
+      <div class="mb-4 p-4 rounded-4" style="background:rgba(30,80,130,0.25);border:1px solid #50A3FF;max-width:100%;margin:0 auto 2rem auto;">
+        <h2 class="mb-3 text-center" style="color:#79C2F5;">Quiz Scores Overview</h2>
+        <div class="table-responsive">
+          <table class="table table-bordered table-dark table-striped w-100" style="min-width:600px;">
+              <thead>
+                  <tr>
+                      <th style="min-width:200px;">User</th>
+                      <th style="min-width:180px;">Understanding Phishing</th>
+                      <th style="min-width:220px;">All About Email and SMS Phishing</th>
+                      <th style="min-width:260px;">Case Study: The Rise of Phishing Attacks</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  {% for entry in user_progress %}
+                  <tr>
+                      <td>{{ entry.user.email }}</td>
+                      <td>{% if entry.lesson1_score %}{{ entry.lesson1_score }}{% else %}-{% endif %}</td>
+                      <td>{% if entry.lesson2_score %}{{ entry.lesson2_score }}{% else %}-{% endif %}</td>
+                      <td>{% if entry.lesson3_score %}{{ entry.lesson3_score }}{% else %}-{% endif %}</td>
+                  </tr>
+                  {% endfor %}
+              </tbody>
+          </table>
+        </div>
+      </div>
 </div>
 
 <script>

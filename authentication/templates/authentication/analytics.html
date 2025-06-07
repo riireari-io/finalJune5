@@ -122,6 +122,26 @@
     <div class="chart-container mt-5">
         <canvas id="analyticsBar" width="400" height="200"></canvas>
     </div>
+    <!-- Average Quiz Scores Chart -->
+    <div class="chart-container mt-4">
+        <canvas id="averageQuizScoresBar" width="400" height="200"></canvas>
+    </div>
+    <div class="mt-2 mb-4">
+        <ul class="list-group">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                Average Quiz 1 Score (Email Phishing Basics)
+                <span class="badge bg-primary rounded-pill">{{ average_quiz1_score }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                Average Quiz 2 Score (Suspicious URLs & Domains)
+                <span class="badge bg-warning rounded-pill text-dark">{{ average_quiz2_score }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                Average Quiz 3 Score (Phishing Techniques Advance)
+                <span class="badge bg-success rounded-pill">{{ average_quiz3_score }}</span>
+            </li>
+        </ul>
+    </div>
     <div class="mt-4">
         <ul class="list-group">
             <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -416,6 +436,63 @@
                 responsive: true,
                 plugins: {
                     legend: { labels: { color: '#e0e0e0' } }
+                }
+            }
+        });
+    </script>
+    <script>
+        // Average Quiz Scores Bar Chart
+        const averageQuizScoresBar = new Chart(document.getElementById('averageQuizScoresBar').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: [
+                    'Quiz 1: Email Phishing Basics',
+                    'Quiz 2: Suspicious URLs & Domains',
+                    'Quiz 3: Phishing Techniques Advance'
+                ],
+                datasets: [{
+                    label: 'Average Score',
+                    data: [
+                        Number('{{ average_quiz1_score|default:0 }}'),
+                        Number('{{ average_quiz2_score|default:0 }}'),
+                        Number('{{ average_quiz3_score|default:0 }}')
+                    ],
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(255, 206, 86, 0.7)',
+                        'rgba(40, 167, 69, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(40, 167, 69, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { labels: { color: '#e0e0e0' } },
+                    title: {
+                        display: true,
+                        text: 'Average Quiz Scores (All Users)',
+                        color: '#e0e0e0',
+                        font: { size: 18 }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: { color: '#e0e0e0' },
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        precision: 2,
+                        ticks: { color: '#e0e0e0' },
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                    }
                 }
             }
         });
